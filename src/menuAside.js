@@ -4,39 +4,39 @@ import {
   mdiLock,
   mdiViewList,
   mdiPalette,
-} from "@mdi/js";
+} from '@mdi/js'
 
 export default [
   {
-    to: "/dashboard",
+    to: '/dashboard',
     icon: mdiMonitor,
-    label: "Dashboard",
+    label: 'Dashboard',
   },
   {
-    to: "/",
-    label: "Styles",
+    to: '/style',
+    label: 'Styles',
     icon: mdiPalette,
   },
   {
-    to: "/profile",
-    label: "Profile",
+    to: '/profile',
+    label: 'Profile',
     icon: mdiAccountCircle,
   },
   {
-    to: "/login",
-    label: "Login",
+    to: '/login',
+    label: 'Login',
     icon: mdiLock,
   },
   {
-    label: "Dropdown",
+    label: 'Dropdown',
     icon: mdiViewList,
     menu: [
       {
-        label: "Item One",
+        label: 'Item One',
       },
       {
-        label: "Item Two",
+        label: 'Item Two',
       },
     ],
   },
-];
+]
