@@ -1,5 +1,10 @@
+<script setup>
+import First from "@/components/front/FirstWindow.vue";
+</script>
+
 <template>
-  <main id="main">
+  <First></First>
+  <!-- <main id="main"> -->
     <!-- ======= About Section ======= -->
 
     <!-- End About Section -->
@@ -27,7 +32,7 @@
     <!-- ======= Contact Section ======= -->
 
     <!-- End Contact Section -->
-  </main>
+  <!-- </main> -->
 
   <!-- ======= Footer ======= -->
 
@@ -37,3 +42,4 @@
 
   <!-- END Pre Loader -->
 </template>
+
