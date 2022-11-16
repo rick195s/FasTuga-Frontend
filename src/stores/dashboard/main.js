@@ -7,6 +7,7 @@ export const useMainStore = defineStore("main", {
     userName: null,
     userEmail: null,
     userAvatar: null,
+    authToken: localStorage.getItem("authToken") || null,
 
     /* Field focus with ctrl+k (to register only once) */
     isFieldFocusRegistered: false,
@@ -26,6 +27,11 @@ export const useMainStore = defineStore("main", {
       if (payload.avatar) {
         this.userAvatar = payload.avatar;
       }
+    },
+
+    setAuthToken(token) {
+      this.authToken = "Bearer " + token;
+      localStorage.setItem("authToken", token);
     },
 
     fetch(sampleDataKey) {

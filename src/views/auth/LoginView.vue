@@ -1,5 +1,5 @@
 <script setup>
-import { reactive } from "vue";
+import { reactive, inject } from "vue";
 import { useRouter } from "vue-router";
 import { mdiAccount, mdiAsterisk } from "@mdi/js";
 import SectionFullScreen from "@/components/dashboard/SectionFullScreen.vue";
@@ -10,17 +10,30 @@ import FormControl from "@/components/dashboard/FormControl.vue";
 import BaseButton from "@/components/dashboard/BaseButton.vue";
 import BaseButtons from "@/components/dashboard/BaseButtons.vue";
 import LayoutGuest from "@/layouts/dashboard/LayoutGuest.vue";
+import { useMainStore } from "@/stores/dashboard/main";
+
+const axios = inject("axios");
+const router = useRouter();
 
 const form = reactive({
-  login: "john.doe",
-  pass: "highly-secure-password-fYjUw-",
+  email: "",
+  password: "",
   remember: true,
 });
 
-const router = useRouter();
-
 const submit = () => {
-  router.push("/dashboard");
+  const body = {
+    email: form.email,
+    password: form.password,
+  };
+
+  axios.post("/login", body).then((response) => {
+    const store = useMainStore();
+    store.setAuthToken(response.data.token);
+    axios.defaults.headers.common.Authorization = store.authToken;
+
+    router.push({ name: "dashboard" });
+  });
 };
 </script>
 
@@ -30,19 +43,21 @@ const submit = () => {
       <CardBox :class="cardClass" is-form @submit.prevent="submit">
         <FormField label="Login" help="Please enter your login">
           <FormControl
-            v-model="form.login"
+            v-model="form.email"
             :icon="mdiAccount"
             name="login"
-            autocomplete="username"
+            placeholder="Email"
+            autocomplete="email"
           />
         </FormField>
 
         <FormField label="Password" help="Please enter your password">
           <FormControl
-            v-model="form.pass"
+            v-model="form.password"
             :icon="mdiAsterisk"
             type="password"
             name="password"
+            placeholder="Password"
             autocomplete="current-password"
           />
         </FormField>
