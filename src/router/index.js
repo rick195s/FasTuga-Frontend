@@ -28,6 +28,14 @@ const routes = [
     name: "login",
     component: () => import("@/views/auth/LoginView.vue"),
   },
+  {
+    meta: {
+      title: "Register",
+    },
+    path: "/register",
+    name: "register",
+    component: () => import("@/views/auth/RegisterView.vue"),
+  },
 ];
 
 const router = createRouter({
@@ -36,6 +44,16 @@ const router = createRouter({
   scrollBehavior(to, from, savedPosition) {
     return savedPosition || { top: 0 };
   },
+});
+
+/* Default title tag */
+const defaultDocumentTitle = "FasTuga";
+
+/* Set document title from route meta */
+router.afterEach((to) => {
+  document.title = to.meta?.title
+    ? `${to.meta.title} — ${defaultDocumentTitle}`
+    : defaultDocumentTitle;
 });
 
 export default router;
