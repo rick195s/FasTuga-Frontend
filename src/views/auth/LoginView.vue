@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, inject } from "vue";
+import { reactive, inject, ref } from "vue";
 import { useRouter } from "vue-router";
 import { mdiAccount, mdiAsterisk } from "@mdi/js";
 import SectionFullScreen from "@/components/dashboard/SectionFullScreen.vue";
@@ -11,9 +11,14 @@ import BaseButton from "@/components/dashboard/BaseButton.vue";
 import BaseButtons from "@/components/dashboard/BaseButtons.vue";
 import LayoutGuest from "@/layouts/dashboard/LayoutGuest.vue";
 import { useMainStore } from "@/stores/dashboard/main";
+import NotificationBarInCard from "@/components/dashboard/NotificationBarInCard.vue";
 
 const axios = inject("axios");
 const router = useRouter();
+
+const formStatusCurrent = ref("");
+const formHeaderText = ref("");
+const store = useMainStore();
 
 const form = reactive({
   email: "",
@@ -21,19 +26,22 @@ const form = reactive({
   remember: true,
 });
 
-const submit = () => {
+const submit = async () => {
   const body = {
     email: form.email,
     password: form.password,
   };
 
-  axios.post("/login", body).then((response) => {
-    const store = useMainStore();
+  try {
+    const response = await axios.post("/login", body);
     store.setAuthToken(response.data.token);
     axios.defaults.headers.common.Authorization = store.authToken;
 
     router.push({ name: "dashboard" });
-  });
+  } catch (error) {
+    formHeaderText.value = error.response.data.message;
+    formStatusCurrent.value = "danger";
+  }
 };
 </script>
 
@@ -41,6 +49,12 @@ const submit = () => {
   <LayoutGuest>
     <SectionFullScreen v-slot="{ cardClass }" bg="purplePink">
       <CardBox :class="cardClass" is-form @submit.prevent="submit">
+        <NotificationBarInCard
+          v-if="formStatusCurrent"
+          :color="formStatusCurrent"
+        >
+          <span><b class="capitalize">Error:</b> {{ formHeaderText }}</span>
+        </NotificationBarInCard>
         <FormField label="Login" help="Please enter your login">
           <FormControl
             v-model="form.email"
