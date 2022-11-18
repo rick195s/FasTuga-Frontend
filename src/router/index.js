@@ -28,6 +28,14 @@ const routes = [
     name: "login",
     component: () => import("@/views/auth/LoginView.vue"),
   },
+  {
+    meta: {
+      title: "Register",
+    },
+    path: "/register",
+    name: "register",
+    component: () => import("@/views/auth/RegisterView.vue"),
+  },
 ];
 
 const router = createRouter({
