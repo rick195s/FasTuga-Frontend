@@ -54,8 +54,12 @@ const submit = async () => {
 
     router.push({ name: "dashboard" });
   } catch (error) {
-    formHeaderText.value = error.response.data.message;
-    populateErrors(error.response.data.errors);
+    if (!error.response.data) {
+      formHeaderText.value = "Register failed";
+    } else {
+      formHeaderText.value = error.response.data.message;
+      populateErrors(error.response.data.errors);
+    }
     formStatusCurrent.value = "danger";
   }
 };
