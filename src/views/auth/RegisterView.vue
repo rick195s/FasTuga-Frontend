@@ -17,7 +17,9 @@ const router = useRouter();
 const store = useMainStore();
 
 const formStatusCurrent = ref("");
-const formHeaderText = ref("");
+const formHeaderTitle = ref("");
+const formHeaderContent = ref("");
+const waiting = ref(false);
 
 const formErrors = reactive({
   name: [],
@@ -46,22 +48,31 @@ const submit = async () => {
   };
 
   try {
+    setWaiting();
     const response = await axios.post("/register", body);
-    formHeaderText.value = "Register successful";
-    formStatusCurrent.value = "success";
     store.setAuthToken(response.data.token);
     axios.defaults.headers.common.Authorization = store.authToken;
 
     router.push({ name: "dashboard" });
   } catch (error) {
+    formHeaderTitle.value = "Error: ";
     if (!error.response.data) {
-      formHeaderText.value = "Register failed";
+      formHeaderContent.value = "Register failed";
     } else {
-      formHeaderText.value = error.response.data.message;
+      formHeaderContent.value = error.response.data.message;
       populateErrors(error.response.data.errors);
     }
     formStatusCurrent.value = "danger";
   }
+
+  waiting.value = false;
+};
+
+const setWaiting = () => {
+  formHeaderTitle.value = "Waiting";
+  formHeaderContent.value = "";
+  waiting.value = true;
+  formStatusCurrent.value = "info";
 };
 
 const populateErrors = (errors) => {
@@ -91,8 +102,12 @@ const populateErrors = (errors) => {
         <NotificationBarInCard
           v-if="formStatusCurrent"
           :color="formStatusCurrent"
+          :waiting="waiting"
         >
-          <span><b class="capitalize">Error:</b> {{ formHeaderText }}</span>
+          <span
+            ><b class="capitalize">{{ formHeaderTitle }}</b>
+            {{ formHeaderContent }}</span
+          >
         </NotificationBarInCard>
 
         <FormField

@@ -17,7 +17,9 @@ const axios = inject("axios");
 const router = useRouter();
 
 const formStatusCurrent = ref("");
-const formHeaderText = ref("");
+const formHeaderTitle = ref("");
+const formHeaderContent = ref("");
+const waiting = ref(false);
 const store = useMainStore();
 
 const form = reactive({
@@ -33,19 +35,30 @@ const submit = async () => {
   };
 
   try {
+    setWaiting();
     const response = await axios.post("/login", body);
     store.setAuthToken(response.data.token);
     axios.defaults.headers.common.Authorization = store.authToken;
 
     router.push({ name: "dashboard" });
   } catch (error) {
+    formHeaderTitle.value = "Error: ";
     if (!error.response.data) {
-      formHeaderText.value = "Login failed";
+      formHeaderContent.value = "Login failed";
     } else {
-      formHeaderText.value = error.response.data.message;
+      formHeaderTitle.value = error.response.data.message;
     }
     formStatusCurrent.value = "danger";
   }
+
+  waiting.value = false;
+};
+
+const setWaiting = () => {
+  formHeaderTitle.value = "Waiting";
+  formHeaderContent.value = "";
+  waiting.value = true;
+  formStatusCurrent.value = "info";
 };
 </script>
 
@@ -56,8 +69,12 @@ const submit = async () => {
         <NotificationBarInCard
           v-if="formStatusCurrent"
           :color="formStatusCurrent"
+          :waiting="waiting"
         >
-          <span><b class="capitalize">Error:</b> {{ formHeaderText }}</span>
+          <span
+            ><b class="capitalize">{{ formHeaderTitle }}</b>
+            {{ formHeaderContent }}</span
+          >
         </NotificationBarInCard>
         <FormField label="Login" help="Please enter your login">
           <FormControl
