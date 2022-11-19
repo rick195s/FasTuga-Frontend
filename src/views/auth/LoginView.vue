@@ -39,7 +39,11 @@ const submit = async () => {
 
     router.push({ name: "dashboard" });
   } catch (error) {
-    formHeaderText.value = error.response.data.message;
+    if (!error.response.data) {
+      formHeaderText.value = "Login failed";
+    } else {
+      formHeaderText.value = error.response.data.message;
+    }
     formStatusCurrent.value = "danger";
   }
 };
