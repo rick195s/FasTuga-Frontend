@@ -1,3 +1,8 @@
+<style scoped>
+  @import '@/../src/assets/css/style.css';
+  @import "@/../node_modules/bootstrap/dist/css/bootstrap.min.css";
+</style>
+
 <template>
     <!-- ======= Top Bar ======= -->
   <div id="topbar" class="d-flex align-items-center fixed-top">
@@ -15,9 +20,9 @@
 
       <div class="languages d-none d-md-flex align-items-center">
         <ul>
-          <li data-toggle="modal" data-target="#exampleModalCenter">Login</li>
+          <li data-toggle="modal" data-target="#exampleModalCenter"><a href="">Login</a></li>
           <li data-toggle="modal" data-target="#exampleModalCenter">
-            Register
+            <a href="">Register</a>
           </li>
         </ul>
       </div>
@@ -35,48 +40,25 @@
 
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
-          <li><a class="nav-link scrollto active" href="#hero">Home</a></li>
-          <li><a class="nav-link scrollto" href="#about">About</a></li>
-          <li><a class="nav-link scrollto" href="#menu">Menu</a></li>
-          <li><a class="nav-link scrollto" href="#specials">Specials</a></li>
-          <li><a class="nav-link scrollto" href="#gallery">Gallery</a></li>
-          <li><a class="nav-link scrollto" href="#chefs">Chefs</a></li>
-
-          <!-- <li class="dropdown">
-              <a href="#">
-                <span>Drop Down</span>
-                <i class="bi bi-chevron-down"></i>
-              </a>
-              <ul>
-                <li><a href="#">Drop Down 1</a></li>
-                <li class="dropdown">
-                  <a href="#">
-                    <span>Deep Drop Down</span>
-                    <i class="bi bi-chevron-right"></i>
-                  </a>
-                  <ul>
-                    <li><a href="#">Deep Drop Down 1</a></li>
-                    <li><a href="#">Deep Drop Down 2</a></li>
-                    <li><a href="#">Deep Drop Down 3</a></li>
-                    <li><a href="#">Deep Drop Down 4</a></li>
-                    <li><a href="#">Deep Drop Down 5</a></li>
-                  </ul>
-                </li>
-                <li><a href="#">Drop Down 2</a></li>
-                <li><a href="#">Drop Down 3</a></li>
-                <li><a href="#">Drop Down 4</a></li>
-              </ul>
-            </li> -->
-          <li><a class="nav-link scrollto" href="#contact">Contact</a></li>
+          <li class="book-a-table-btn d-none d-lg-flex">
+            Menu Choosing
+          </li>
+          <li><fa icon="chevron-right" /></li>
+          <li class="d-none d-lg-flex">
+            Finishing Order
+          </li>
+          <li><fa icon="chevron-right" /></li>
+          <li class="d-none d-lg-flex">
+            Status
+          </li>
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav>
       <!-- .navbar -->
       <a
-        href="#book-a-table"
-        class="book-a-table-btn scrollto d-none d-lg-flex"
+        
       >
-        Book a table
+        
       </a>
     </div>
   </header>
@@ -90,32 +72,29 @@
       autoplay
       loop
       muted
-      poster="assets/img/hero-bg.jpg"
+      poster="src/assets/img/promoVideo.mp4"
     >
-      <source src="assets/img/promoVideo.mp4" type="video/mp4" />
+      <source src="src/assets/img/promoVideo.mp4" type="video/mp4" />
     </video>
     <div
       class="container position-relative text-center text-lg-start"
       data-aos="zoom-in"
       data-aos-delay="100"
     >
-      <div class="row">
-        <div class="col-lg-8 text-left">
-          <h1>
-            Welcome to
-            <span>FASTUGA</span>
-          </h1>
-          <h2>Delivering great food in great time</h2>
-
-          <div class="btns">
+      <div class="row bgOrder">
+          <div class="col-lg-6">
+            <h2> MENU </h2>
+          </div>
+          <div class="col-lg-6 text-right">
             <a href="#menu" class="btn-menu animated fadeInUp scrollto">
-              Our Menu
-            </a>
-            <a href="#book-a-table" class="btn-book animated fadeInUp scrollto">
-              Book a Table
+              Next (5)
             </a>
           </div>
-        </div>
+          <div class="col-lg-2"><h5>Filter:</h5></div>
+          <div class="col-lg-10 text-left"><h5>Food</h5><h5>Drinks</h5><h5>Hot</h5><h5>Dessert</h5></div>
+          
+          
+          
         <div
           class="col-lg-4 d-flex align-items-center justify-content-center position-relative"
           data-aos="zoom-in"
@@ -127,7 +106,3 @@
   <!-- End Hero -->
 </template>
 
-<style scoped>
-  @import 'https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css';
-  @import '../../../assets/css/style.css';
-</style>

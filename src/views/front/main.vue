@@ -2,6 +2,8 @@
 import First from "@/components/front/FirstWindow.vue";
 </script>
 
+
+
 <template>
   <First></First>
   <!-- <main id="main"> -->
