@@ -159,16 +159,16 @@ h6 {
   list-style: none;
   padding: 0;
   margin: 0;
-  color:#fff;
+  color: #fff;
   cursor: pointer;
   transition: all 0.2s;
 }
 
-#topbar .languages ul > li{
+#topbar .languages ul > li {
   transition: all 0.2s;
 }
 
-#topbar .languages ul > li:hover{
+#topbar .languages ul > li:hover {
   color: #cda45e;
 }
 
@@ -279,7 +279,7 @@ h6 {
   position: relative;
 }
 
-.navbar li svg{
+.navbar li svg {
   color: white;
   font-size: 20px;
 }
@@ -543,7 +543,7 @@ h6 {
   font-family: Arial;
 }
 
-#hero h5{
+#hero h5 {
   font-family: Arial;
 }
 
@@ -706,17 +706,31 @@ h6 {
   }
 }
 
-.bgOrder{
+.bgOrder {
   background-color: rgba(0, 0, 0, 0.412);
   padding: 30px;
   border-radius: 5px;
   color: white;
 }
 
-
 .col-lg-10 > h5 {
   display: inline-block;
   padding: 0 25px;
+}
+
+.menuInput {
+  float: right;
+  clear: both;
+}
+
+.menuInput > input[type='number'] {
+  background-color: rgba(0, 0, 0, 0.503);
+  border-radius: 5px;
+  border-color: #cda45e;
+  width: 50px;
+  margin-left: 10px;
+  padding: 0;
+  text-align: center;
 }
 
 /*--------------------------------------------------------------
@@ -967,7 +981,7 @@ section {
 /*--------------------------------------------------------------
 # Menu Section
 --------------------------------------------------------------*/
-.menu #menu-flters {
+#menu-flters {
   padding: 0;
   margin: 0 auto 0 auto;
   list-style: none;
@@ -975,7 +989,7 @@ section {
   border-radius: 50px;
 }
 
-.menu #menu-flters li {
+#menu-flters li {
   cursor: pointer;
   display: inline-block;
   padding: 8px 12px 10px 12px;
@@ -989,27 +1003,27 @@ section {
   font-family: 'Playfair Display', serif;
 }
 
-.menu #menu-flters li:hover,
-.menu #menu-flters li.filter-active {
+#menu-flters li:hover,
+#menu-flters li.filter-active {
   color: #cda45e;
 }
 
-.menu #menu-flters li:last-child {
+#menu-flters li:last-child {
   margin-right: 0;
 }
 
-.menu .menu-item {
+.menu-item {
   margin-top: 50px;
 }
 
-.menu .menu-img {
+.menu-img {
   width: 70px;
   border-radius: 50%;
   float: left;
   border: 5px solid rgba(255, 255, 255, 0.2);
 }
 
-.menu .menu-content {
+.menu-content {
   margin-left: 85px;
   overflow: hidden;
   display: flex;
@@ -1017,7 +1031,7 @@ section {
   position: relative;
 }
 
-.menu .menu-content::after {
+.menu-content::after {
   content: '......................................................................'
     '....................................................................'
     '....................................................................';
@@ -1030,7 +1044,7 @@ section {
   font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
 }
 
-.menu .menu-content a {
+.menu-content a {
   padding-right: 10px;
   background: #1a1814;
   position: relative;
@@ -1040,11 +1054,11 @@ section {
   transition: 0.3s;
 }
 
-.menu .menu-content a:hover {
+.menu-content a:hover {
   color: #cda45e;
 }
 
-.menu .menu-content span {
+.menu-content span {
   background: #1a1814;
   position: relative;
   z-index: 3;
@@ -1053,7 +1067,7 @@ section {
   color: #cda45e;
 }
 
-.menu .menu-ingredients {
+.menu-ingredients {
   margin-left: 85px;
   font-style: italic;
   font-size: 14px;
@@ -1826,6 +1840,4 @@ section {
   color: #fff;
 }
 
-
 /* ADDED */
-
