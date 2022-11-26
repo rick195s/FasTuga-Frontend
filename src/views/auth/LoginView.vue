@@ -33,8 +33,6 @@ const submit = async () => {
     password: form.password,
   };
 
-  console.log(credentials);
-
   setWaiting();
   const response = await store.login(credentials);
 
