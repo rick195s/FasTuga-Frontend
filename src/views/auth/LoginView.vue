@@ -49,7 +49,7 @@ const setError = (error) => {
   if (!error.response.data) {
     formHeaderContent.value = "Login failed";
   } else {
-    formHeaderTitle.value = error.response.data.message;
+    formHeaderContent.value = error.response.data.message;
   }
   formStatusCurrent.value = "danger";
 };

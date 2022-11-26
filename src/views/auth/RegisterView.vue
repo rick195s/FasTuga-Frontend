@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, inject, ref } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { mdiAccount, mdiAsterisk } from "@mdi/js";
 import SectionFullScreen from "@/components/dashboard/SectionFullScreen.vue";
@@ -9,12 +9,11 @@ import FormControl from "@/components/dashboard/FormControl.vue";
 import BaseButton from "@/components/dashboard/BaseButton.vue";
 import BaseButtons from "@/components/dashboard/BaseButtons.vue";
 import LayoutGuest from "@/layouts/dashboard/LayoutGuest.vue";
-import { useMainStore } from "@/stores/dashboard/main";
+import { useUserStore } from "@/stores/user";
 import NotificationBarInCard from "@/components/dashboard/NotificationBarInCard.vue";
 
-const axios = inject("axios");
 const router = useRouter();
-const store = useMainStore();
+const store = useUserStore();
 
 const formStatusCurrent = ref("");
 const formHeaderTitle = ref("");
@@ -38,7 +37,7 @@ const form = reactive({
 });
 
 const submit = async () => {
-  const body = {
+  const user = {
     name: form.name,
     email: form.email,
     password: form.password,
@@ -47,32 +46,26 @@ const submit = async () => {
     nif: form.nif,
   };
 
-  try {
-    setWaiting();
-    const response = await axios.post("/register", body);
-    store.setAuthToken(response.data.token);
-    axios.defaults.headers.common.Authorization = store.authToken;
+  setWaiting();
+  const response = await store.register(user);
 
+  if (response.status === 200) {
     router.push({ name: "dashboard" });
-  } catch (error) {
-    formHeaderTitle.value = "Error: ";
-    if (!error.response.data) {
-      formHeaderContent.value = "Register failed";
-    } else {
-      formHeaderContent.value = error.response.data.message;
-      populateErrors(error.response.data.errors);
-    }
-    formStatusCurrent.value = "danger";
+  } else {
+    setError(response);
   }
-
   waiting.value = false;
 };
 
-const setWaiting = () => {
-  formHeaderTitle.value = "Waiting";
-  formHeaderContent.value = "";
-  waiting.value = true;
-  formStatusCurrent.value = "info";
+const setError = (error) => {
+  formHeaderTitle.value = "Error: ";
+  if (!error.response.data) {
+    formHeaderContent.value = "Register failed";
+  } else {
+    formHeaderContent.value = error.response.data.message;
+    populateErrors(error.response.data.errors);
+  }
+  formStatusCurrent.value = "danger";
 };
 
 const populateErrors = (errors) => {
@@ -92,6 +85,13 @@ const populateErrors = (errors) => {
       formErrors.phone_nif.push(element);
     });
   }
+};
+
+const setWaiting = () => {
+  formHeaderTitle.value = "Waiting";
+  formHeaderContent.value = "";
+  waiting.value = true;
+  formStatusCurrent.value = "info";
 };
 </script>
 
