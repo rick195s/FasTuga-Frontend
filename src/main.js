@@ -16,9 +16,11 @@ const pinia = createPinia();
 /* Create Vue app */
 const app = createApp(App).use(router).use(pinia);
 
+const serverBaseUrl = "http://localhost";
+app.provide("serverBaseUrl", serverBaseUrl);
 /* Axios available in all components */
 const axiosModel = axios.create({
-  baseURL: "http://localhost/api",
+  baseURL: serverBaseUrl + "/api",
   headers: {
     "Content-type": "application/json",
     Accpet: "application/json",

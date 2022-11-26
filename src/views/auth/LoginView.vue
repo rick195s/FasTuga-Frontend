@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, inject, ref } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { mdiAccount, mdiAsterisk } from "@mdi/js";
 import SectionFullScreen from "@/components/dashboard/SectionFullScreen.vue";
@@ -10,17 +10,16 @@ import FormControl from "@/components/dashboard/FormControl.vue";
 import BaseButton from "@/components/dashboard/BaseButton.vue";
 import BaseButtons from "@/components/dashboard/BaseButtons.vue";
 import LayoutGuest from "@/layouts/dashboard/LayoutGuest.vue";
-import { useMainStore } from "@/stores/dashboard/main";
+import { useUserStore } from "@/stores/user";
 import NotificationBarInCard from "@/components/dashboard/NotificationBarInCard.vue";
 
-const axios = inject("axios");
 const router = useRouter();
 
 const formStatusCurrent = ref("");
 const formHeaderTitle = ref("");
 const formHeaderContent = ref("");
 const waiting = ref(false);
-const store = useMainStore();
+const store = useUserStore();
 
 const form = reactive({
   email: "",
@@ -29,29 +28,32 @@ const form = reactive({
 });
 
 const submit = async () => {
-  const body = {
+  const credentials = {
     email: form.email,
     password: form.password,
   };
 
-  try {
-    setWaiting();
-    const response = await axios.post("/login", body);
-    store.setAuthToken(response.data.token);
-    axios.defaults.headers.common.Authorization = store.authToken;
+  console.log(credentials);
 
+  setWaiting();
+  const response = await store.login(credentials);
+
+  if (response.status === 200) {
     router.push({ name: "dashboard" });
-  } catch (error) {
-    formHeaderTitle.value = "Error: ";
-    if (!error.response.data) {
-      formHeaderContent.value = "Login failed";
-    } else {
-      formHeaderTitle.value = error.response.data.message;
-    }
-    formStatusCurrent.value = "danger";
+  } else {
+    setError(response);
   }
-
   waiting.value = false;
+};
+
+const setError = (error) => {
+  formHeaderTitle.value = "Error: ";
+  if (!error.response.data) {
+    formHeaderContent.value = "Login failed";
+  } else {
+    formHeaderTitle.value = error.response.data.message;
+  }
+  formStatusCurrent.value = "danger";
 };
 
 const setWaiting = () => {
