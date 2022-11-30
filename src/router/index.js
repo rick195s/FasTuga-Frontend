@@ -70,8 +70,8 @@ router.beforeEach((to, from, next) => {
   
   // careful 
   // https://pinia.vuejs.org/core-concepts/outside-component-usage.html#single-page-applications
-
   const userStore = useUserStore()  
+  
   if (!userStore.user) {
     next({ name: 'login' })
     return
