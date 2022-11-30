@@ -14,10 +14,11 @@ import "./css/dashboard/main.css";
 const pinia = createPinia();
 
 /* Create Vue app */
-const app = createApp(App).use(router).use(pinia);
+const app = createApp(App).use(pinia).use(router);
 
 const serverBaseUrl = "http://localhost";
 app.provide("serverBaseUrl", serverBaseUrl);
+
 /* Axios available in all components */
 const axiosModel = axios.create({
   baseURL: serverBaseUrl + "/api",
@@ -26,6 +27,7 @@ const axiosModel = axios.create({
     Accpet: "application/json",
   },
 });
+
 app.provide("axios", axiosModel);
 
 app.mount("#app");
@@ -34,7 +36,6 @@ app.mount("#app");
 const mainStore = useMainStore(pinia);
 const styleStore = useStyleStore(pinia);
 
-axiosModel.defaults.headers.common.Authorization = mainStore.authToken;
 
 /* Fetch sample data */
 mainStore.fetch("clients");

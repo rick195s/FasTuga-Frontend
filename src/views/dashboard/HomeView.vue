@@ -4,14 +4,12 @@ import {
   mdiCartOutline,
   mdiChartTimelineVariant,
   mdiMonitorCellphone,
-  mdiGithub,
 } from "@mdi/js";
 import SectionMain from "@/components/dashboard/SectionMain.vue";
 import CardBoxWidget from "@/components/dashboard/CardBoxWidget.vue";
 import CardBox from "@/components/dashboard/CardBox.vue";
 import TableSampleClients from "@/components/dashboard/TableSampleClients.vue";
 import NotificationBar from "@/components/dashboard/NotificationBar.vue";
-import BaseButton from "@/components/dashboard/BaseButton.vue";
 import LayoutAuthenticated from "@/layouts/dashboard/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/dashboard/SectionTitleLineWithButton.vue";
 </script>

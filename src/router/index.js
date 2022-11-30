@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "@/views/dashboard/HomeView.vue";
+import { useUserStore } from "@/stores/user";
 
 const routes = [
   {
@@ -48,6 +49,57 @@ const router = createRouter({
 
 /* Default title tag */
 const defaultDocumentTitle = "FasTuga";
+
+let handlingFirstRoute = true
+
+router.beforeEach((to, from, next) => {  
+  // if (handlingFirstRoute) {
+  //   handlingFirstRoute = false
+  //   next({name: 'Redirect', params: {redirectTo: to.fullPath}})
+  //   return
+  // } else if (to.name == 'Redirect') {
+  //   next()
+  //   return
+  // }
+
+  // when user not auth --------------------
+  if (to.name == 'login') {
+    next()
+    return
+  }
+  
+  // careful 
+  // https://pinia.vuejs.org/core-concepts/outside-component-usage.html#single-page-applications
+
+  const userStore = useUserStore()  
+  if (!userStore.user) {
+    next({ name: 'login' })
+    return
+  }
+  
+  // ----------------------------------------
+
+
+  // when user auth --------------------
+  if (to.name == 'Reports') {
+    if (userStore.user.type != 'A') {
+      next({ name: 'home' })
+      return
+    }
+  }
+  if (to.name == 'User') {
+    if ((userStore.user.type == 'A') || (userStore.user.id == to.params.id)) {
+      next()
+      return
+    }
+    next({ name: 'home' })
+    return
+  }
+
+  // ----------------------------------------
+
+  next()
+})
 
 /* Set document title from route meta */
 router.afterEach((to) => {

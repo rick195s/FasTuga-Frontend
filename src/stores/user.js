@@ -4,7 +4,6 @@ import avatarNoneUrl from "@/assets/avatar-none.png";
 
 export const useUserStore = defineStore("user", () => {
   const axios = inject("axios");
-  const serverBaseUrl = inject("serverBaseUrl");
 
   const user = ref(null);
 
@@ -44,7 +43,7 @@ export const useUserStore = defineStore("user", () => {
       await loadUser();
       return response;
     } catch (error) {
-      clearUser();
+      //clearUser();
       return error;
     }
   }
