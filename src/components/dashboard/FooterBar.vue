@@ -1,7 +1,6 @@
 <script setup>
 import { containerMaxW } from "@/config.js";
 import BaseLevel from "@/components/dashboard/BaseLevel.vue";
-import JustboilLogo from "@/components/dashboard/JustboilLogo.vue";
 
 const year = new Date().getFullYear();
 </script>
@@ -12,14 +11,8 @@ const year = new Date().getFullYear();
       <div class="text-center md:text-left">
         <b
           >&copy;{{ year }},
-          <a href="https://justboil.me/" target="_blank">JustBoil.me</a>.</b
-        >
+        </b>
         <slot />
-      </div>
-      <div class="md:py-2">
-        <a href="https://justboil.me">
-          <JustboilLogo class="w-auto h-8 md:h-6" />
-        </a>
       </div>
     </BaseLevel>
   </footer>
