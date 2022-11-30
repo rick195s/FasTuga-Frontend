@@ -5,6 +5,7 @@ import { useRouter } from "vue-router";
 import menuAside from "@/menuAside.js";
 import menuNavBar from "@/menuNavBar.js";
 import { useMainStore } from "@/stores/dashboard/main.js";
+import { useUserStore } from "@/stores/user";
 import { useStyleStore } from "@/stores/dashboard/style.js";
 import BaseIcon from "@/components/dashboard/BaseIcon.vue";
 import FormControl from "@/components/dashboard/FormControl.vue";
@@ -24,6 +25,8 @@ const layoutAsidePadding = "xl:pl-60";
 
 const styleStore = useStyleStore();
 
+const userStore = useUserStore();
+
 const router = useRouter();
 
 const isAsideMobileExpanded = ref(false);
@@ -40,7 +43,7 @@ const menuClick = (event, item) => {
   }
 
   if (item.isLogout) {
-    //
+    userStore.logout();
   }
 };
 </script>
