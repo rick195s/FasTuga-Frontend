@@ -3,37 +3,12 @@ import axios from "axios";
 
 export const useMainStore = defineStore("main", {
   state: () => ({
-    /* User */
-    userName: null,
-    userEmail: null,
-    userAvatar: null,
-    authToken: localStorage.getItem("authToken") || null,
-
-    /* Field focus with ctrl+k (to register only once) */
-    isFieldFocusRegistered: false,
-
     /* Sample data (commonly used) */
     clients: [],
-    history: [],
   }),
   actions: {
-    setUser(payload) {
-      if (payload.name) {
-        this.userName = payload.name;
-      }
-      if (payload.email) {
-        this.userEmail = payload.email;
-      }
-      if (payload.avatar) {
-        this.userAvatar = payload.avatar;
-      }
-    },
 
-    setAuthToken(token) {
-      this.authToken = "Bearer " + token;
-      localStorage.setItem("authToken", token);
-    },
-
+    
     fetch(sampleDataKey) {
       axios
         .get(`data-sources/${sampleDataKey}.json`)

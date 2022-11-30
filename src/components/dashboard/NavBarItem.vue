@@ -3,7 +3,7 @@ import { mdiChevronUp, mdiChevronDown } from "@mdi/js";
 import { RouterLink } from "vue-router";
 import { computed, ref, onMounted, onBeforeUnmount } from "vue";
 import { useStyleStore } from "@/stores/dashboard/style.js";
-import { useMainStore } from "@/stores/dashboard/main.js";
+import { useUserStore } from "@/stores/user";
 import BaseIcon from "@/components/dashboard/BaseIcon.vue";
 import UserAvatarCurrentUser from "@/components/dashboard/UserAvatarCurrentUser.vue";
 import NavBarMenuList from "@/components/dashboard/NavBarMenuList.vue";
@@ -48,7 +48,7 @@ const componentClass = computed(() => {
 });
 
 const itemLabel = computed(() =>
-  props.item.isCurrentUser ? useMainStore().userName : props.item.label
+  props.item.isCurrentUser ? useUserStore().user?.name ?? 'Anonymous' : props.item.label
 );
 
 const isDropdownActive = ref(false);

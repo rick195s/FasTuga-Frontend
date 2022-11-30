@@ -1,6 +1,6 @@
 <script setup>
 import { computed, ref } from "vue";
-import { useMainStore } from "@/stores/dashboard/main";
+import { useUserStore } from "@/stores/user";
 import { mdiCheckDecagram } from "@mdi/js";
 import BaseLevel from "@/components/dashboard/BaseLevel.vue";
 import UserAvatarCurrentUser from "@/components/dashboard/UserAvatarCurrentUser.vue";
@@ -8,9 +8,9 @@ import CardBox from "@/components/dashboard/CardBox.vue";
 import FormCheckRadio from "@/components/dashboard/FormCheckRadio.vue";
 import PillTag from "@/components/dashboard/PillTag.vue";
 
-const mainStore = useMainStore();
+const userStore = useUserStore();
 
-const userName = computed(() => mainStore.userName);
+const userName = computed(() => userStore.user?.name ?? 'Anonymous');
 
 const userSwitchVal = ref(false);
 </script>
