@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, inject } from "vue";
-import { mdiEye, mdiTrashCan } from "@mdi/js";
+import { mdiEye, mdiTrashCan, mdiCancel } from "@mdi/js";
 import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
 import TableCheckboxCell from "@/components/dashboard/TableCheckboxCell.vue";
 import BaseLevel from "@/components/dashboard/BaseLevel.vue";
@@ -64,6 +64,16 @@ const loadUsers = async (url) => {
   }
 };
 
+const toggleBlocked = async (user) => {
+  try {
+    const response = await axios.patch(`users/${user.id}/toggleBlocked`);
+
+    user.blocked = response.data.data.blocked;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 onMounted(async () => {
   loadUsers();
 });
@@ -118,11 +128,18 @@ onMounted(async () => {
           v-for="header in headers"
           :key="header.value"
           data-label="{{header}}"
+          :class="{ 'line-through': user.blocked }"
         >
           {{ user[header.value] }}
         </td>
         <td class="before:hidden lg:w-1 whitespace-nowrap">
           <BaseButtons type="justify-start lg:justify-end" no-wrap>
+            <BaseButton
+              color="white"
+              :icon="mdiCancel"
+              small
+              @click="toggleBlocked(user)"
+            />
             <BaseButton
               color="info"
               :icon="mdiEye"
