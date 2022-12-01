@@ -1,10 +1,19 @@
 <script setup>
 import { ref, onMounted, inject, defineExpose } from "vue";
-import { mdiTrashCan, mdiCancel, mdiCircleEditOutline } from "@mdi/js";
+import {
+  mdiTrashCan,
+  mdiCancel,
+  mdiCircleEditOutline,
+  mdiAccount,
+} from "@mdi/js";
 import BaseLevel from "@/components/dashboard/BaseLevel.vue";
 import BaseButtons from "@/components/dashboard/BaseButtons.vue";
 import BaseButton from "@/components/dashboard/BaseButton.vue";
 import UserAvatar from "@/components/dashboard/UserAvatar.vue";
+import FormField from "@/components/dashboard/FormField.vue";
+import FormControl from "@/components/dashboard/FormControl.vue";
+import FormFilePicker from "@/components/dashboard/FormFilePicker.vue";
+import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
 
 const props = defineProps({
   endpoint: {
@@ -15,13 +24,13 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  updateFields: {
+  userUpdateFields: {
     type: Array,
     default: () => [],
   },
 });
 
-const emit = defineEmits(["toggle_blocked", "delete", "update"]);
+const emit = defineEmits(["toggle-blocked", "delete", "update"]);
 
 const axios = inject("axios");
 
@@ -29,6 +38,16 @@ const users = ref([]);
 const numPages = ref(0);
 const currentPageHuman = ref(0);
 const pagesList = ref([]);
+
+const isModalDeleteUser = ref(false);
+const userToDelete = ref(null);
+
+const isModelUpdateUser = ref(false);
+const userToUpdate = ref([null]);
+userToUpdate.value = {
+  name: "",
+  type: "",
+};
 
 const loadUsers = async (url) => {
   try {
@@ -44,6 +63,20 @@ const loadUsers = async (url) => {
   }
 };
 
+const setFile = (file) => {
+  userToUpdate.value.photo = file;
+};
+
+const showModelDeleteUser = (user) => {
+  isModalDeleteUser.value = true;
+  userToDelete.value = user;
+};
+
+const showModelUpdateUser = (user) => {
+  isModelUpdateUser.value = true;
+  userToUpdate.value = { ...user };
+};
+
 defineExpose({
   loadUsers,
 });
@@ -54,6 +87,63 @@ onMounted(async () => {
 </script>
 
 <template>
+  <!-- #region ------------------------------- UPDATE USER ------------------------------- -->
+  <CardBoxModal
+    v-model="isModelUpdateUser"
+    title="Update User"
+    button="info"
+    has-cancel
+    @confirm="emit('update', userToUpdate)"
+  >
+    <FormField
+      v-for="userField in userUpdateFields"
+      :key="userField.name"
+      :label="userField.label"
+    >
+      <FormFilePicker
+        v-if="userField.type == 'file'"
+        label="Upload"
+        @update:modelValue="setFile"
+      />
+      <FormControl
+        v-else-if="userField.type == 'select'"
+        v-model="userToUpdate[userField.name]"
+        :icon="mdiAccount"
+        :name="userField.name"
+        :autocomplete="userField.name"
+        :placeholder="userField.label"
+        :type="userField.type"
+        :options="userField.options"
+      />
+      <FormControl
+        v-else
+        v-model="userToUpdate[userField.name]"
+        :icon="mdiAccount"
+        :name="userField.name"
+        :autocomplete="userField.name"
+        :placeholder="userField.label"
+        :type="userField.type"
+      />
+    </FormField>
+  </CardBoxModal>
+  <!-- #endregion -->
+  <!-- #region ------------------------------- DELETE USER ------------------------------- -->
+  <CardBoxModal
+    v-model="isModalDeleteUser"
+    title="Please confirm"
+    button="danger"
+    has-cancel
+    @confirm="emit('delete', userToDelete)"
+  >
+    <p>
+      Are you sure you want to delete user:
+      <br />
+      <b>{{ `${userToDelete?.name} - ${userToDelete?.typeToString}` }}</b>
+      ?
+    </p>
+  </CardBoxModal>
+  <!-- #endregion -->
+
   <table>
     <thead>
       <tr>
@@ -85,19 +175,19 @@ onMounted(async () => {
               color="white"
               :icon="mdiCancel"
               small
-              @click="emit('toggle_blocked', user)"
+              @click="emit('toggle-blocked', user)"
             />
             <BaseButton
               color="info"
               :icon="mdiCircleEditOutline"
               small
-              @click="emit('update', user)"
+              @click="showModelUpdateUser(user)"
             />
             <BaseButton
               color="danger"
               :icon="mdiTrashCan"
               small
-              @click="emit('delete', user)"
+              @click="showModelDeleteUser(user)"
             />
           </BaseButtons>
         </td>
