@@ -8,10 +8,27 @@ import {
 import SectionMain from "@/components/dashboard/SectionMain.vue";
 import CardBoxWidget from "@/components/dashboard/CardBoxWidget.vue";
 import CardBox from "@/components/dashboard/CardBox.vue";
-import TableSampleClients from "@/components/dashboard/TableSampleClients.vue";
+import TableUsers from "@/components/dashboard/TableUsers.vue";
 import NotificationBar from "@/components/dashboard/NotificationBar.vue";
 import LayoutAuthenticated from "@/layouts/dashboard/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/dashboard/SectionTitleLineWithButton.vue";
+
+const usersHeaders = [
+  {
+    text: "Name",
+    value: "name",
+  },
+  {
+    text: "Email",
+    value: "email",
+  },
+  {
+    text: "Role",
+    value: "typeToString",
+  },
+];
+
+const usersEndpoint = "users";
 </script>
 
 <template>
@@ -60,7 +77,7 @@ import SectionTitleLineWithButton from "@/components/dashboard/SectionTitleLineW
       </NotificationBar>
 
       <CardBox has-table>
-        <TableSampleClients />
+        <TableUsers :headers="usersHeaders" :endpoint="usersEndpoint" />
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>

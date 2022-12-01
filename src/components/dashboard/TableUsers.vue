@@ -1,6 +1,5 @@
 <script setup>
-import { computed, ref } from "vue";
-import { useMainStore } from "@/stores/dashboard/main";
+import { ref, onMounted, inject } from "vue";
 import { mdiEye, mdiTrashCan } from "@mdi/js";
 import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
 import TableCheckboxCell from "@/components/dashboard/TableCheckboxCell.vue";
@@ -9,56 +8,36 @@ import BaseButtons from "@/components/dashboard/BaseButtons.vue";
 import BaseButton from "@/components/dashboard/BaseButton.vue";
 import UserAvatar from "@/components/dashboard/UserAvatar.vue";
 
-defineProps({
+const props = defineProps({
   checkable: Boolean,
+  endpoint: {
+    type: String,
+    default: null,
+  },
+  headers: {
+    type: Array,
+    default: () => [],
+  },
+  items: {
+    type: Array,
+    default: () => [],
+  },
 });
 
-const mainStore = useMainStore();
+const axios = inject("axios");
 
-const items = computed(() => mainStore.clients);
+const users = ref([]);
+const numPages = ref(0);
+const currentPageHuman = ref(0);
+const pagesList = ref([]);
 
 const isModalActive = ref(false);
 
 const isModalDangerActive = ref(false);
 
-const perPage = ref(5);
-
-const currentPage = ref(0);
-
 const checkedRows = ref([]);
 
-const itemsPaginated = computed(() =>
-  items.value.slice(
-    perPage.value * currentPage.value,
-    perPage.value * (currentPage.value + 1)
-  )
-);
-
-const numPages = computed(() => Math.ceil(items.value.length / perPage.value));
-
-const currentPageHuman = computed(() => currentPage.value + 1);
-
-const pagesList = computed(() => {
-  const pagesList = [];
-
-  for (let i = 0; i < numPages.value; i++) {
-    pagesList.push(i);
-  }
-
-  return pagesList;
-});
-
-const remove = (arr, cb) => {
-  const newArr = [];
-
-  arr.forEach((item) => {
-    if (!cb(item)) {
-      newArr.push(item);
-    }
-  });
-
-  return newArr;
-};
+const remove = (arr, cb) => {};
 
 const checked = (isChecked, client) => {
   if (isChecked) {
@@ -70,6 +49,24 @@ const checked = (isChecked, client) => {
     );
   }
 };
+
+const loadUsers = async (url) => {
+  try {
+    const response = await axios.get(url || props.endpoint || "users");
+
+    users.value = response.data;
+
+    numPages.value = users.value.meta.last_page;
+    currentPageHuman.value = users.value.meta.current_page;
+    pagesList.value = users.value.meta.links;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+onMounted(async () => {
+  loadUsers();
+});
 </script>
 
 <template>
@@ -103,50 +100,26 @@ const checked = (isChecked, client) => {
       <tr>
         <th v-if="checkable" />
         <th />
-        <th>Name</th>
-        <th>Company</th>
-        <th>City</th>
-        <th>Progress</th>
-        <th>Created</th>
+        <th v-for="header in headers" :key="header.value">{{ header.text }}</th>
         <th />
       </tr>
     </thead>
     <tbody>
-      <tr v-for="client in itemsPaginated" :key="client.id">
-        <TableCheckboxCell
-          v-if="checkable"
-          @checked="checked($event, client)"
-        />
+      <tr v-for="user in users.data" :key="user.id">
+        <TableCheckboxCell v-if="checkable" @checked="checked($event, user)" />
         <td class="border-b-0 lg:w-6 before:hidden">
           <UserAvatar
-            :username="client.name"
+            :username="user.name"
+            :avatar="user.photo_url"
             class="w-24 h-24 mx-auto lg:w-6 lg:h-6"
           />
         </td>
-        <td data-label="Name">
-          {{ client.name }}
-        </td>
-        <td data-label="Company">
-          {{ client.company }}
-        </td>
-        <td data-label="City">
-          {{ client.city }}
-        </td>
-        <td data-label="Progress" class="lg:w-32">
-          <progress
-            class="flex w-2/5 self-center lg:w-full"
-            max="100"
-            :value="client.progress"
-          >
-            {{ client.progress }}
-          </progress>
-        </td>
-        <td data-label="Created" class="lg:w-1 whitespace-nowrap">
-          <small
-            class="text-gray-500 dark:text-slate-400"
-            :title="client.created"
-            >{{ client.created }}</small
-          >
+        <td
+          v-for="header in headers"
+          :key="header.value"
+          data-label="{{header}}"
+        >
+          {{ user[header.value] }}
         </td>
         <td class="before:hidden lg:w-1 whitespace-nowrap">
           <BaseButtons type="justify-start lg:justify-end" no-wrap>
@@ -173,11 +146,11 @@ const checked = (isChecked, client) => {
         <BaseButton
           v-for="page in pagesList"
           :key="page"
-          :active="page === currentPage"
-          :label="page + 1"
-          :color="page === currentPage ? 'lightDark' : 'whiteDark'"
+          :active="page.active"
+          :label="page.label"
+          :color="page.active ? 'lightDark' : 'whiteDark'"
           small
-          @click="currentPage = page"
+          @click="loadUsers(page.url)"
         />
       </BaseButtons>
       <small>Page {{ currentPageHuman }} of {{ numPages }}</small>

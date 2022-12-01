@@ -1,5 +1,6 @@
 <script setup>
 import { computed } from "vue";
+import avatarNoneUrl from "@/assets/avatar-none.png";
 
 const props = defineProps({
   username: {
@@ -16,14 +17,7 @@ const props = defineProps({
   },
 });
 
-const avatar = computed(
-  () =>
-    props.avatar ??
-    `https://avatars.dicebear.com/api/${props.api}/${props.username.replace(
-      /[^a-z0-9]+/i,
-      "-"
-    )}.svg`
-);
+const avatar = computed(() => (!props.avatar ? avatarNoneUrl : props.avatar));
 
 const username = computed(() => props.username);
 </script>

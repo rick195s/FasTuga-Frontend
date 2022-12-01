@@ -3,7 +3,6 @@ import { createPinia } from "pinia";
 
 import App from "./App.vue";
 import router from "./router";
-import { useMainStore } from "@/stores/dashboard/main.js";
 import { useStyleStore } from "@/stores/dashboard/style.js";
 import { darkModeKey, styleKey } from "@/config.js";
 import axios from "axios";
@@ -32,13 +31,7 @@ app.provide("axios", axiosModel);
 
 app.mount("#app");
 
-/* Init Pinia stores */
-const mainStore = useMainStore(pinia);
 const styleStore = useStyleStore(pinia);
-
-
-/* Fetch sample data */
-mainStore.fetch("clients");
 
 /* App style */
 styleStore.setStyle(localStorage[styleKey] ?? "basic");
