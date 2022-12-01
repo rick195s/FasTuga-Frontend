@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref, onMounted, onBeforeUnmount } from "vue";
+import { computed, ref, onMounted } from "vue";
 import FormControlIcon from "@/components/dashboard/FormControlIcon.vue";
 
 const props = defineProps({
@@ -91,17 +91,6 @@ onMounted(() => {
     emit("setRef", inputEl.value);
   }
 });
-
-if (props.ctrlKFocus) {
-  const fieldFocusHook = (e) => {
-    if (e.ctrlKey && e.key === "k") {
-      e.preventDefault();
-      inputEl.value.focus();
-    } else if (e.key === "Escape") {
-      inputEl.value.blur();
-    }
-  };
-}
 </script>
 
 <template>
@@ -116,7 +105,7 @@ if (props.ctrlKFocus) {
       <option
         v-for="option in options"
         :key="option.id ?? option"
-        :value="option"
+        :value="option.value"
       >
         {{ option.label ?? option }}
       </option>

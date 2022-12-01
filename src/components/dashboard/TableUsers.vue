@@ -1,7 +1,6 @@
 <script setup>
-import { ref, onMounted, inject } from "vue";
-import { mdiEye, mdiTrashCan, mdiCancel } from "@mdi/js";
-import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
+import { ref, onMounted, inject, defineExpose } from "vue";
+import { mdiTrashCan, mdiCancel, mdiCircleEditOutline } from "@mdi/js";
 import BaseLevel from "@/components/dashboard/BaseLevel.vue";
 import BaseButtons from "@/components/dashboard/BaseButtons.vue";
 import BaseButton from "@/components/dashboard/BaseButton.vue";
@@ -16,11 +15,13 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-  items: {
+  updateFields: {
     type: Array,
     default: () => [],
   },
 });
+
+const emit = defineEmits(["toggle_blocked", "delete", "update"]);
 
 const axios = inject("axios");
 
@@ -28,11 +29,6 @@ const users = ref([]);
 const numPages = ref(0);
 const currentPageHuman = ref(0);
 const pagesList = ref([]);
-
-const isModalActive = ref(false);
-
-const userToDelete = ref(null);
-const isModalDeleteUser = ref(false);
 
 const loadUsers = async (url) => {
   try {
@@ -48,29 +44,9 @@ const loadUsers = async (url) => {
   }
 };
 
-const toggleBlocked = async (user) => {
-  try {
-    const response = await axios.patch(`users/${user.id}/toggleBlocked`);
-
-    user.blocked = response.data.data.blocked;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const confirmDelete = async () => {
-  try {
-    await axios.delete(`users/${userToDelete.value.id}`);
-    loadUsers();
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-const showModelDeleteUser = (user) => {
-  isModalDeleteUser.value = true;
-  userToDelete.value = user;
-};
+defineExpose({
+  loadUsers,
+});
 
 onMounted(async () => {
   loadUsers();
@@ -78,26 +54,6 @@ onMounted(async () => {
 </script>
 
 <template>
-  <CardBoxModal v-model="isModalActive" title="Sample modal">
-    <p>Lorem ipsum dolor sit amet <b>adipiscing elit</b></p>
-    <p>This is sample modal</p>
-  </CardBoxModal>
-
-  <CardBoxModal
-    v-model="isModalDeleteUser"
-    title="Please confirm"
-    button="danger"
-    has-cancel
-    @confirm="confirmDelete"
-  >
-    <p>
-      Are you sure you want to delete user:
-      <br />
-      <b>{{ `${userToDelete?.name} - ${userToDelete?.typeToString}` }}</b>
-      ?
-    </p>
-  </CardBoxModal>
-
   <table>
     <thead>
       <tr>
@@ -129,19 +85,19 @@ onMounted(async () => {
               color="white"
               :icon="mdiCancel"
               small
-              @click="toggleBlocked(user)"
+              @click="emit('toggle_blocked', user)"
             />
             <BaseButton
               color="info"
-              :icon="mdiEye"
+              :icon="mdiCircleEditOutline"
               small
-              @click="isModalActive = true"
+              @click="emit('update', user)"
             />
             <BaseButton
               color="danger"
               :icon="mdiTrashCan"
               small
-              @click="showModelDeleteUser(user)"
+              @click="emit('delete', user)"
             />
           </BaseButtons>
         </td>

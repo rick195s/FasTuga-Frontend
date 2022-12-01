@@ -4,6 +4,7 @@ import {
   mdiCartOutline,
   mdiChartTimelineVariant,
   mdiMonitorCellphone,
+  mdiAccount,
 } from "@mdi/js";
 import SectionMain from "@/components/dashboard/SectionMain.vue";
 import CardBoxWidget from "@/components/dashboard/CardBoxWidget.vue";
@@ -12,6 +13,13 @@ import TableUsers from "@/components/dashboard/TableUsers.vue";
 import NotificationBar from "@/components/dashboard/NotificationBar.vue";
 import LayoutAuthenticated from "@/layouts/dashboard/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/dashboard/SectionTitleLineWithButton.vue";
+import FormField from "@/components/dashboard/FormField.vue";
+import FormControl from "@/components/dashboard/FormControl.vue";
+import FormFilePicker from "@/components/dashboard/FormFilePicker.vue";
+import { ref, inject } from "vue";
+import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
+
+const axios = inject("axios");
 
 const usersHeaders = [
   {
@@ -28,11 +36,169 @@ const usersHeaders = [
   },
 ];
 
+const userUpdateFields = [
+  {
+    name: "name",
+    label: "Name",
+    type: "text",
+  },
+  {
+    name: "type",
+    label: "Role",
+    type: "select",
+    value: "",
+    options: [
+      {
+        value: "EM",
+        label: "Employee Manager",
+      },
+      {
+        value: "ED",
+        label: "Employee Delivery",
+      },
+      {
+        value: "C",
+        label: "Customer",
+      },
+      {
+        value: "EC",
+        label: "Employee Chef",
+      },
+    ],
+  },
+  {
+    name: "photo",
+    label: "Avatar",
+    type: "file",
+  },
+];
+
 const usersEndpoint = "users";
+const isModalDeleteUser = ref(false);
+const userToDelete = ref(null);
+
+const isModelUpdateUser = ref(false);
+const userToUpdate = ref([null]);
+userToUpdate.value = {
+  name: "",
+  type: "",
+};
+
+const tableUsers = ref(null);
+
+const toggleBlocked = async (user) => {
+  try {
+    const response = await axios.patch(`users/${user.id}/toggleBlocked`);
+
+    user.blocked = response.data.data.blocked;
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const confirmDelete = async () => {
+  try {
+    await axios.delete(`users/${userToDelete.value.id}`);
+    tableUsers.value.loadUsers();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const showModelDeleteUser = (user) => {
+  isModalDeleteUser.value = true;
+  userToDelete.value = user;
+};
+
+const showModelUpdateUser = (user) => {
+  isModelUpdateUser.value = true;
+  userToUpdate.value = { ...user };
+};
+
+const updateUser = async () => {
+  try {
+    if (userToUpdate.value.photo) {
+      const formData = new FormData();
+      formData.append("photo", userToUpdate.value.photo);
+
+      await axios.post(`users/${userToUpdate.value.id}/photo`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+    } else {
+      await axios.put(`users/${userToUpdate.value.id}`, userToUpdate.value);
+    }
+
+    tableUsers.value.loadUsers();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const setFile = (file) => {
+  userToUpdate.value.photo = file;
+};
 </script>
 
 <template>
   <LayoutAuthenticated>
+    <!-- #region ------------------------------- UPDATE USER ------------------------------- -->
+    <CardBoxModal
+      v-model="isModelUpdateUser"
+      title="Update User"
+      button="info"
+      has-cancel
+      @confirm="updateUser"
+    >
+      <FormField
+        v-for="userField in userUpdateFields"
+        :key="userField.name"
+        :label="userField.label"
+      >
+        <FormFilePicker
+          v-if="userField.type == 'file'"
+          label="Upload"
+          @update:modelValue="setFile"
+        />
+        <FormControl
+          v-else-if="userField.type == 'select'"
+          v-model="userToUpdate[userField.name]"
+          :icon="mdiAccount"
+          :name="userField.name"
+          :autocomplete="userField.name"
+          :placeholder="userField.label"
+          :type="userField.type"
+          :options="userField.options"
+        />
+        <FormControl
+          v-else
+          v-model="userToUpdate[userField.name]"
+          :icon="mdiAccount"
+          :name="userField.name"
+          :autocomplete="userField.name"
+          :placeholder="userField.label"
+          :type="userField.type"
+        />
+      </FormField>
+    </CardBoxModal>
+    <!-- #endregion -->
+    <!-- #region ------------------------------- DELETE USER ------------------------------- -->
+    <CardBoxModal
+      v-model="isModalDeleteUser"
+      title="Please confirm"
+      button="danger"
+      has-cancel
+      @confirm="confirmDelete"
+    >
+      <p>
+        Are you sure you want to delete user:
+        <br />
+        <b>{{ `${userToDelete?.name} - ${userToDelete?.typeToString}` }}</b>
+        ?
+      </p>
+    </CardBoxModal>
+    <!-- #endregion -->
     <SectionMain>
       <SectionTitleLineWithButton
         :icon="mdiChartTimelineVariant"
@@ -77,7 +243,14 @@ const usersEndpoint = "users";
       </NotificationBar>
 
       <CardBox has-table>
-        <TableUsers :headers="usersHeaders" :endpoint="usersEndpoint" />
+        <TableUsers
+          ref="tableUsers"
+          :headers="usersHeaders"
+          :endpoint="usersEndpoint"
+          @delete="showModelDeleteUser"
+          @toggle_blocked="toggleBlocked"
+          @update="showModelUpdateUser"
+        />
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>
