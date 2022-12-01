@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 import { useRouter } from "vue-router";
 import { mdiAccount, mdiAsterisk } from "@mdi/js";
 import SectionFullScreen from "@/components/dashboard/SectionFullScreen.vue";
@@ -20,14 +20,14 @@ const formHeaderTitle = ref("");
 const formHeaderContent = ref("");
 const waiting = ref(false);
 
-const formErrors = reactive({
+const formErrors = ref({
   name: [],
   email: [],
   password: [],
   phone_nif: [],
 });
 
-const form = reactive({
+const form = ref({
   name: "",
   email: "",
   password: "",
@@ -36,24 +36,26 @@ const form = reactive({
   nif: "",
 });
 
-const submit = async () => {
-  const user = {
-    name: form.name,
-    email: form.email,
-    password: form.password,
-    password_confirmation: form.password_confirmation,
-    phone: form.phone,
-    nif: form.nif,
+const cleanErrors = () => {
+  formErrors.value = {
+    name: [],
+    email: [],
+    password: [],
+    phone_nif: [],
   };
+};
 
+const submit = async () => {
   setWaiting();
-  const response = await store.register(user);
+  cleanErrors();
 
-  if (response.status === 200) {
+  try {
+    await store.register(form);
     router.push({ name: "dashboard" });
-  } else {
-    setError(response);
+  } catch (error) {
+    setError(error);
   }
+
   waiting.value = false;
 };
 
@@ -69,20 +71,20 @@ const setError = (error) => {
 };
 
 const populateErrors = (errors) => {
-  formErrors.name = errors.name;
-  formErrors.email = errors.email;
-  formErrors.password = errors.password;
+  formErrors.value.name = errors.name;
+  formErrors.value.email = errors.email;
+  formErrors.value.password = errors.password;
 
-  formErrors.phone_nif = [];
+  formErrors.value.phone_nif = [];
   if (errors.phone) {
     errors.phone.forEach((element) => {
-      formErrors.phone_nif.push(element);
+      formErrors.value.phone_nif.push(element);
     });
   }
 
   if (errors.nif) {
     errors.nif.forEach((element) => {
-      formErrors.phone_nif.push(element);
+      formErrors.value.phone_nif.push(element);
     });
   }
 };

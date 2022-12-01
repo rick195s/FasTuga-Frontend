@@ -18,9 +18,22 @@ import BaseButtons from "@/components/dashboard/BaseButtons.vue";
 import UserCard from "@/components/dashboard/UserCard.vue";
 import LayoutAuthenticated from "@/layouts/dashboard/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/dashboard/SectionTitleLineWithButton.vue";
+import NotificationBarInCard from "@/components/dashboard/NotificationBarInCard.vue";
 
 const userStore = useUserStore();
 const axios = inject("axios");
+
+const formStatusCurrent = ref("");
+const formHeaderTitle = ref("");
+const formHeaderContent = ref("");
+const waiting = ref(false);
+
+const formErrors = ref({
+  name: [],
+  photo: [],
+  old_password: [],
+  password: [],
+});
 
 const profileForm = ref({
   name: userStore.user?.name ?? "Anonymous",
@@ -34,11 +47,22 @@ const passwordForm = ref({
   password_confirmation: "",
 });
 
+const cleanErrors = () => {
+  formErrors.value = {
+    name: [],
+    photo: [],
+    old_password: [],
+    password: [],
+  };
+};
+
 const setPhoto = (file) => {
   userPhoto.value = file;
 };
 
 const submitProfile = async () => {
+  cleanErrors();
+  setWaiting();
   try {
     if (userPhoto.value) {
       const formData = new FormData();
@@ -59,13 +83,48 @@ const submitProfile = async () => {
 
     await axios.put(`users/${userStore.userId}`, profileForm.value);
     userStore.user = { ...userStore.user, ...profileForm.value };
+    setSuccess();
   } catch (error) {
-    console.log(error);
+    setError();
+
+    formErrors.value.name = error.response.data.errors?.name;
+    formErrors.value.photo = error.response.data.errors?.photo;
   }
+
+  waiting.value = false;
 };
 
-const submitPass = () => {
-  //
+const submitPass = async () => {
+  cleanErrors();
+  setWaiting();
+  try {
+    await axios.put(`users/${userStore.userId}`, passwordForm.value);
+    setSuccess();
+  } catch (error) {
+    setError();
+    formErrors.value.password = error.response.data.errors?.password;
+    formErrors.value.old_password = error.response.data.errors?.old_password;
+  }
+  waiting.value = false;
+};
+
+const setWaiting = () => {
+  formHeaderTitle.value = "Waiting";
+  formHeaderContent.value = "";
+  waiting.value = true;
+  formStatusCurrent.value = "info";
+};
+
+const setSuccess = () => {
+  formHeaderTitle.value = "Success";
+  formHeaderContent.value = "";
+  formStatusCurrent.value = "success";
+};
+
+const setError = () => {
+  formHeaderTitle.value = "Error";
+  formHeaderContent.value = "";
+  formStatusCurrent.value = "danger";
 };
 </script>
 
@@ -79,11 +138,15 @@ const submitPass = () => {
 
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <CardBox is-form @submit.prevent="submitProfile">
-          <FormField label="Avatar" help="Max 500kb">
+          <FormField :errors="formErrors.photo" label="Avatar" help="Max 500kb">
             <FormFilePicker label="Upload" @update:modelValue="setPhoto" />
           </FormField>
 
-          <FormField label="Name" help="Required. Your name">
+          <FormField
+            label="Name"
+            help="Required. Your name"
+            :errors="formErrors.name"
+          >
             <FormControl
               v-model="profileForm.name"
               :icon="mdiAccount"
@@ -112,12 +175,22 @@ const submitPass = () => {
         </CardBox>
 
         <CardBox is-form @submit.prevent="submitPass">
+          <NotificationBarInCard
+            v-if="formStatusCurrent"
+            :color="formStatusCurrent"
+            :waiting="waiting"
+          >
+            <span
+              ><b class="capitalize">{{ formHeaderTitle }}</b>
+            </span>
+          </NotificationBarInCard>
           <FormField
             label="Current password"
             help="Required. Your current password"
+            :errors="formErrors.old_password"
           >
             <FormControl
-              v-model="passwordForm.password_current"
+              v-model="passwordForm.old_password"
               :icon="mdiAsterisk"
               name="password_current"
               type="password"
@@ -128,7 +201,11 @@ const submitPass = () => {
 
           <BaseDivider />
 
-          <FormField label="New password" help="Required. New password">
+          <FormField
+            label="New password"
+            help="Required. New password"
+            :errors="formErrors.password"
+          >
             <FormControl
               v-model="passwordForm.password"
               :icon="mdiFormTextboxPassword"
