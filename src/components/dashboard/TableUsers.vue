@@ -2,14 +2,12 @@
 import { ref, onMounted, inject } from "vue";
 import { mdiEye, mdiTrashCan, mdiCancel } from "@mdi/js";
 import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
-import TableCheckboxCell from "@/components/dashboard/TableCheckboxCell.vue";
 import BaseLevel from "@/components/dashboard/BaseLevel.vue";
 import BaseButtons from "@/components/dashboard/BaseButtons.vue";
 import BaseButton from "@/components/dashboard/BaseButton.vue";
 import UserAvatar from "@/components/dashboard/UserAvatar.vue";
 
 const props = defineProps({
-  checkable: Boolean,
   endpoint: {
     type: String,
     default: null,
@@ -33,22 +31,8 @@ const pagesList = ref([]);
 
 const isModalActive = ref(false);
 
-const isModalDangerActive = ref(false);
-
-const checkedRows = ref([]);
-
-const remove = (arr, cb) => {};
-
-const checked = (isChecked, client) => {
-  if (isChecked) {
-    checkedRows.value.push(client);
-  } else {
-    checkedRows.value = remove(
-      checkedRows.value,
-      (row) => row.id === client.id
-    );
-  }
-};
+const userToDelete = ref(null);
+const isModalDeleteUser = ref(false);
 
 const loadUsers = async (url) => {
   try {
@@ -74,6 +58,20 @@ const toggleBlocked = async (user) => {
   }
 };
 
+const confirmDelete = async () => {
+  try {
+    await axios.delete(`users/${userToDelete.value.id}`);
+    loadUsers();
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const showModelDeleteUser = (user) => {
+  isModalDeleteUser.value = true;
+  userToDelete.value = user;
+};
+
 onMounted(async () => {
   loadUsers();
 });
@@ -86,29 +84,23 @@ onMounted(async () => {
   </CardBoxModal>
 
   <CardBoxModal
-    v-model="isModalDangerActive"
+    v-model="isModalDeleteUser"
     title="Please confirm"
     button="danger"
     has-cancel
+    @confirm="confirmDelete"
   >
-    <p>Lorem ipsum dolor sit amet <b>adipiscing elit</b></p>
-    <p>This is sample modal</p>
+    <p>
+      Are you sure you want to delete user:
+      <br />
+      <b>{{ `${userToDelete?.name} - ${userToDelete?.typeToString}` }}</b>
+      ?
+    </p>
   </CardBoxModal>
-
-  <div v-if="checkedRows.length" class="p-3 bg-gray-100/50 dark:bg-slate-800">
-    <span
-      v-for="checkedRow in checkedRows"
-      :key="checkedRow.id"
-      class="inline-block px-2 py-1 rounded-sm mr-2 text-sm bg-gray-100 dark:bg-slate-700"
-    >
-      {{ checkedRow.name }}
-    </span>
-  </div>
 
   <table>
     <thead>
       <tr>
-        <th v-if="checkable" />
         <th />
         <th v-for="header in headers" :key="header.value">{{ header.text }}</th>
         <th />
@@ -116,7 +108,6 @@ onMounted(async () => {
     </thead>
     <tbody>
       <tr v-for="user in users.data" :key="user.id">
-        <TableCheckboxCell v-if="checkable" @checked="checked($event, user)" />
         <td class="border-b-0 lg:w-6 before:hidden">
           <UserAvatar
             :username="user.name"
@@ -150,7 +141,7 @@ onMounted(async () => {
               color="danger"
               :icon="mdiTrashCan"
               small
-              @click="isModalDangerActive = true"
+              @click="showModelDeleteUser(user)"
             />
           </BaseButtons>
         </td>
