@@ -164,7 +164,7 @@ onMounted(async () => {
         <td
           v-for="header in headers"
           :key="header.value"
-          data-label="{{header}}"
+          :data-label="header.text"
           :class="{ 'line-through': user.blocked }"
         >
           {{ user[header.value] }}
