@@ -1,12 +1,11 @@
 <script setup>
-import { reactive } from "vue";
+import { ref, inject } from "vue";
 import { useUserStore } from "@/stores/user";
 import {
   mdiAccount,
   mdiMail,
   mdiAsterisk,
   mdiFormTextboxPassword,
-  mdiGithub,
 } from "@mdi/js";
 import SectionMain from "@/components/dashboard/SectionMain.vue";
 import CardBox from "@/components/dashboard/CardBox.vue";
@@ -21,20 +20,48 @@ import LayoutAuthenticated from "@/layouts/dashboard/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/dashboard/SectionTitleLineWithButton.vue";
 
 const userStore = useUserStore();
+const axios = inject("axios");
 
-const profileForm = reactive({
-  name: userStore.user?.name ?? 'Anonymous',
-  email: userStore.user?.email,
+const profileForm = ref({
+  name: userStore.user?.name ?? "Anonymous",
 });
 
-const passwordForm = reactive({
-  password_current: "",
+const userPhoto = ref(null);
+
+const passwordForm = ref({
+  old_password: "",
   password: "",
   password_confirmation: "",
 });
 
-const submitProfile = () => {
-  // TODO
+const setPhoto = (file) => {
+  userPhoto.value = file;
+};
+
+const submitProfile = async () => {
+  try {
+    if (userPhoto.value) {
+      const formData = new FormData();
+      formData.append("photo", userPhoto.value);
+
+      const response = await axios.post(
+        `users/${userStore.userId}/photo`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      userStore.user.photo_url = response.data.data.photo_url;
+    }
+
+    await axios.put(`users/${userStore.userId}`, profileForm.value);
+    userStore.user = { ...userStore.user, ...profileForm.value };
+  } catch (error) {
+    console.log(error);
+  }
 };
 
 const submitPass = () => {
@@ -46,15 +73,6 @@ const submitPass = () => {
   <LayoutAuthenticated>
     <SectionMain>
       <SectionTitleLineWithButton :icon="mdiAccount" title="Profile" main>
-        <BaseButton
-          href="https://github.com/justboil/admin-one-vue-tailwind"
-          target="_blank"
-          :icon="mdiGithub"
-          label="Star on GitHub"
-          color="contrast"
-          rounded-full
-          small
-        />
       </SectionTitleLineWithButton>
 
       <UserCard class="mb-6" />
@@ -62,7 +80,7 @@ const submitPass = () => {
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <CardBox is-form @submit.prevent="submitProfile">
           <FormField label="Avatar" help="Max 500kb">
-            <FormFilePicker label="Upload" />
+            <FormFilePicker label="Upload" @update:modelValue="setPhoto" />
           </FormField>
 
           <FormField label="Name" help="Required. Your name">
@@ -76,7 +94,7 @@ const submitPass = () => {
           </FormField>
           <FormField label="E-mail" help="Required. Your e-mail">
             <FormControl
-              v-model="profileForm.email"
+              v-model="userStore.user.email"
               :icon="mdiMail"
               type="email"
               name="email"

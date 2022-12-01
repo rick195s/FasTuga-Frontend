@@ -102,9 +102,9 @@ const updateUser = async (user) => {
           "Content-Type": "multipart/form-data",
         },
       });
-    } else {
-      await axios.put(`users/${user.id}`, user);
     }
+
+    await axios.put(`users/${user.id}`, user);
 
     tableUsers.value.loadUsers();
   } catch (error) {
