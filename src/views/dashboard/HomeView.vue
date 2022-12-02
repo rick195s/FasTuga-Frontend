@@ -3,16 +3,23 @@ import {
   mdiAccountMultiple,
   mdiCartOutline,
   mdiChartTimelineVariant,
-  mdiMonitorCellphone,
+  mdiAccountPlusOutline,
+  mdiFormTextboxPassword,
+  mdiMail,
+  mdiAccount,
 } from "@mdi/js";
+import { ref, inject } from "vue";
 import SectionMain from "@/components/dashboard/SectionMain.vue";
 import CardBoxWidget from "@/components/dashboard/CardBoxWidget.vue";
 import CardBox from "@/components/dashboard/CardBox.vue";
 import TableUsers from "@/components/dashboard/TableUsers.vue";
-import NotificationBar from "@/components/dashboard/NotificationBar.vue";
 import LayoutAuthenticated from "@/layouts/dashboard/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/dashboard/SectionTitleLineWithButton.vue";
-import { ref, inject } from "vue";
+import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
+import FormField from "@/components/dashboard/FormField.vue";
+import FormControl from "@/components/dashboard/FormControl.vue";
+import FormFilePicker from "@/components/dashboard/FormFilePicker.vue";
+import NotificationToast from "@/components/dashboard/NotificationToast.vue";
 
 const axios = inject("axios");
 
@@ -31,6 +38,21 @@ const usersHeaders = [
   },
 ];
 
+const userTypes = [
+  {
+    value: "EM",
+    label: "Employee Manager",
+  },
+  {
+    value: "ED",
+    label: "Employee Delivery",
+  },
+  {
+    value: "EC",
+    label: "Employee Chef",
+  },
+];
+
 const userUpdateFields = [
   {
     name: "name",
@@ -42,24 +64,7 @@ const userUpdateFields = [
     label: "Role",
     type: "select",
     value: "",
-    options: [
-      {
-        value: "EM",
-        label: "Employee Manager",
-      },
-      {
-        value: "ED",
-        label: "Employee Delivery",
-      },
-      {
-        value: "C",
-        label: "Customer",
-      },
-      {
-        value: "EC",
-        label: "Employee Chef",
-      },
-    ],
+    options: userTypes,
   },
   {
     name: "photo",
@@ -71,6 +76,17 @@ const userUpdateFields = [
 const usersEndpoint = "users";
 
 const tableUsers = ref(null);
+const isModelCreateUser = ref(false);
+const toastType = ref("");
+const toastMessage = ref("");
+const userToCreate = ref({
+  name: "",
+  email: "",
+  password: "",
+  password_confirmation: "",
+  type: "",
+  photo: null,
+});
 
 const toggleBlocked = async (user) => {
   try {
@@ -82,12 +98,38 @@ const toggleBlocked = async (user) => {
   }
 };
 
+const setPhoto = (file) => {
+  userToCreate.value.photo = file;
+};
+
+const createUser = async () => {
+  try {
+    const formData = new FormData();
+
+    for (var key in userToCreate.value) {
+      if (userToCreate.value[key]) {
+        formData.append(key, userToCreate.value[key]);
+      }
+    }
+
+    await axios.post("users", formData);
+    toastMessage.value = "User created successfully";
+    toastType.value = "success";
+  } catch (error) {
+    toastMessage.value = error.response.data.message;
+    toastType.value = "danger";
+  }
+};
+
 const deleteUser = async (user) => {
   try {
     await axios.delete(`users/${user.id}`);
     tableUsers.value.loadUsers();
+    toastMessage.value = "User deleted successfully";
+    toastType.value = "success";
   } catch (error) {
-    console.log(error);
+    toastMessage.value = error.response.data.message;
+    toastType.value = "danger";
   }
 };
 
@@ -105,16 +147,84 @@ const updateUser = async (user) => {
     }
 
     await axios.put(`users/${user.id}`, user);
-
+    toastMessage.value = "User updated successfully";
+    toastType.value = "success";
     tableUsers.value.loadUsers();
   } catch (error) {
-    console.log(error);
+    toastMessage.value = error.response.data.message;
+    toastType.value = "danger";
   }
 };
 </script>
 
 <template>
   <LayoutAuthenticated>
+    <NotificationToast
+      v-if="toastType"
+      :type="toastType"
+      :message="toastMessage"
+      @close="toastType = ''"
+    ></NotificationToast>
+
+    <CardBoxModal
+      v-model="isModelCreateUser"
+      title="Create User"
+      button="info"
+      has-cancel
+      @confirm="createUser"
+    >
+      <FormField label="Role">
+        <FormControl
+          v-model="userToCreate.type"
+          :icon="mdiAccount"
+          name="type"
+          autocomplete="type"
+          placeholder="Type"
+          type="select"
+          :options="userTypes"
+        />
+      </FormField>
+      <FormField label="Name">
+        <FormControl
+          v-model="userToCreate.name"
+          :icon="mdiAccount"
+          name="name"
+          autocomplete="name"
+          placeholder="Name"
+          type="text"
+        />
+      </FormField>
+      <FormField label="Email">
+        <FormControl
+          v-model="userToCreate.email"
+          :icon="mdiMail"
+          name="email"
+          autocomplete="email"
+          placeholder="Email"
+          type="email"
+      /></FormField>
+      <FormField label="Password">
+        <FormControl
+          v-model="userToCreate.password"
+          :icon="mdiFormTextboxPassword"
+          name="password"
+          autocomplete="password"
+          placeholder="Password"
+          type="password"
+      /></FormField>
+      <FormField label="Confirm Password">
+        <FormControl
+          v-model="userToCreate.password_confirmation"
+          :icon="mdiFormTextboxPassword"
+          name="confirm_password"
+          autocomplete="password"
+          placeholder="Password"
+          type="password"
+      /></FormField>
+      <FormField label="Photo">
+        <FormFilePicker label="Upload" @update:modelValue="setPhoto" />
+      </FormField>
+    </CardBoxModal>
     <SectionMain>
       <SectionTitleLineWithButton
         :icon="mdiChartTimelineVariant"
@@ -152,11 +262,12 @@ const updateUser = async (user) => {
         />
       </div>
 
-      <SectionTitleLineWithButton :icon="mdiAccountMultiple" title="Users" />
-
-      <NotificationBar color="info" :icon="mdiMonitorCellphone">
-        <b>Responsive table.</b> Collapses on mobile
-      </NotificationBar>
+      <SectionTitleLineWithButton
+        :end-icon="mdiAccountPlusOutline"
+        :icon="mdiAccountMultiple"
+        title="Users"
+        @end-icon-click="isModelCreateUser = true"
+      />
 
       <CardBox has-table>
         <TableUsers

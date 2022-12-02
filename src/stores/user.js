@@ -57,7 +57,7 @@ export const useUserStore = defineStore("user", () => {
       await loadUser();
       return response;
     } catch (error) {
-      clearUser();
+      //clearUser();
       return error;
     }
   }
