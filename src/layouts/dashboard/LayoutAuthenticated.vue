@@ -13,7 +13,6 @@ import NavBarItemPlain from "@/components/dashboard/NavBarItemPlain.vue";
 import AsideMenu from "@/components/dashboard/AsideMenu.vue";
 import FooterBar from "@/components/dashboard/FooterBar.vue";
 
-
 const layoutAsidePadding = "xl:pl-60";
 
 const styleStore = useStyleStore();
@@ -36,7 +35,13 @@ const menuClick = (event, item) => {
   }
 
   if (item.isLogout) {
-    userStore.logout();
+    logout();
+  }
+};
+
+const logout = async () => {
+  if (await userStore.logout()) {
+    router.push({ name: "login" });
   }
 };
 </script>
@@ -92,9 +97,7 @@ const menuClick = (event, item) => {
         @aside-lg-close-click="isAsideLgActive = false"
       />
       <slot />
-      <FooterBar>
-        FasTuga
-      </FooterBar>
+      <FooterBar> FasTuga </FooterBar>
     </div>
   </div>
 </template>

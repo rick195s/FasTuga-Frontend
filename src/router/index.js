@@ -89,7 +89,7 @@ router.beforeEach((to, from, next) => {
     return;
   }
 
-  if (userStore.user && (to.name == "login" || to.name == "register")) {
+  if ((to.name == "login" || to.name == "register") && userStore.user) {
     userStore.user.type == "EM"
       ? next({ name: "dashboard" })
       : next({ name: "home" });

@@ -1,9 +1,8 @@
 import {
   mdiAccountCircle,
   mdiMonitor,
-  mdiLock,
   mdiViewList,
-  mdiPalette,
+  mdiPackageVariantClosed,
 } from "@mdi/js";
 
 export default [
@@ -13,20 +12,16 @@ export default [
     label: "Dashboard",
   },
   {
-    to: "/",
-    label: "Styles",
-    icon: mdiPalette,
+    to: "/orders",
+    label: "Orders",
+    icon: mdiPackageVariantClosed,
   },
   {
     to: "/profile",
     label: "Profile",
     icon: mdiAccountCircle,
   },
-  {
-    to: "/login",
-    label: "Login",
-    icon: mdiLock,
-  },
+
   {
     label: "Dropdown",
     icon: mdiViewList,
