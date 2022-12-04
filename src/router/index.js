@@ -33,9 +33,17 @@ const routes = [
     },
     path: "/orders",
     name: "orders",
-    component: () => import("@/views/dashboard/OrdersView.vue"),
+    component: () => import("@/views/dashboard/OrdersListView.vue"),
   },
-
+  {
+    meta: {
+      title: "Order Details",
+    },
+    path: "/orders/:id",
+    name: "order",
+    component: () => import("@/views/dashboard/OrderView.vue"),
+    props: (route) => ({ id: parseInt(route.params.id) }),
+  },
   {
     meta: {
       title: "Profile",
@@ -98,6 +106,15 @@ router.beforeEach((to, from, next) => {
   }
 
   if (to.name == "orders") {
+    if (userStore.user && userStore.user.type == "EM") {
+      next();
+      return;
+    }
+    next({ name: "home" });
+    return;
+  }
+
+  if (to.name == "order") {
     if (userStore.user && userStore.user.type == "EM") {
       next();
       return;

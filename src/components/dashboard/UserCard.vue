@@ -10,7 +10,7 @@ import PillTag from "@/components/dashboard/PillTag.vue";
 
 const userStore = useUserStore();
 
-const userName = computed(() => userStore.user?.name ?? 'Anonymous');
+const userName = computed(() => userStore.user?.name ?? "Anonymous");
 
 const userSwitchVal = ref(false);
 </script>

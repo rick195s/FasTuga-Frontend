@@ -6,7 +6,10 @@ const userStore = useUserStore();
 </script>
 
 <template>
-  <UserAvatar :username="userStore.user?.name ?? 'Anonymous'" :avatar="userStore.userPhotoUrl">
+  <UserAvatar
+    :username="userStore.user?.name ?? 'Anonymous'"
+    :avatar="userStore.userPhotoUrl"
+  >
     <slot />
   </UserAvatar>
 </template>
