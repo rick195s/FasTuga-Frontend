@@ -27,6 +27,14 @@ const routes = [
     name: "dashboard",
     component: Dashboard,
   },
+  {
+    meta: {
+      title: "All Orders",
+    },
+    path: "/orders",
+    name: "orders",
+    component: () => import("@/views/dashboard/OrdersView.vue"),
+  },
 
   {
     meta: {
@@ -81,6 +89,15 @@ router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
 
   if (to.name == "dashboard") {
+    if (userStore.user && userStore.user.type == "EM") {
+      next();
+      return;
+    }
+    next({ name: "home" });
+    return;
+  }
+
+  if (to.name == "orders") {
     if (userStore.user && userStore.user.type == "EM") {
       next();
       return;

@@ -6,7 +6,7 @@ import {
   mdiCircleEditOutline,
   mdiAccount,
 } from "@mdi/js";
-import BaseLevel from "@/components/dashboard/BaseLevel.vue";
+import PaginationButtons from "@/components/dashboard/PaginationButtons.vue";
 import BaseButtons from "@/components/dashboard/BaseButtons.vue";
 import BaseButton from "@/components/dashboard/BaseButton.vue";
 import UserAvatar from "@/components/dashboard/UserAvatar.vue";
@@ -195,19 +195,11 @@ onMounted(async () => {
     </tbody>
   </table>
   <div class="p-3 lg:px-6 border-t border-gray-100 dark:border-slate-800">
-    <BaseLevel>
-      <BaseButtons>
-        <BaseButton
-          v-for="page in pagesList"
-          :key="page"
-          :active="page.active"
-          :label="page.label"
-          :color="page.active ? 'lightDark' : 'whiteDark'"
-          small
-          @click="loadUsers(page.url)"
-        />
-      </BaseButtons>
-      <small>Page {{ currentPageHuman }} of {{ numPages }}</small>
-    </BaseLevel>
+    <PaginationButtons
+      :num-pages="numPages"
+      :current-page-human="currentPageHuman"
+      :pages-list="pagesList"
+      @change-page="loadUsers"
+    />
   </div>
 </template>
