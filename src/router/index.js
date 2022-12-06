@@ -46,12 +46,21 @@ const routes = [
   },
   {
     meta: {
+      title: "Items To Prepare",
+    },
+    path: "/orderItems",
+    name: "itemsToPrepare",
+    component: () => import("@/views/dashboard/OrderItemsView.vue"),
+  },
+  {
+    meta: {
       title: "Profile",
     },
     path: "/profile",
     name: "profile",
     component: () => import("@/views/dashboard/ProfileView.vue"),
   },
+
   {
     meta: {
       title: "Login",
@@ -97,6 +106,11 @@ router.beforeEach((to, from, next) => {
   const userStore = useUserStore();
 
   if (to.name == "dashboard") {
+    if (userStore.user.type == "EC") {
+      next({ name: "itemsToPrepare" });
+      return;
+    }
+
     if (userStore.user && userStore.user.type == "EM") {
       next();
       return;
@@ -114,6 +128,15 @@ router.beforeEach((to, from, next) => {
     return;
   }
 
+  if (to.name == "itemsToPrepare") {
+    if (userStore.user && userStore.user.type == "EC") {
+      next();
+      return;
+    }
+    next({ name: "home" });
+    return;
+  }
+
   if (to.name == "order") {
     if (userStore.user && userStore.user.type == "EM") {
       next();
@@ -124,7 +147,7 @@ router.beforeEach((to, from, next) => {
   }
 
   if ((to.name == "login" || to.name == "register") && userStore.user) {
-    userStore.user.type == "EM"
+    userStore.user.type == "EM" || userStore.user.type == "EC"
       ? next({ name: "dashboard" })
       : next({ name: "home" });
     return;

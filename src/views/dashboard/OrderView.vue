@@ -11,6 +11,7 @@ import BaseButton from "@/components/dashboard/BaseButton.vue";
 import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
 
 const axios = inject("axios");
+const socket = inject("socket");
 
 const props = defineProps({
   id: {
@@ -33,18 +34,18 @@ const cancelOrder = async () => {
     const response = await axios.patch(`orders/${props.id}`, { status: "C" });
     order.value = response.data;
 
-    console.log(order.value.data.status);
-    if (order.value.data.status != "Cancelled") {
-      toastType.value = "danger";
-      toastMessage.value = "Error canceling order";
-    } else {
+    if (order.value.data.status == "Cancelled") {
       toastType.value = "success";
       toastMessage.value = "Order canceled successfully";
+
+      if (order.value.data.order_delivery) {
+        socket.emit("order-cancelled", order.value.data.order_delivery);
+      }
+      return;
     }
-  } catch (error) {
-    toastType.value = "danger";
-    toastMessage.value = "Error canceling order";
-  }
+  } catch {}
+  toastType.value = "danger";
+  toastMessage.value = "Error canceling order";
 };
 
 const loadOrder = async (url) => {
@@ -112,7 +113,7 @@ onMounted(() => {
           <CardBoxItem
             :name="item.product.name"
             :avatar="item.product.photo_url"
-            :price="item.price_on_purchase"
+            :price="`${item.price_on_purchase} €`"
             :status="item.status"
           />
         </div>

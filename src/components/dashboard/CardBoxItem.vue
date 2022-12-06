@@ -46,7 +46,7 @@ const statusColor = computed(() => {
           <h4 class="text-xl text-ellipsis">
             {{ name }}
           </h4>
-          <p class="text-gray-500 dark:text-slate-400">{{ price }} €</p>
+          <p class="text-gray-500 dark:text-slate-400">{{ price }}</p>
         </div>
       </BaseLevel>
       <PillTag :color="statusColor" :label="status" />

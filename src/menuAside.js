@@ -17,6 +17,11 @@ export default [
     icon: mdiPackageVariantClosed,
   },
   {
+    to: "/orderItems",
+    label: "Items To Prepare",
+    icon: mdiPackageVariantClosed,
+  },
+  {
     to: "/profile",
     label: "Profile",
     icon: mdiAccountCircle,

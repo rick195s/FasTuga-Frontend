@@ -6,6 +6,7 @@ import router from "./router";
 import { useStyleStore } from "@/stores/dashboard/style.js";
 import { darkModeKey, styleKey } from "@/config.js";
 import axios from "axios";
+import { io } from "socket.io-client";
 
 import "./css/dashboard/main.css";
 
@@ -28,6 +29,8 @@ const axiosModel = axios.create({
 });
 
 app.provide("axios", axiosModel);
+
+app.provide("socket", io("http://localhost:8080"));
 
 app.mount("#app");
 
