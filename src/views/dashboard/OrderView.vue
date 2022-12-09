@@ -86,7 +86,7 @@ onMounted(() => {
     <SectionMain>
       <SectionTitleLineWithButton
         :icon="mdiChartTimelineVariant"
-        :title="`Order #${props.id}`"
+        :title="`Order #${order.data?.ticket_number}`"
         main
       >
         <BaseButton
