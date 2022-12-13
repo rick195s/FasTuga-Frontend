@@ -5,6 +5,14 @@ import avatarNoneUrl from "@/assets/avatar-none.png";
 export const useUserStore = defineStore("user", () => {
   const axios = inject("axios");
 
+  const permissions = {
+    dashboard: ["EM"],
+    orders: ["EM"],
+    itemsToPrepare: ["EC"],
+    order: ["EM"],
+    profile: ["EM", "EC"],
+  };
+
   const user = ref(null);
 
   const userPhotoUrl = computed(() => {
@@ -84,14 +92,6 @@ export const useUserStore = defineStore("user", () => {
   }
 
   function canGoTo(to) {
-    const permissions = {
-      dashboard: ["EM"],
-      orders: ["EM"],
-      itemsToPrepare: ["EC"],
-      order: ["EM"],
-      profile: ["EM", "EC"],
-    };
-
     if (
       permissions[to.name] &&
       !permissions[to.name].includes(user.value.type)

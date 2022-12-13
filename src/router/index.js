@@ -109,48 +109,6 @@ router.beforeEach((to, from, next) => {
     next({ name: "home" });
     return;
   }
-  /*
-
-  if (to.name == "dashboard") {
-    if (userStore.user.type == "EC") {
-      next({ name: "itemsToPrepare" });
-      return;
-    }
-
-    if (userStore.user && userStore.user.type == "EM") {
-      next();
-      return;
-    }
-    next({ name: "home" });
-    return;
-  }
-
-  if (to.name == "orders") {
-    if (userStore.user && userStore.user.type == "EM") {
-      next();
-      return;
-    }
-    next({ name: "home" });
-    return;
-  }
-
-  if (to.name == "itemsToPrepare") {
-    if (userStore.user && userStore.user.type == "EC") {
-      next();
-      return;
-    }
-    next({ name: "home" });
-    return;
-  }
-
-  if (to.name == "order") {
-    if (userStore.user && userStore.user.type == "EM") {
-      next();
-      return;
-    }
-    next({ name: "home" });
-    return;
-  }*/
 
   if ((to.name == "login" || to.name == "register") && userStore.user) {
     userStore.user.type == "EM" || userStore.user.type == "EC"
