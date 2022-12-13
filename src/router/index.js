@@ -18,6 +18,15 @@ const routes = [
     path: "/",
     name: "home",
     component: Home,
+    
+  },
+  {
+    meta: {
+      title: "Products",
+    },
+    path: "/products",
+    name: "products",
+    component: () => import("@/views/dashboard/ProductsView.vue"),
   },
   {
     meta: {

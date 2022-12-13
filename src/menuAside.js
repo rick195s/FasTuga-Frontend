@@ -17,6 +17,11 @@ export default [
     icon: mdiPackageVariantClosed,
   },
   {
+    to: "/products",
+    label: "Products",
+    icon: mdiPackageVariantClosed,
+  },
+  {
     to: "/orderItems",
     label: "Items To Prepare",
     icon: mdiPackageVariantClosed,
