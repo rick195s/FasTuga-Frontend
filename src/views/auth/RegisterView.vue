@@ -193,7 +193,7 @@ const setWaiting = () => {
         <template #footer>
           <BaseButtons>
             <BaseButton type="submit" color="info" label="Register" />
-            <BaseButton to="/dashboard" color="info" outline label="Back" />
+            <BaseButton to="/login" color="info" outline label="Login" />
           </BaseButtons>
         </template>
       </CardBox>
