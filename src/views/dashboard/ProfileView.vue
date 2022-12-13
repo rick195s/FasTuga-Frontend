@@ -62,7 +62,14 @@ const setPhoto = (file) => {
 
 const submitProfile = async () => {
   cleanErrors();
+  if (profileForm.value.name === userStore.user.name) {
+    formHeaderTitle.value = "No changes detected";
+    formStatusCurrent.value = "info";
+    return;
+  }
+
   setWaiting();
+
   try {
     if (userPhoto.value) {
       const formData = new FormData();
@@ -169,7 +176,6 @@ const setError = () => {
           <template #footer>
             <BaseButtons>
               <BaseButton color="info" type="submit" label="Submit" />
-              <BaseButton color="info" label="Options" outline />
             </BaseButtons>
           </template>
         </CardBox>
@@ -212,6 +218,7 @@ const setError = () => {
               name="password"
               type="password"
               required
+              minlength="8"
               autocomplete="new-password"
             />
           </FormField>
@@ -226,6 +233,7 @@ const setError = () => {
               name="password_confirmation"
               type="password"
               required
+              minlength="8"
               autocomplete="new-password"
             />
           </FormField>
@@ -233,7 +241,6 @@ const setError = () => {
           <template #footer>
             <BaseButtons>
               <BaseButton type="submit" color="info" label="Submit" />
-              <BaseButton color="info" label="Options" outline />
             </BaseButtons>
           </template>
         </CardBox>
