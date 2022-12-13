@@ -94,7 +94,7 @@ export const useUserStore = defineStore("user", () => {
   function canGoTo(to) {
     if (
       permissions[to.name] &&
-      !permissions[to.name].includes(user.value.type)
+      !permissions[to.name].includes(user.value?.type)
     ) {
       return false;
     }

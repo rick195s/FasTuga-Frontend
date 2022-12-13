@@ -49,11 +49,15 @@ const submit = async () => {
   setWaiting();
   cleanErrors();
 
-  const response = await store.register(form);
-  if (response.status === 200) {
+  try {
+    const response = await store.register(form);
+
+    if (response.status !== 200) {
+      throw response;
+    }
     router.push({ name: "dashboard" });
-  } else {
-    setError(response);
+  } catch (error) {
+    setError(error);
   }
 
   waiting.value = false;

@@ -34,12 +34,17 @@ const submit = async () => {
   };
 
   setWaiting();
-  const response = await store.login(credentials);
 
-  if (response.status === 200) {
+  try {
+    const response = await store.login(credentials);
+
+    if (response.status !== 200) {
+      throw response;
+    }
+
     router.push({ name: "dashboard" });
-  } else {
-    setError(response);
+  } catch (error) {
+    setError(error);
   }
   waiting.value = false;
 };
