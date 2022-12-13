@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, onMounted, computed } from "vue";
+import { ref, watch, onMounted } from "vue";
 import {
   mdiTrashCan,
   mdiCancel,
@@ -16,10 +16,6 @@ import FormFilePicker from "@/components/dashboard/FormFilePicker.vue";
 import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
 
 const props = defineProps({
-  endpoint: {
-    type: String,
-    default: null,
-  },
   users: {
     type: Object,
     default: () => {},
@@ -52,7 +48,6 @@ userToUpdate.value = {
 watch(
   () => props.users,
   (users) => {
-    console.log("users");
     loadMeta(users.meta);
   }
 );

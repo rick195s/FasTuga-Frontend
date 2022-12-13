@@ -74,12 +74,11 @@ const userUpdateFields = [
   },
 ];
 
-const usersEndpoint = "users";
-
 const isModelCreateUser = ref(false);
 const toastType = ref("");
 const toastMessage = ref("");
 const users = ref([]);
+const tableUsersWaiting = ref(false);
 
 const userToCreate = ref({
   name: "",
@@ -101,13 +100,16 @@ const toggleBlocked = async (user) => {
 };
 
 const loadUsers = async (url) => {
+  tableUsersWaiting.value = true;
   try {
     const response = await axios.get(url || "users");
     users.value = response.data;
   } catch (error) {
     console.log(error);
   }
+  tableUsersWaiting.value = false;
 };
+
 const setPhoto = (file) => {
   userToCreate.value.photo = file;
 };
@@ -285,9 +287,8 @@ onMounted(async () => {
 
       <CardBox has-table>
         <TableUsers
-          v-if="users.data"
+          v-if="users.data && !tableUsersWaiting"
           :headers="usersHeaders"
-          :endpoint="usersEndpoint"
           :user-update-fields="userUpdateFields"
           :users="users"
           @delete="deleteUser"
@@ -295,7 +296,7 @@ onMounted(async () => {
           @update="updateUser"
           @load-users="loadUsers"
         />
-        <CardBoxComponentEmpty v-else />
+        <CardBoxComponentEmpty v-else :waiting="tableUsersWaiting" />
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>

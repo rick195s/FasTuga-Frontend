@@ -54,7 +54,7 @@ const submit = async () => {
     if (response.status !== 200) {
       throw response;
     }
-    router.push({ name: "dashboard" });
+    router.push({ name: "home" });
   } catch (error) {
     setError(error);
   }
