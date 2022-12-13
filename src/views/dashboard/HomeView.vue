@@ -20,7 +20,6 @@ import FormField from "@/components/dashboard/FormField.vue";
 import FormControl from "@/components/dashboard/FormControl.vue";
 import FormFilePicker from "@/components/dashboard/FormFilePicker.vue";
 import NotificationToast from "@/components/dashboard/NotificationToast.vue";
-import CardBoxComponentEmpty from "@/components/dashboard/CardBoxComponentEmpty.vue";
 
 const axios = inject("axios");
 
@@ -78,7 +77,6 @@ const isModelCreateUser = ref(false);
 const toastType = ref("");
 const toastMessage = ref("");
 const users = ref([]);
-const tableUsersWaiting = ref(false);
 
 const userToCreate = ref({
   name: "",
@@ -100,14 +98,12 @@ const toggleBlocked = async (user) => {
 };
 
 const loadUsers = async (url) => {
-  tableUsersWaiting.value = true;
   try {
     const response = await axios.get(url || "users");
     users.value = response.data;
   } catch (error) {
     console.log(error);
   }
-  tableUsersWaiting.value = false;
 };
 
 const setPhoto = (file) => {
@@ -287,7 +283,7 @@ onMounted(async () => {
 
       <CardBox has-table>
         <TableUsers
-          v-if="users.data && !tableUsersWaiting"
+          v-if="users.data"
           :headers="usersHeaders"
           :user-update-fields="userUpdateFields"
           :users="users"
@@ -296,7 +292,6 @@ onMounted(async () => {
           @update="updateUser"
           @load-users="loadUsers"
         />
-        <CardBoxComponentEmpty v-else :waiting="tableUsersWaiting" />
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>

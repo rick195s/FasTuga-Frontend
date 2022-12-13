@@ -14,6 +14,7 @@ import FormField from "@/components/dashboard/FormField.vue";
 import FormControl from "@/components/dashboard/FormControl.vue";
 import FormFilePicker from "@/components/dashboard/FormFilePicker.vue";
 import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
+import CardBoxComponentEmpty from "@/components/dashboard/CardBoxComponentEmpty.vue";
 
 const props = defineProps({
   users: {
@@ -38,6 +39,8 @@ const pagesList = ref([]);
 const isModalDeleteUser = ref(false);
 const userToDelete = ref(null);
 
+const tableUsersWaiting = ref(false);
+
 const isModelUpdateUser = ref(false);
 const userToUpdate = ref([null]);
 userToUpdate.value = {
@@ -49,6 +52,7 @@ watch(
   () => props.users,
   (users) => {
     loadMeta(users.meta);
+    tableUsersWaiting.value = false;
   }
 );
 
@@ -73,6 +77,7 @@ const showModelUpdateUser = (user) => {
 };
 
 const loadUsers = (url) => {
+  tableUsersWaiting.value = true;
   emit("load-users", url);
 };
 
@@ -139,7 +144,7 @@ onMounted(() => {
   </CardBoxModal>
   <!-- #endregion -->
 
-  <table>
+  <table v-if="!tableUsersWaiting">
     <thead>
       <tr>
         <th />
@@ -189,6 +194,8 @@ onMounted(() => {
       </tr>
     </tbody>
   </table>
+  <CardBoxComponentEmpty v-else :waiting="tableUsersWaiting" />
+
   <div class="p-3 lg:px-6 border-t border-gray-100 dark:border-slate-800">
     <PaginationButtons
       :num-pages="numPages"
