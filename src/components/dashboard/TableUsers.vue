@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, inject, defineExpose } from "vue";
+import { ref, watch, onMounted, computed } from "vue";
 import {
   mdiTrashCan,
   mdiCancel,
@@ -20,6 +20,10 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  users: {
+    type: Object,
+    default: () => {},
+  },
   headers: {
     type: Array,
     default: () => [],
@@ -29,12 +33,8 @@ const props = defineProps({
     default: () => [],
   },
 });
+const emit = defineEmits(["toggle-blocked", "delete", "update", "load-users"]);
 
-const emit = defineEmits(["toggle-blocked", "delete", "update"]);
-
-const axios = inject("axios");
-
-const users = ref([]);
 const numPages = ref(0);
 const currentPageHuman = ref(0);
 const pagesList = ref([]);
@@ -49,18 +49,18 @@ userToUpdate.value = {
   type: "",
 };
 
-const loadUsers = async (url) => {
-  try {
-    const response = await axios.get(url || props.endpoint || "users");
-
-    users.value = response.data;
-
-    numPages.value = users.value.meta.last_page;
-    currentPageHuman.value = users.value.meta.current_page;
-    pagesList.value = users.value.meta.links;
-  } catch (error) {
-    console.log(error);
+watch(
+  () => props.users,
+  (users) => {
+    console.log("users");
+    loadMeta(users.meta);
   }
+);
+
+const loadMeta = (meta) => {
+  numPages.value = meta.last_page;
+  currentPageHuman.value = meta.current_page;
+  pagesList.value = meta.links;
 };
 
 const setFile = (file) => {
@@ -77,12 +77,12 @@ const showModelUpdateUser = (user) => {
   userToUpdate.value = { ...user };
 };
 
-defineExpose({
-  loadUsers,
-});
+const loadUsers = (url) => {
+  emit("load-users", url);
+};
 
-onMounted(async () => {
-  loadUsers();
+onMounted(() => {
+  loadMeta(props.users.meta);
 });
 </script>
 

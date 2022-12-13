@@ -22,7 +22,7 @@ defineEmits(["change-page"]);
 </script>
 
 <template>
-  <BaseLevel>
+  <BaseLevel v-if="numPages > 1">
     <BaseButtons>
       <BaseButton
         v-for="page in pagesList"

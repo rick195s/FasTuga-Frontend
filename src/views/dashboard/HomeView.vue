@@ -8,7 +8,7 @@ import {
   mdiMail,
   mdiAccount,
 } from "@mdi/js";
-import { ref, inject } from "vue";
+import { ref, inject, onMounted } from "vue";
 import SectionMain from "@/components/dashboard/SectionMain.vue";
 import CardBoxWidget from "@/components/dashboard/CardBoxWidget.vue";
 import CardBox from "@/components/dashboard/CardBox.vue";
@@ -20,6 +20,7 @@ import FormField from "@/components/dashboard/FormField.vue";
 import FormControl from "@/components/dashboard/FormControl.vue";
 import FormFilePicker from "@/components/dashboard/FormFilePicker.vue";
 import NotificationToast from "@/components/dashboard/NotificationToast.vue";
+import CardBoxComponentEmpty from "@/components/dashboard/CardBoxComponentEmpty.vue";
 
 const axios = inject("axios");
 
@@ -75,10 +76,11 @@ const userUpdateFields = [
 
 const usersEndpoint = "users";
 
-const tableUsers = ref(null);
 const isModelCreateUser = ref(false);
 const toastType = ref("");
 const toastMessage = ref("");
+const users = ref([]);
+
 const userToCreate = ref({
   name: "",
   email: "",
@@ -98,6 +100,14 @@ const toggleBlocked = async (user) => {
   }
 };
 
+const loadUsers = async (url) => {
+  try {
+    const response = await axios.get(url || "users");
+    users.value = response.data;
+  } catch (error) {
+    console.log(error);
+  }
+};
 const setPhoto = (file) => {
   userToCreate.value.photo = file;
 };
@@ -124,7 +134,7 @@ const createUser = async () => {
 const deleteUser = async (user) => {
   try {
     await axios.delete(`users/${user.id}`);
-    tableUsers.value.loadUsers();
+    loadUsers();
     toastMessage.value = "User deleted successfully";
     toastType.value = "success";
   } catch (error) {
@@ -149,12 +159,16 @@ const updateUser = async (user) => {
     await axios.put(`users/${user.id}`, user);
     toastMessage.value = "User updated successfully";
     toastType.value = "success";
-    tableUsers.value.loadUsers();
+    loadUsers();
   } catch (error) {
     toastMessage.value = error.response.data.message;
     toastType.value = "danger";
   }
 };
+
+onMounted(async () => {
+  loadUsers();
+});
 </script>
 
 <template>
@@ -271,14 +285,17 @@ const updateUser = async (user) => {
 
       <CardBox has-table>
         <TableUsers
-          ref="tableUsers"
+          v-if="users.data"
           :headers="usersHeaders"
           :endpoint="usersEndpoint"
           :user-update-fields="userUpdateFields"
+          :users="users"
           @delete="deleteUser"
           @toggle-blocked="toggleBlocked"
           @update="updateUser"
+          @load-users="loadUsers"
         />
+        <CardBoxComponentEmpty v-else />
       </CardBox>
     </SectionMain>
   </LayoutAuthenticated>
