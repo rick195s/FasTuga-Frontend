@@ -4,7 +4,6 @@ import { useRouter } from "vue-router";
 import { mdiAccount, mdiAsterisk } from "@mdi/js";
 import SectionFullScreen from "@/components/dashboard/SectionFullScreen.vue";
 import CardBox from "@/components/dashboard/CardBox.vue";
-import FormCheckRadio from "@/components/dashboard/FormCheckRadio.vue";
 import FormField from "@/components/dashboard/FormField.vue";
 import FormControl from "@/components/dashboard/FormControl.vue";
 import BaseButton from "@/components/dashboard/BaseButton.vue";
@@ -24,7 +23,6 @@ const store = useUserStore();
 const form = reactive({
   email: "",
   password: "",
-  remember: true,
 });
 
 const submit = async () => {
@@ -88,6 +86,8 @@ const setWaiting = () => {
             name="login"
             placeholder="Email"
             autocomplete="email"
+            required
+            type="email"
           />
         </FormField>
 
@@ -99,6 +99,7 @@ const setWaiting = () => {
             name="password"
             placeholder="Password"
             autocomplete="current-password"
+            required
           />
         </FormField>
 

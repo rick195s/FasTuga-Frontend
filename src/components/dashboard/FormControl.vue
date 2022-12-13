@@ -39,6 +39,14 @@ const props = defineProps({
     type: [String, Number, Boolean, Array, Object],
     default: "",
   },
+  minlength: {
+    type: String,
+    default: null,
+  },
+  maxlength: {
+    type: String,
+    default: null,
+  },
   required: Boolean,
   borderless: Boolean,
   transparent: Boolean,
@@ -131,6 +139,8 @@ onMounted(() => {
       :placeholder="placeholder"
       :type="computedType"
       :class="inputElClass"
+      :minlength="minlength"
+      :maxlength="maxlength"
     />
     <FormControlIcon v-if="icon" :icon="icon" :h="controlIconH" />
   </div>

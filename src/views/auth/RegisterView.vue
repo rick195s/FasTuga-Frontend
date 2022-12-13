@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { mdiAccount, mdiAsterisk } from "@mdi/js";
 import SectionFullScreen from "@/components/dashboard/SectionFullScreen.vue";
@@ -27,7 +27,7 @@ const formErrors = ref({
   phone_nif: [],
 });
 
-const form = ref({
+const form = reactive({
   name: "",
   email: "",
   password: "",
@@ -51,7 +51,6 @@ const submit = async () => {
 
   try {
     const response = await store.register(form);
-
     if (response.status !== 200) {
       throw response;
     }
@@ -127,6 +126,7 @@ const setWaiting = () => {
             name="name"
             placeholder="Name"
             autocomplete="name"
+            required
           />
         </FormField>
 
@@ -141,6 +141,8 @@ const setWaiting = () => {
             name="email"
             placeholder="Email"
             autocomplete="email"
+            required
+            type="email"
           />
         </FormField>
 
@@ -152,10 +154,11 @@ const setWaiting = () => {
           <FormControl
             v-model="form.phone"
             :icon="mdiAsterisk"
-            type="text"
+            type="tel"
             name="phone"
             placeholder="Phone"
             autocomplete="current-phone"
+            required
           />
           <FormControl
             v-model="form.nif"
@@ -164,6 +167,9 @@ const setWaiting = () => {
             name="nif"
             placeholder="NIF"
             autocomplete="current-nif"
+            minlength="9"
+            maxlength="9"
+            required
           />
         </FormField>
 
@@ -179,6 +185,8 @@ const setWaiting = () => {
             name="password"
             placeholder="Password"
             autocomplete="current-password"
+            minlength="8"
+            required
           />
           <FormControl
             v-model="form.password_confirmation"
@@ -187,6 +195,8 @@ const setWaiting = () => {
             name="password_confirmation"
             placeholder="Password Confirmation"
             autocomplete="current-password-confirmation"
+            minlength="8"
+            required
           />
         </FormField>
 
