@@ -83,5 +83,33 @@ export const useUserStore = defineStore("user", () => {
     return false;
   }
 
-  return { user, userId, userPhotoUrl, login, logout, register, restoreToken };
+  function canGoTo(to) {
+    const permissions = {
+      dashboard: ["EM"],
+      orders: ["EM"],
+      itemsToPrepare: ["EC"],
+      order: ["EM"],
+      profile: ["EM", "EC"],
+    };
+
+    if (
+      permissions[to.name] &&
+      !permissions[to.name].includes(user.value.type)
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  return {
+    user,
+    userId,
+    userPhotoUrl,
+    login,
+    logout,
+    register,
+    restoreToken,
+    canGoTo,
+  };
 });

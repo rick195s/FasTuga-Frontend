@@ -38,8 +38,8 @@ const cancelOrder = async () => {
       toastType.value = "success";
       toastMessage.value = "Order canceled successfully";
 
-      if (order.value.data.order_delivery) {
-        socket.emit("order-cancelled", order.value.data.order_delivery);
+      if (order.value.data.id) {
+        socket.emit("order-cancelled", order.value.data.id);
       }
       return;
     }

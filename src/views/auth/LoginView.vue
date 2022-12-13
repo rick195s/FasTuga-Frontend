@@ -46,7 +46,7 @@ const submit = async () => {
 
 const setError = (error) => {
   formHeaderTitle.value = "Error: ";
-  if (!error.response.data) {
+  if (!error.response?.data) {
     formHeaderContent.value = "Login failed";
   } else {
     formHeaderContent.value = error.response.data.message;
@@ -96,13 +96,6 @@ const setWaiting = () => {
             autocomplete="current-password"
           />
         </FormField>
-
-        <FormCheckRadio
-          v-model="form.remember"
-          name="remember"
-          label="Remember"
-          :input-value="true"
-        />
 
         <template #footer>
           <BaseButtons>

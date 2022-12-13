@@ -61,7 +61,7 @@ const submit = async () => {
 
 const setError = (error) => {
   formHeaderTitle.value = "Error: ";
-  if (!error.response.data) {
+  if (!error.response?.data) {
     formHeaderContent.value = "Register failed";
   } else {
     formHeaderContent.value = error.response.data.message;

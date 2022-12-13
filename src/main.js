@@ -10,18 +10,21 @@ import { io } from "socket.io-client";
 
 import "./css/dashboard/main.css";
 
+const apiDomain = "http://localhost"; //process.env.VUE_APP_API_DOMAIN;
+const wsConnection = "http://localhost:8080"; //process.env.VUE_APP_WS_CONNECTION;
+
 /* Init Pinia */
 const pinia = createPinia();
 
 /* Create Vue app */
 const app = createApp(App).use(pinia).use(router);
 
-const serverBaseUrl = "http://localhost";
-app.provide("serverBaseUrl", serverBaseUrl);
+app.config.globalProperties.$serverUrl = apiDomain;
 
 /* Axios available in all components */
+
 const axiosModel = axios.create({
-  baseURL: serverBaseUrl + "/api",
+  baseURL: `${apiDomain}/api`,
   headers: {
     "Content-type": "application/json",
     Accpet: "application/json",
@@ -30,7 +33,7 @@ const axiosModel = axios.create({
 
 app.provide("axios", axiosModel);
 
-app.provide("socket", io("http://localhost:8080"));
+app.provide("socket", io(wsConnection));
 
 app.mount("#app");
 

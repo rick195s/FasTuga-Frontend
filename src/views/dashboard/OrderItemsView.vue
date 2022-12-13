@@ -77,7 +77,10 @@ const checkStatusChanged = (newStatus) => {
   ) {
     toastType.value = "success";
     toastMessage.value = "Order item status changed";
-    socket.emit("order-ready", orderItemSelected.value.data.order_id);
+
+    if (orderItemSelected.value.data.order_status == "R") {
+      socket.emit("order-ready", orderItemSelected.value.data.order_id);
+    }
   } else {
     toastType.value = "danger";
     toastMessage.value = "Error changing item status";
@@ -136,7 +139,7 @@ onMounted(() => {
         v-for="item in orderItems.data"
         v-else
         :key="item.id"
-        :name="`Order #${item.local_number} - ${item.product.name} `"
+        :name="`Order #${item.order_ticket_number} - ${item.product.name} `"
         :avatar="item.product.photo_url"
         :price="`Notes: ${item.notes ?? ''}`"
         :status="item.status"

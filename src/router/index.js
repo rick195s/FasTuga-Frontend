@@ -105,6 +105,12 @@ router.beforeEach((to, from, next) => {
   // https://pinia.vuejs.org/core-concepts/outside-component-usage.html#single-page-applications
   const userStore = useUserStore();
 
+  if (!userStore.canGoTo(to)) {
+    next({ name: "home" });
+    return;
+  }
+  /*
+
   if (to.name == "dashboard") {
     if (userStore.user.type == "EC") {
       next({ name: "itemsToPrepare" });
@@ -144,7 +150,7 @@ router.beforeEach((to, from, next) => {
     }
     next({ name: "home" });
     return;
-  }
+  }*/
 
   if ((to.name == "login" || to.name == "register") && userStore.user) {
     userStore.user.type == "EM" || userStore.user.type == "EC"
