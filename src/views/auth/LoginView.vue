@@ -41,7 +41,6 @@ const submit = async () => {
     }
     router.push({ name: "dashboard" });
   } catch (error) {
-    console.log(error);
     setError(error);
   }
   waiting.value = false;
