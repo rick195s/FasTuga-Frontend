@@ -39,9 +39,9 @@ const submit = async () => {
     if (response.status !== 200) {
       throw response;
     }
-
     router.push({ name: "dashboard" });
   } catch (error) {
+    console.log(error);
     setError(error);
   }
   waiting.value = false;

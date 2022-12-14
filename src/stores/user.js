@@ -111,5 +111,6 @@ export const useUserStore = defineStore("user", () => {
     register,
     restoreToken,
     canGoTo,
+    clearUser,
   };
 });

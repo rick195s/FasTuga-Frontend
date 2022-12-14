@@ -4,6 +4,7 @@ import { createPinia } from "pinia";
 import App from "./App.vue";
 import router from "./router";
 import { useStyleStore } from "@/stores/dashboard/style.js";
+import { useUserStore } from "@/stores/user.js";
 import { darkModeKey, styleKey } from "@/config.js";
 import axios from "axios";
 import { io } from "socket.io-client";
@@ -30,6 +31,23 @@ const axiosModel = axios.create({
     Accpet: "application/json",
   },
 });
+
+axiosModel.interceptors.response.use(
+  function (response) {
+    return response;
+  },
+  function (error) {
+    if (
+      error.response.status === 403 &&
+      error.response?.data?.message.includes("is blocked")
+    ) {
+      useUserStore(pinia).clearUser();
+      router.push("/login");
+    }
+    // Do something with request error
+    return Promise.reject(error);
+  }
+);
 
 app.provide("axios", axiosModel);
 
