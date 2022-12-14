@@ -1,6 +1,14 @@
 <script setup>
 import { mdiChartTimelineVariant, mdiAlertRemoveOutline } from "@mdi/js";
 import { ref, inject, onMounted } from "vue";
+import {
+  mdiTrashCan,
+  mdiCancel,
+  mdiCircleEditOutline,
+  mdiAccount,
+  mdiPencil,
+  mdiPlus
+} from "@mdi/js";
 import SectionMain from "@/components/dashboard/SectionMain.vue";
 import LayoutAuthenticated from "@/layouts/dashboard/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/dashboard/SectionTitleLineWithButton.vue";
@@ -66,8 +74,12 @@ onMounted(() => {
       :message="toastMessage"
       @close="toastType = ''"
     ></NotificationToast>
-
     <SectionMain>
+      <BaseButton 
+        label="Create new Product"
+        :icon="mdiPlus"
+      />
+      <br><br>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div
           v-for="item in products"
@@ -78,6 +90,7 @@ onMounted(() => {
             :name="item.name"
             :avatar="item.photo_url"
             :price="item.price"
+            :product="item"
           />
         </div>
       </div>
