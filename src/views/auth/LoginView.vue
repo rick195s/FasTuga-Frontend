@@ -25,6 +25,26 @@ const form = reactive({
   password: "",
 });
 
+const resolveDirective = () => {
+  switch (store.user?.type) {
+    case "EM":
+      router.push({ name: "dashboard" });
+      break;
+
+    case "EC":
+      router.push({ name: "itemsToPrepare" });
+      break;
+
+    case "ED":
+      router.push({ name: "ordersToDeliver" });
+      break;
+
+    default:
+      router.push({ name: "home" });
+      break;
+  }
+};
+
 const submit = async () => {
   const credentials = {
     email: form.email,
@@ -39,7 +59,8 @@ const submit = async () => {
     if (response.status !== 200) {
       throw response;
     }
-    router.push({ name: "dashboard" });
+
+    resolveDirective();
   } catch (error) {
     setError(error);
   }
