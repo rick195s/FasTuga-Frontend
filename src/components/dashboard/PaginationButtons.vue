@@ -18,7 +18,13 @@ defineProps({
   },
 });
 
-defineEmits(["change-page"]);
+const emit = defineEmits(["change-page"]);
+
+const changePage = (page) => {
+  if (page?.label != "...") {
+    emit("change-page", page.url);
+  }
+};
 </script>
 
 <template>
@@ -26,12 +32,13 @@ defineEmits(["change-page"]);
     <BaseButtons>
       <BaseButton
         v-for="page in pagesList"
+        v-show="page.url || page.label === '...'"
         :key="page"
         :active="page.active"
         :label="page.label"
         :color="page.active ? 'lightDark' : 'whiteDark'"
         small
-        @click="$emit('change-page', page.url)"
+        @click="changePage(page)"
       />
     </BaseButtons>
     <small>Page {{ currentPageHuman }} of {{ numPages }}</small>
