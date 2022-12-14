@@ -32,7 +32,7 @@ const waiting = ref(false);
 const loadItems = async (url) => {
   waiting.value = true;
   try {
-    const response = await axios.get(url || "orderItems");
+    const response = await axios.get(url || "orders/items");
 
     orderItems.value = response.data;
 
@@ -54,7 +54,7 @@ const changeItemStatus = async (newStatus) => {
   isModelItem.value = false;
   try {
     const response = await axios.put(
-      `orderItems/${orderItemSelected.value.id}`,
+      `orders/items/${orderItemSelected.value.id}`,
       {
         status: newStatus,
       }
