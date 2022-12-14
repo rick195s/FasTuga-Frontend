@@ -61,7 +61,7 @@ onMounted(() => {
         v-for="order in orders.data"
         v-else
         :key="order.id"
-        :amount="`#${order.ticket_number} - ${order.total_price}`"
+        :amount="`#${order.ticket_number} - ${order.total_price} €`"
         :date="order.created_at"
         :type="order.payment_type"
         :status="order.status"

@@ -5,18 +5,17 @@ import SectionMain from "@/components/dashboard/SectionMain.vue";
 import LayoutAuthenticated from "@/layouts/dashboard/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/dashboard/SectionTitleLineWithButton.vue";
 import PaginationButtons from "@/components/dashboard/PaginationButtons.vue";
-import CardBoxItem from "@/components/dashboard/CardBoxItem.vue";
+import CardBoxTransaction from "@/components/dashboard/CardBoxTransaction.vue";
 import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
 import BaseButton from "@/components/dashboard/BaseButton.vue";
-import BaseButtons from "@/components/dashboard/BaseButtons.vue";
+
 import NotificationToast from "@/components/dashboard/NotificationToast.vue";
 import CardBoxComponentEmpty from "@/components/dashboard/CardBoxComponentEmpty.vue";
 
 const axios = inject("axios");
-const socket = inject("socket");
 
-const orderItems = ref([]);
-const isModelItem = ref(false);
+const orders = ref([]);
+const isModalOrder = ref(false);
 
 const toastType = ref("");
 const toastMessage = ref("");
@@ -25,70 +24,51 @@ const numPages = ref(0);
 const currentPageHuman = ref(0);
 const pagesList = ref([]);
 
-const orderItemSelected = ref(null);
+const orderSelected = ref(null);
 
 const waiting = ref(false);
 
-const loadItems = async (url) => {
+const loadOrders = async (url) => {
   waiting.value = true;
   try {
-    const response = await axios.get(url || "orderItems");
+    const response = await axios.get(url || "orders/deliver");
 
-    orderItems.value = response.data;
+    orders.value = response.data;
 
-    numPages.value = orderItems.value.meta.last_page;
-    currentPageHuman.value = orderItems.value.meta.current_page;
-    pagesList.value = orderItems.value.meta.links;
+    numPages.value = orders.value.meta.last_page;
+    currentPageHuman.value = orders.value.meta.current_page;
+    pagesList.value = orders.value.meta.links;
   } catch (error) {
     console.log(error);
   }
   waiting.value = false;
 };
 
-const showItemModal = (item) => {
-  orderItemSelected.value = item;
-  isModelItem.value = true;
+const showOrderModal = (order) => {
+  orderSelected.value = order;
+  isModalOrder.value = true;
 };
 
-const changeItemStatus = async (newStatus) => {
-  isModelItem.value = false;
+const deliverOrder = async () => {
+  isModalOrder.value = false;
+  console.log(orderSelected.value);
   try {
-    const response = await axios.put(
-      `orderItems/${orderItemSelected.value.id}`,
-      {
-        status: newStatus,
-      }
-    );
+    const response = await axios.put(`orders/${orderSelected.value.id}`, {
+      status: "D",
+    });
 
-    orderItemSelected.value = response.data;
-    checkStatusChanged(newStatus);
-    loadItems();
+    orderSelected.value = response.data;
+    toastType.value = "success";
+    toastMessage.value = "Success changing order status";
+    loadOrders();
   } catch (error) {
     toastType.value = "danger";
-    toastMessage.value = "Error changing item status";
-  }
-};
-
-const checkStatusChanged = (newStatus) => {
-  if (
-    (newStatus == "W" && orderItemSelected.value.data.status == "Waiting") ||
-    (newStatus == "P" && orderItemSelected.value.data.status == "Preparing") ||
-    (newStatus == "R" && orderItemSelected.value.data.status == "Ready")
-  ) {
-    toastType.value = "success";
-    toastMessage.value = "Order item status changed";
-
-    if (orderItemSelected.value.data.order_status == "R") {
-      socket.emit("order-ready", orderItemSelected.value.data.order_id);
-    }
-  } else {
-    toastType.value = "danger";
-    toastMessage.value = "Error changing item status";
+    toastMessage.value = "Error changing order status";
   }
 };
 
 onMounted(() => {
-  loadItems();
+  loadOrders();
 });
 </script>
 
@@ -101,56 +81,41 @@ onMounted(() => {
       @close="toastType = ''"
     ></NotificationToast>
     <CardBoxModal
-      v-model="isModelItem"
-      title="Change Item Status"
+      v-model="isModalOrder"
+      title="Change Order Status"
       button="info"
       :has-done="false"
     >
-      <BaseButtons>
-        <BaseButton
-          color="warning"
-          label="Waiting"
-          @click="changeItemStatus('W')"
-        />
-        <BaseButton
-          color="info"
-          label="Pending"
-          @click="changeItemStatus('P')"
-        />
-        <BaseButton
-          color="success"
-          label="Ready"
-          @click="changeItemStatus('R')"
-        />
-      </BaseButtons>
+      <BaseButton color="success" label="Ready" @click="deliverOrder" />
     </CardBoxModal>
 
     <SectionMain>
       <SectionTitleLineWithButton
         :icon="mdiChartTimelineVariant"
         :end-icon="mdiRefresh"
-        title="Items To Deliver"
+        title="Orders To Deliver"
         main
-        @end-icon-click="loadItems"
+        @end-icon-click="loadOrders"
       >
       </SectionTitleLineWithButton>
 
-      <span v-if="!waiting && orderItems.data?.length > 0">
-        <CardBoxItem
-          v-for="item in orderItems.data"
-          :key="item.id"
-          :name="`Order #${item.order_ticket_number} - ${item.product.name} `"
-          :avatar="item.product.photo_url"
-          :price="`Notes: ${item.notes ?? ''}`"
-          :status="item.status"
-          @click="showItemModal(item)"
+      <span v-if="!waiting && orders.data?.length > 0">
+        <CardBoxTransaction
+          v-for="order in orders.data"
+          :key="order.id"
+          :account="order.payment_reference"
+          :amount="`Order #${order.ticket_number}`"
+          :type="order.payment_type"
+          :date="order.customer_name ?? 'Anonymous'"
+          :status="order.status"
+          @click="showOrderModal(order)"
         />
         <PaginationButtons
           v-if="!waiting"
           :num-pages="numPages"
           :current-page-human="currentPageHuman"
           :pages-list="pagesList"
-          @change-page="loadItems"
+          @change-page="loadOrders"
         />
       </span>
       <CardBoxComponentEmpty v-else :waiting="waiting" />
