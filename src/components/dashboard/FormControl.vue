@@ -1,6 +1,5 @@
 <script setup>
-import { computed, ref, onMounted, onBeforeUnmount } from "vue";
-import { useMainStore } from "@/stores/dashboard/main";
+import { computed, ref, onMounted } from "vue";
 import FormControlIcon from "@/components/dashboard/FormControlIcon.vue";
 
 const props = defineProps({
@@ -40,6 +39,14 @@ const props = defineProps({
     type: [String, Number, Boolean, Array, Object],
     default: "",
   },
+  minlength: {
+    type: String,
+    default: null,
+  },
+  maxlength: {
+    type: String,
+    default: null,
+  },
   required: Boolean,
   borderless: Boolean,
   transparent: Boolean,
@@ -57,7 +64,7 @@ const computedValue = computed({
 
 const inputElClass = computed(() => {
   const base = [
-    "px-3 py-2 max-w-full focus:ring focus:outline-none border-gray-700 rounded w-full",
+    "px-3 py-2 max-w-full focus:ring focus:outline-none border-grey-700 rounded w-full",
     "dark:placeholder-gray-400",
     computedType.value === "textarea" ? "h-24" : "h-12",
     props.borderless ? "border-0" : "border",
@@ -77,8 +84,6 @@ const controlIconH = computed(() =>
   props.type === "textarea" ? "h-full" : "h-12"
 );
 
-const mainStore = useMainStore();
-
 const selectEl = ref(null);
 
 const textareaEl = ref(null);
@@ -94,31 +99,6 @@ onMounted(() => {
     emit("setRef", inputEl.value);
   }
 });
-
-if (props.ctrlKFocus) {
-  const fieldFocusHook = (e) => {
-    if (e.ctrlKey && e.key === "k") {
-      e.preventDefault();
-      inputEl.value.focus();
-    } else if (e.key === "Escape") {
-      inputEl.value.blur();
-    }
-  };
-
-  onMounted(() => {
-    if (!mainStore.isFieldFocusRegistered) {
-      window.addEventListener("keydown", fieldFocusHook);
-      mainStore.isFieldFocusRegistered = true;
-    } else {
-      // console.error('Duplicate field focus event')
-    }
-  });
-
-  onBeforeUnmount(() => {
-    window.removeEventListener("keydown", fieldFocusHook);
-    mainStore.isFieldFocusRegistered = false;
-  });
-}
 </script>
 
 <template>
@@ -133,7 +113,7 @@ if (props.ctrlKFocus) {
       <option
         v-for="option in options"
         :key="option.id ?? option"
-        :value="option"
+        :value="option.value"
       >
         {{ option.label ?? option }}
       </option>
@@ -159,6 +139,8 @@ if (props.ctrlKFocus) {
       :placeholder="placeholder"
       :type="computedType"
       :class="inputElClass"
+      :minlength="minlength"
+      :maxlength="maxlength"
     />
     <FormControlIcon v-if="icon" :icon="icon" :h="controlIconH" />
   </div>

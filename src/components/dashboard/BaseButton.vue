@@ -48,6 +48,8 @@ const props = defineProps({
   roundedFull: Boolean,
 });
 
+defineEmits(["iconClick"]);
+
 const is = computed(() => {
   if (props.as) {
     return props.as;
@@ -117,8 +119,10 @@ const componentClass = computed(() => {
     :to="to"
     :target="target"
     :disabled="disabled"
+    @click="$emit('iconClick')"
   >
     <BaseIcon v-if="icon" :path="icon" :size="iconSize" />
-    <span v-if="label" :class="labelClass">{{ label }}</span>
+    <!-- v-html="label" for plain HTML -->
+    <span v-if="label" :class="labelClass" v-html="label"></span>
   </component>
 </template>

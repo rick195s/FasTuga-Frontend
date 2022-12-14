@@ -1,12 +1,15 @@
 <script setup>
-import { useMainStore } from "@/stores/dashboard/main";
+import { useUserStore } from "@/stores/user";
 import UserAvatar from "@/components/dashboard/UserAvatar.vue";
 
-const mainStore = useMainStore();
+const userStore = useUserStore();
 </script>
 
 <template>
-  <UserAvatar :username="mainStore.userName" :avatar="mainStore.userAvatar">
+  <UserAvatar
+    :username="userStore.user?.name ?? 'Anonymous'"
+    :avatar="userStore.userPhotoUrl"
+  >
     <slot />
   </UserAvatar>
 </template>

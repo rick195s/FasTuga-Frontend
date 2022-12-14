@@ -1,31 +1,35 @@
 import {
   mdiAccountCircle,
   mdiMonitor,
-  mdiLock,
   mdiViewList,
-  mdiPalette,
-} from '@mdi/js'
+
+  mdiPackageVariantClosed,
+} from "@mdi/js";
 
 export default [
   {
-    to: '/dashboard',
+    to: "/dashboard",
+    label: "Dashboard",
     icon: mdiMonitor,
-    label: 'Dashboard',
+    name: "dashboard",
   },
   {
-    to: '/style',
-    label: 'Styles',
-    icon: mdiPalette,
+    to: "/orders",
+    label: "Orders",
+    icon: mdiPackageVariantClosed,
+    name: "orders",
+  },
+  {
+    to: "/orderItems",
+    label: "Items To Prepare",
+    icon: mdiPackageVariantClosed,
+    name: "itemsToPrepare",
   },
   {
     to: '/profile',
     label: 'Profile',
     icon: mdiAccountCircle,
-  },
-  {
-    to: '/login',
-    label: 'Login',
-    icon: mdiLock,
+    name: "profile",
   },
   {
     label: 'Dropdown',

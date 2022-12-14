@@ -4,7 +4,7 @@ import { ref } from "vue";
 import { useRouter } from "vue-router";
 import menuAside from "@/menuAside.js";
 import menuNavBar from "@/menuNavBar.js";
-import { useMainStore } from "@/stores/dashboard/main.js";
+import { useUserStore } from "@/stores/user";
 import { useStyleStore } from "@/stores/dashboard/style.js";
 import BaseIcon from "@/components/dashboard/BaseIcon.vue";
 import FormControl from "@/components/dashboard/FormControl.vue";
@@ -13,16 +13,11 @@ import NavBarItemPlain from "@/components/dashboard/NavBarItemPlain.vue";
 import AsideMenu from "@/components/dashboard/AsideMenu.vue";
 import FooterBar from "@/components/dashboard/FooterBar.vue";
 
-useMainStore().setUser({
-  name: "John Doe",
-  email: "john@example.com",
-  avatar:
-    "https://avatars.dicebear.com/api/avataaars/example.svg?options[top][]=shortHair&options[accessoriesChance]=93",
-});
-
 const layoutAsidePadding = "xl:pl-60";
 
 const styleStore = useStyleStore();
+
+const userStore = useUserStore();
 
 const router = useRouter();
 
@@ -40,7 +35,13 @@ const menuClick = (event, item) => {
   }
 
   if (item.isLogout) {
-    //
+    logout();
+  }
+};
+
+const logout = async () => {
+  if (await userStore.logout()) {
+    router.push({ name: "login" });
   }
 };
 </script>
@@ -96,15 +97,7 @@ const menuClick = (event, item) => {
         @aside-lg-close-click="isAsideLgActive = false"
       />
       <slot />
-      <FooterBar>
-        Get more with
-        <a
-          href="https://tailwind-vue.justboil.me/"
-          target="_blank"
-          class="text-blue-600"
-          >Premium version</a
-        >
-      </FooterBar>
+      <FooterBar> FasTuga </FooterBar>
     </div>
   </div>
 </template>

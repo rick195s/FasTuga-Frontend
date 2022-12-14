@@ -1,51 +1,68 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
-import Style from '@/views/dashboard/StyleView.vue'
-import Home from '@/views/dashboard/HomeView.vue'
-import FrontMain from '@/views/front/main.vue'
+import { createRouter, createWebHistory } from "vue-router";
+import Dashboard from "@/views/dashboard/HomeView.vue";
+import Home from "@/views/HomeView.vue";
+import { useUserStore } from "@/stores/user";
+import RouteRedirector from "@/components/RouteRedirector.vue";
 
 const routes = [
   {
-    meta: {
-      title: 'Home',
-    },
-    path: '/',
-    name: 'main',
-    component: FrontMain,
+    path: "/redirect/:redirectTo",
+    name: "Redirect",
+    component: RouteRedirector,
+    props: (route) => ({ redirectTo: route.params.redirectTo }),
   },
   {
     meta: {
-      title: 'Select style',
+
+      title: "Home",
     },
-    path: '/style',
-    name: 'style',
-    component: Style,
-  },
-  {
-    // Document title tag
-    // We combine it with defaultDocumentTitle set in `src/main.js` on router.afterEach hook
-    meta: {
-      title: 'Dashboard',
-    },
-    path: '/dashboard',
-    name: 'dashboard',
+    path: "/",
+    name: "home",
     component: Home,
   },
   {
     meta: {
-      title: 'Profile',
+      title: 'Dashboard',
     },
-    path: '/profile',
-    name: 'profile',
-    component: () => import('@/views/dashboard/ProfileView.vue'),
+
+    path: "/dashboard",
+    name: "dashboard",
+    component: Dashboard,
   },
   {
     meta: {
-      title: 'Responsive layout',
+      title: "All Orders",
     },
-    path: '/responsive',
-    name: 'responsive',
-    component: () => import('@/views/dashboard/ResponsiveView.vue'),
+    path: "/orders",
+    name: "orders",
+    component: () => import("@/views/dashboard/OrdersListView.vue"),
   },
+  {
+    meta: {
+      title: "Order Details",
+    },
+    path: "/orders/:id",
+    name: "order",
+    component: () => import("@/views/dashboard/OrderView.vue"),
+    props: (route) => ({ id: parseInt(route.params.id) }),
+  },
+  {
+    meta: {
+      title: "Items To Prepare",
+    },
+    path: "/orderItems",
+    name: "itemsToPrepare",
+    component: () => import("@/views/dashboard/OrderItemsView.vue"),
+  },
+  {
+    meta: {
+      title: "Profile",
+    },
+    path: "/profile",
+    name: "profile",
+    component: () => import("@/views/dashboard/ProfileView.vue"),
+  },
+
   {
     meta: {
       title: 'Login',
@@ -54,14 +71,64 @@ const routes = [
     name: 'login',
     component: () => import('@/views/auth/LoginView.vue'),
   },
-]
+
+  {
+    meta: {
+      title: "Register",
+    },
+    path: "/register",
+    name: "register",
+    component: () => import("@/views/auth/RegisterView.vue"),
+  },
+];
 
 const router = createRouter({
-  history: createWebHashHistory(),
+  history: createWebHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
     return savedPosition || { top: 0 }
   },
 })
 
-export default router
+
+/* Default title tag */
+const defaultDocumentTitle = "FasTuga";
+
+let handlingFirstRoute = true;
+
+router.beforeEach((to, from, next) => {
+  if (handlingFirstRoute) {
+    handlingFirstRoute = false;
+    next({ name: "Redirect", params: { redirectTo: to.fullPath } });
+    return;
+  } else if (to.name == "Redirect") {
+    next();
+    return;
+  }
+  // Careful!!! Using Handling first route to solve this
+  // https://pinia.vuejs.org/core-concepts/outside-component-usage.html#single-page-applications
+  const userStore = useUserStore();
+
+  if (!userStore.canGoTo(to)) {
+    next({ name: "home" });
+    return;
+  }
+
+  if ((to.name == "login" || to.name == "register") && userStore.user) {
+    userStore.user.type == "EM" || userStore.user.type == "EC"
+      ? next({ name: "dashboard" })
+      : next({ name: "home" });
+    return;
+  }
+
+  next();
+});
+
+/* Set document title from route meta */
+router.afterEach((to) => {
+  document.title = to.meta?.title
+    ? `${to.meta.title} — ${defaultDocumentTitle}`
+    : defaultDocumentTitle;
+});
+
+export default router;

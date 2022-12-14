@@ -1,9 +1,9 @@
 {
-  "name": "admin-one-vue-tailwind",
+  "name": "fastuga",
   "version": "3.1.0",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --mode production",
     "preview": "vite preview --port 4173",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
   },
@@ -21,6 +21,7 @@
     "chart.js": "^3.6.0",
     "numeral": "^2.0.6",
     "pinia": "^2.0.13",
+    "socket.io-client": "^4.5.4",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0"
   },

@@ -1,11 +1,6 @@
 <script setup>
 import { computed } from "vue";
-import {
-  mdiCashMinus,
-  mdiCashPlus,
-  mdiReceipt,
-  mdiCreditCardOutline,
-} from "@mdi/js";
+import { mdiCellphone, mdiCreditCardOutline, mdiAt } from "@mdi/js";
 import CardBox from "@/components/dashboard/CardBox.vue";
 import BaseLevel from "@/components/dashboard/BaseLevel.vue";
 import PillTag from "@/components/dashboard/PillTag.vue";
@@ -13,14 +8,14 @@ import IconRounded from "@/components/dashboard/IconRounded.vue";
 
 const props = defineProps({
   amount: {
-    type: Number,
+    type: String,
     required: true,
   },
   date: {
     type: String,
     required: true,
   },
-  business: {
+  status: {
     type: String,
     required: true,
   },
@@ -39,27 +34,27 @@ const props = defineProps({
 });
 
 const icon = computed(() => {
-  if (props.type === "withdrawal") {
-    return {
-      icon: mdiCashMinus,
-      type: "danger",
-    };
-  } else if (props.type === "deposit") {
-    return {
-      icon: mdiCashPlus,
-      type: "success",
-    };
-  } else if (props.type === "invoice") {
-    return {
-      icon: mdiReceipt,
-      type: "warning",
-    };
+  if (props.type === "PAYPAL") {
+    return mdiAt;
+  } else if (props.type === "MBWAY") {
+    return mdiCellphone;
   }
 
-  return {
-    icon: mdiCreditCardOutline,
-    type: "info",
-  };
+  return mdiCreditCardOutline;
+});
+
+const statusColor = computed(() => {
+  if (props.status === "Delivered") {
+    return "success";
+  } else if (props.status === "Cancelled") {
+    return "danger";
+  } else if (props.status === "Preparing") {
+    return "info";
+  } else if (props.status === "Ready") {
+    return "warning";
+  }
+
+  return "danger";
 });
 </script>
 
@@ -67,11 +62,12 @@ const icon = computed(() => {
   <CardBox class="mb-6 last:mb-0" is-hoverable>
     <BaseLevel>
       <BaseLevel type="justify-start">
-        <IconRounded :icon="icon.icon" :color="icon.type" class="md:mr-6" />
+        <IconRounded :icon="icon" :color="statusColor" class="md:mr-6" />
         <div class="text-center space-y-1 md:text-left md:mr-6">
-          <h4 class="text-xl">${{ amount }}</h4>
+          <h4 class="text-xl">{{ amount }} €</h4>
+
           <p class="text-gray-500 dark:text-slate-400">
-            <b>{{ date }}</b> via {{ business }}
+            <b>{{ date }}</b> via {{ type }}
           </p>
         </div>
       </BaseLevel>
@@ -80,7 +76,7 @@ const icon = computed(() => {
           {{ name }}
         </p>
         <div>
-          <PillTag :color="icon.type" :label="type" small />
+          <PillTag :color="statusColor" :label="status" />
         </div>
       </div>
     </BaseLevel>

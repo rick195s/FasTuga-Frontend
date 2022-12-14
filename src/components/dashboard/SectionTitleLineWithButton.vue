@@ -10,12 +10,18 @@ defineProps({
     type: String,
     default: null,
   },
+  endIcon: {
+    type: String,
+    default: null,
+  },
   title: {
     type: String,
     required: true,
   },
   main: Boolean,
 });
+
+defineEmits(["endIconClick"]);
 
 const hasSlot = computed(() => useSlots().default);
 </script>
@@ -39,6 +45,11 @@ const hasSlot = computed(() => useSlots().default);
       </h1>
     </div>
     <slot v-if="hasSlot" />
-    <BaseButton v-else :icon="mdiCog" color="whiteDark" />
+    <BaseButton
+      v-else
+      :icon="endIcon || mdiCog"
+      color="whiteDark"
+      @icon-click="$emit('endIconClick')"
+    />
   </section>
 </template>

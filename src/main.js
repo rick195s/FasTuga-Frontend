@@ -11,10 +11,10 @@ library.add(fas);
 
 import router from "./router";
 
-
-import { useMainStore } from "@/stores/dashboard/main.js";
 import { useStyleStore } from "@/stores/dashboard/style.js";
 import { darkModeKey, styleKey } from "@/config.js";
+import axios from "axios";
+import { io } from "socket.io-client";
 
 
 
@@ -22,6 +22,8 @@ import { darkModeKey, styleKey } from "@/config.js";
 import "./css/dashboard/main.css";
 
 
+const apiDomain = "http://localhost"; //process.env.VUE_APP_API_DOMAIN;
+const wsConnection = "http://localhost:8080"; //process.env.VUE_APP_WS_CONNECTION;
 
 
 /* Init Pinia */
@@ -29,15 +31,28 @@ const pinia = createPinia();
 
 
 /* Create Vue app */
-createApp(App).use(router).use(pinia).component('fa', FontAwesomeIcon).mount("#app");
 
-/* Init Pinia stores */
-const mainStore = useMainStore(pinia);
+const app = createApp(App).use(pinia).component('fa', FontAwesomeIcon).use(router);
+
+app.config.globalProperties.$serverUrl = apiDomain;
+
+/* Axios available in all components */
+
+const axiosModel = axios.create({
+  baseURL: `${apiDomain}/api`,
+  headers: {
+    "Content-type": "application/json",
+    Accpet: "application/json",
+  },
+});
+
+app.provide("axios", axiosModel);
+
+app.provide("socket", io(wsConnection));
+
+app.mount("#app");
+
 const styleStore = useStyleStore(pinia);
-
-/* Fetch sample data */
-mainStore.fetch("clients");
-mainStore.fetch("history");
 
 
 
@@ -52,13 +67,3 @@ if (
 ) {
   styleStore.setDarkMode(true);
 }
-
-/* Default title tag */
-const defaultDocumentTitle = "FasTuga";
-
-/* Set document title from route meta */
-router.afterEach((to) => {
-  document.title = to.meta?.title
-    ? `${to.meta.title} — ${defaultDocumentTitle}`
-    : defaultDocumentTitle;
-});

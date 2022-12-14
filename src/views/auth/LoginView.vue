@@ -1,26 +1,67 @@
 <script setup>
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import { mdiAccount, mdiAsterisk } from "@mdi/js";
 import SectionFullScreen from "@/components/dashboard/SectionFullScreen.vue";
 import CardBox from "@/components/dashboard/CardBox.vue";
-import FormCheckRadio from "@/components/dashboard/FormCheckRadio.vue";
 import FormField from "@/components/dashboard/FormField.vue";
 import FormControl from "@/components/dashboard/FormControl.vue";
 import BaseButton from "@/components/dashboard/BaseButton.vue";
 import BaseButtons from "@/components/dashboard/BaseButtons.vue";
 import LayoutGuest from "@/layouts/dashboard/LayoutGuest.vue";
-
-const form = reactive({
-  login: "john.doe",
-  pass: "highly-secure-password-fYjUw-",
-  remember: true,
-});
+import { useUserStore } from "@/stores/user";
+import NotificationBarInCard from "@/components/dashboard/NotificationBarInCard.vue";
 
 const router = useRouter();
 
-const submit = () => {
-  router.push("/dashboard");
+const formStatusCurrent = ref("");
+const formHeaderTitle = ref("");
+const formHeaderContent = ref("");
+const waiting = ref(false);
+const store = useUserStore();
+
+const form = reactive({
+  email: "",
+  password: "",
+});
+
+const submit = async () => {
+  const credentials = {
+    email: form.email,
+    password: form.password,
+  };
+
+  setWaiting();
+
+  try {
+    const response = await store.login(credentials);
+
+    if (response.status !== 200) {
+      throw response;
+    }
+
+    router.push({ name: "dashboard" });
+  } catch (error) {
+    setError(error);
+  }
+  waiting.value = false;
+};
+
+const setError = (error) => {
+  formHeaderTitle.value = "Error: ";
+  if (!error.response?.data) {
+    formHeaderContent.value = "Login failed";
+  } else {
+    formHeaderContent.value = error.response.data.message;
+  }
+  formStatusCurrent.value = "danger";
+};
+
+const setWaiting = () => {
+  formHeaderTitle.value = "Waiting";
+  formHeaderContent.value = "";
+  waiting.value = true;
+  formStatusCurrent.value = "info";
 };
 </script>
 
@@ -28,36 +69,44 @@ const submit = () => {
   <LayoutGuest>
     <SectionFullScreen v-slot="{ cardClass }" bg="purplePink">
       <CardBox :class="cardClass" is-form @submit.prevent="submit">
+        <NotificationBarInCard
+          v-if="formStatusCurrent"
+          :color="formStatusCurrent"
+          :waiting="waiting"
+        >
+          <span
+            ><b class="capitalize">{{ formHeaderTitle }}</b>
+            {{ formHeaderContent }}</span
+          >
+        </NotificationBarInCard>
         <FormField label="Login" help="Please enter your login">
           <FormControl
-            v-model="form.login"
+            v-model="form.email"
             :icon="mdiAccount"
             name="login"
-            autocomplete="username"
+            placeholder="Email"
+            autocomplete="email"
+            required
+            type="email"
           />
         </FormField>
 
         <FormField label="Password" help="Please enter your password">
           <FormControl
-            v-model="form.pass"
+            v-model="form.password"
             :icon="mdiAsterisk"
             type="password"
             name="password"
+            placeholder="Password"
             autocomplete="current-password"
+            required
           />
         </FormField>
-
-        <FormCheckRadio
-          v-model="form.remember"
-          name="remember"
-          label="Remember"
-          :input-value="true"
-        />
 
         <template #footer>
           <BaseButtons>
             <BaseButton type="submit" color="info" label="Login" />
-            <BaseButton to="/dashboard" color="info" outline label="Back" />
+            <BaseButton to="/register" color="info" outline label="Register" />
           </BaseButtons>
         </template>
       </CardBox>
