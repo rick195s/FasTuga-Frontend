@@ -22,7 +22,7 @@ const emit = defineEmits(["change-page"]);
 
 const changePage = (page) => {
   if (page?.label != "...") {
-    emit("change-page", page.url);
+    emit("change-page", page?.url);
   }
 };
 </script>
@@ -32,7 +32,7 @@ const changePage = (page) => {
     <BaseButtons>
       <BaseButton
         v-for="page in pagesList"
-        v-show="page.url || page.label === '...'"
+        v-show="page?.url || page.label === '...'"
         :key="page"
         :active="page.active"
         :label="page.label"

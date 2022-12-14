@@ -51,9 +51,9 @@ const menuClick = (event) => {
 <template>
   <li v-if="userStore.canGoTo(item)">
     <component
-      :is="item.to ? RouterLink : 'a'"
+      :is="item.name ? RouterLink : 'a'"
       v-slot="vSlot"
-      :to="item.to ?? null"
+      :to="{ name: item.name ?? null }"
       :href="item.href ?? null"
       :target="item.target ?? null"
       class="flex cursor-pointer"

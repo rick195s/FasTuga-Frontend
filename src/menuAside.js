@@ -7,25 +7,26 @@ import {
 
 export default [
   {
-    to: "/dashboard",
     label: "Dashboard",
     icon: mdiMonitor,
     name: "dashboard",
   },
   {
-    to: "/orders",
     label: "Orders",
     icon: mdiPackageVariantClosed,
     name: "orders",
   },
   {
-    to: "/orderItems",
     label: "Items To Prepare",
     icon: mdiPackageVariantClosed,
     name: "itemsToPrepare",
   },
   {
-    to: "/profile",
+    label: "Items To Deliver",
+    icon: mdiPackageVariantClosed,
+    name: "ordersToDeliver",
+  },
+  {
     label: "Profile",
     icon: mdiAccountCircle,
     name: "profile",

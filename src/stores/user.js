@@ -9,8 +9,9 @@ export const useUserStore = defineStore("user", () => {
     dashboard: ["EM"],
     orders: ["EM"],
     itemsToPrepare: ["EC"],
+    ordersToDeliver: ["ED"],
     order: ["EM"],
-    profile: ["EM", "EC"],
+    profile: ["EM", "EC", "ED"],
   };
 
   const user = ref(null);
@@ -29,7 +30,12 @@ export const useUserStore = defineStore("user", () => {
   async function loadUser() {
     try {
       const response = await axios.get("/me");
-      user.value = response.data.data;
+      // verification because of when a driver makes 'me' request the "data" wrapper is not there
+      if (response.data.data) {
+        user.value = response.data.data;
+      } else {
+        user.value = response.data;
+      }
     } catch (error) {
       clearUser();
       throw error;

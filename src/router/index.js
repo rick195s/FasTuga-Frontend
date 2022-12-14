@@ -48,9 +48,17 @@ const routes = [
     meta: {
       title: "Items To Prepare",
     },
-    path: "/orderItems",
+    path: "/orders/items/prepare",
     name: "itemsToPrepare",
     component: () => import("@/views/dashboard/OrderItemsView.vue"),
+  },
+  {
+    meta: {
+      title: "Items To Deliver",
+    },
+    path: "/orders/deliver",
+    name: "ordersToDeliver",
+    component: () => import("@/views/dashboard/DeliverOrdersView.vue"),
   },
   {
     meta: {
