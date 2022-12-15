@@ -3,6 +3,7 @@ import {
   mdiMonitor,
   mdiViewList,
   mdiPackageVariantClosed,
+  mdiSilverware
 } from "@mdi/js";
 
 export default [
@@ -19,7 +20,7 @@ export default [
   {
     to: "/products",
     label: "Products",
-    icon: mdiPackageVariantClosed,
+    icon: mdiSilverware,
   },
   {
     to: "/orderItems",
