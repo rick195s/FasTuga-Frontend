@@ -14,7 +14,7 @@ import router from "./router";
 import { useStyleStore } from "@/stores/dashboard/style.js";
 import { darkModeKey, styleKey } from "@/config.js";
 import axios from "axios";
-import { io } from "socket.io-client";
+//import { io } from "socket.io-client";
 
 
 
@@ -48,7 +48,7 @@ const axiosModel = axios.create({
 
 app.provide("axios", axiosModel);
 
-app.provide("socket", io(wsConnection));
+//app.provide("socket", io(wsConnection));
 
 app.mount("#app");
 

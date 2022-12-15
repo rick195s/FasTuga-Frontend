@@ -136,6 +136,7 @@ h6 {
   font-size: 14px;
   transition: all 0.5s;
   z-index: 996;
+  position: relative;
 }
 
 #topbar.topbar-scrolled {
@@ -192,12 +193,12 @@ h6 {
 # Header
 --------------------------------------------------------------*/
 #header {
-  background: rgba(12, 11, 9, 0.6);
+  background: rgba(12, 11, 9, 0.86);
   border-bottom: 1px solid rgba(12, 11, 9, 0.6);
   transition: all 0.5s;
   z-index: 997;
   padding: 15px 0;
-  top: 40px;
+  position: sticky;
 }
 
 #header.header-scrolled {
@@ -487,7 +488,7 @@ h6 {
 --------------------------------------------------------------*/
 #hero {
   width: 100%;
-  height: 100vh;
+  /*height: 100vh;*/
   /*background: url('../img/.jpg') top center;*/
   background-size: cover;
   position: relative;
@@ -497,11 +498,13 @@ h6 {
 
 #bgVideo {
   width: 100%;
-  height: 100vh;
+  height: 100%;
   object-fit: cover;
-  position: absolute;
+  position: fixed;
   padding: 0;
   filter: brightness(0.5);
+  left: 0;
+  bottom: 0;
 }
 
 #hero:before {
@@ -515,7 +518,7 @@ h6 {
 }
 
 #hero .container {
-  padding-top: 110px;
+  padding-top: 30px;
 }
 
 @media (max-width: 992px) {
@@ -563,6 +566,7 @@ h6 {
   transition: 0.3s;
   line-height: 1;
   color: white;
+  text-decoration: none;
   border: 2px solid #cda45e;
 }
 
@@ -723,7 +727,7 @@ h6 {
   clear: both;
 }
 
-.menuInput > input[type='number'] {
+.menu-content > input[type='number'] {
   background-color: rgba(0, 0, 0, 0.503);
   border-radius: 5px;
   border-color: #cda45e;
@@ -746,16 +750,16 @@ section {
 }
 
 .section-title {
-  padding-bottom: 40px;
+  padding-bottom: 20px;
 }
 
 .section-title h2 {
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 500;
   padding: 0;
   line-height: 1px;
   margin: 0 0 5px 0;
-  letter-spacing: 2px;
+  letter-spacing: 4px;
   text-transform: uppercase;
   color: #aaaaaa;
   font-family: 'Poppins', sans-serif;
@@ -767,7 +771,7 @@ section {
   height: 1px;
   display: inline-block;
   background: rgba(255, 255, 255, 0.2);
-  margin: 4px 10px;
+  margin: 8px 10px;
 }
 
 .section-title p {
@@ -1001,6 +1005,7 @@ section {
   transition: all ease-in-out 0.3s;
   border-radius: 50px;
   font-family: 'Playfair Display', serif;
+  text-transform: capitalize;
 }
 
 #menu-flters li:hover,
@@ -1013,14 +1018,23 @@ section {
 }
 
 .menu-item {
-  margin-top: 50px;
+  margin-top: 50px !important;
+  margin: 20px 0 auto;
+}
+
+.menu-item span{
+  flex: 1 0 auto;
+  align-content: flex-end;
+  text-align: end;
 }
 
 .menu-img {
-  width: 70px;
+  width: 80px;
   border-radius: 50%;
   float: left;
-  border: 5px solid rgba(255, 255, 255, 0.2);
+  height: 80px;
+  object-fit: cover;
+  /*border: 5px solid rgba(255, 255, 255, 0.2);*/
 }
 
 .menu-content {
@@ -1031,7 +1045,7 @@ section {
   position: relative;
 }
 
-.menu-content::after {
+/*.menu-content::after {
   content: '......................................................................'
     '....................................................................'
     '....................................................................';
@@ -1042,16 +1056,16 @@ section {
   z-index: 1;
   color: #bab3a6;
   font-family: Arial, 'Helvetica Neue', Helvetica, sans-serif;
-}
+}*/
 
 .menu-content a {
   padding-right: 10px;
-  background: #1a1814;
   position: relative;
   z-index: 3;
   font-weight: 700;
   color: white;
   transition: 0.3s;
+  text-decoration: none;
 }
 
 .menu-content a:hover {
@@ -1059,7 +1073,6 @@ section {
 }
 
 .menu-content span {
-  background: #1a1814;
   position: relative;
   z-index: 3;
   padding: 0 10px;

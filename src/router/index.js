@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Dashboard from "@/views/dashboard/HomeView.vue";
-import Home from "@/views/HomeView.vue";
+import Home from "@/views/front/main.vue";
 import { useUserStore } from "@/stores/user";
 import RouteRedirector from "@/components/RouteRedirector.vue";
 

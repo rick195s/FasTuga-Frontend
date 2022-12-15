@@ -23,6 +23,8 @@
     "pinia": "^2.0.13",
     "socket.io-client": "^4.5.4",
     "vue": "^3.0.0",
+    "vue-infinite-scroll": "^2.0.2",
+    "vue-numeric-input": "^2.0.0",
     "vue-router": "^4.0.0"
   },
   "devDependencies": {
