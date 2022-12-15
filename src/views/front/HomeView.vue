@@ -14,13 +14,13 @@ import { ref, inject, onMounted } from 'vue'
 const axios = inject('axios')
 const products = ref([])
 const productsTypes = ref([])
-const selectedType = 'all'
 const waiting = ref(false)
+let selectedType = 'all'
 
 const loadProducts = async (url) => {
   waiting.value = true
   try {
-    const response = await axios.get(url || 'products')
+    const response = await axios.get(url || 'products?filter='+selectedType)
 
     products.value = response.data
   } catch (error) {
@@ -39,6 +39,11 @@ const loadProductsTypes = async (url) => {
     console.log(error)
   }
   waiting.value = false
+}
+
+const changeType = (value) => {
+  selectedType = value
+  loadProducts()
 }
 
 onMounted(() => {
@@ -141,10 +146,12 @@ onMounted(() => {
           <div class="row" data-aos="fade-up" data-aos-delay="100">
             <div class="col-lg-12 d-flex justify-content-center">
               <ul id="menu-flters">
-                <li data-filter="*" class="active">All</li>
+                <li data-filter="*" class="active" @click="changeType('All')">All</li>
                 <Filter
                   v-for="productType in productsTypes"
                   :p-type="productType.type"
+                  @click="changeType(productType.type)"
+                  :isActive="productType.type==selectedType"
                 />
               </ul>
             </div>

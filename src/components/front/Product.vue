@@ -29,7 +29,7 @@ const props = defineProps({
 </style>
 
 <template>
-  <div class="col-lg-6 menu-item filter-starters" v-if="pType == 'dessert'">
+  <div class="col-lg-6 menu-item filter-starters">
     <img :src="photoUrl" class="menu-img" alt="" />
     <div class="menu-content">
       <a href="#">{{ name }}</a>

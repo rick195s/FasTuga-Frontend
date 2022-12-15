@@ -4,16 +4,22 @@
 </style>
 
 <script setup>
+
 const props = defineProps({
   pType: {
     type: String,
     required: true,
   },
+  isActive: {
+    type: Boolean,
+    required: true,
+  },
 })
+
 </script>
 
 <template>
-  <li :data-filter="'.' + pType">
+  <li :data-filter="'.' + isActive" :class="{ active : isActive }"> 
     {{ pType }}
   </li>
 </template>
