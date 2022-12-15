@@ -21,16 +21,48 @@ import FormField from "@/components/dashboard/FormField.vue";
 import FormControl from "@/components/dashboard/FormControl.vue";
 import FormFilePicker from "@/components/dashboard/FormFilePicker.vue";
 import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
+import NotificationToast from "@/components/dashboard/NotificationToast.vue";
 
 const emit = defineEmits(["update"]);
+const axios = inject("axios");
 const isModelUpdateUser = ref(false);
-const productToUpdate = ref([null]);
-productToUpdate.value = {
+const toastMessage = ref("");
+const toastType = ref("");
+const productTypes = [
+  {
+    value: "hot dish",
+    label: "Hot Dish",
+  },
+  {
+    value: "cold dish",
+    label: "Cold Dish",
+  },
+  {
+    value: "drink",
+    label: "Drink",
+  },
+  {
+    value: "dessert",
+    label: "Dessert",
+  },
+];
+
+const formErrors = ref({
+  name: [],
+  photo: [],
+  old_password: [],
+  password: [],
+});
+
+const productToUpdate = ref({
   name: "",
   type: "",
+  photo: null,
   description: "",
-  price: ""
-};
+  price: "",
+  _method:"PUT"
+});
+
 
 const props = defineProps({
   name: {
@@ -51,9 +83,41 @@ const props = defineProps({
 
 });
 
+const setPhoto = (file) => {
+  productToUpdate.value.photo = file;
+};
+
 const edit = async (product) => {
   isModelUpdateUser.value = true;
   productToUpdate.value = { ...product};
+};
+
+const update = async (product) => {
+  alert("update")
+  try {
+    /*if (product.photo) {
+      const formData = new FormData();
+      formData.append("photo", product.photo);
+
+      await axios.post(`users/${product.id}/photo`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+    }*/
+
+    console.log("PRODUCT TO UPDATE: "+product)
+    console.log(product)
+
+    const res = await axios.put(`products/${product.id}`, product);
+    console.log(res)
+    toastMessage.value = "Product updated successfully";
+    toastType.value = "success";
+  } catch (error) {
+    console.log(error)
+    toastMessage.value = error.response;
+    toastType.value = "danger";
+  }
 };
 
 const destroy = () => {
@@ -63,8 +127,12 @@ const destroy = () => {
 
 <template>
   <!-- #region ------------------------------- UPDATE PRODUCT ------------------------------- -->
-  <CardBoxModal v-model="isModelUpdateUser" title="Update Product" button="info" has-cancel
-    @confirm="emit('update', productToUpdate)">
+  <CardBoxModal 
+      v-model="isModelUpdateUser"
+      title="Update Product"
+      button="info"
+      has-cancel
+      @confirm="update(productToUpdate)">
 
     <FormField label="Name">
         <FormControl 
@@ -74,6 +142,7 @@ const destroy = () => {
           placeholder="Name"
           type="text"
           :modelValue="productToUpdate.name"
+          v-model="productToUpdate.name"
         />
     </FormField>
     <FormField label="Type">
@@ -83,8 +152,9 @@ const destroy = () => {
           autocomplete="type"
           placeholder="Type"
           type="select"
-          :options="['hot dish','cold dish','drink','dessert']"
-          :computedType="productToUpdate.name"
+          :options="productTypes"
+          :computedType="productToUpdate.type"
+          v-model="productToUpdate.type"
         />
     </FormField>
     <FormField label="Price">
@@ -95,6 +165,7 @@ const destroy = () => {
           placeholder="price"
           type="money"
           :modelValue="productToUpdate.price"
+          v-model="productToUpdate.price"
         />
     </FormField>
     <FormField label="Description">
@@ -105,18 +176,11 @@ const destroy = () => {
           placeholder="Description"
           type="textarea"
           :modelValue="productToUpdate.description"
+          v-model="productToUpdate.description"
         />
     </FormField>
 
-    <FormField label="Pefile Photo">
-        <FormControl
-          :icon="mdiImage"
-          name="photo"
-          autocomplete="photo"
-          placeholder="photo"
-          type="file"
-        />
-    </FormField>
+    
       
   </CardBoxModal>
   <!-- #endregion -->
