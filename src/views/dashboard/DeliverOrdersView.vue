@@ -51,7 +51,6 @@ const showOrderModal = (order) => {
 
 const deliverOrder = async () => {
   isModalOrder.value = false;
-  console.log(orderSelected.value);
   try {
     const response = await axios.put(`orders/${orderSelected.value.id}`, {
       status: "D",
@@ -86,7 +85,7 @@ onMounted(() => {
       button="info"
       :has-done="false"
     >
-      <BaseButton color="success" label="Ready" @click="deliverOrder" />
+      <BaseButton color="success" label="Delivered" @click="deliverOrder" />
     </CardBoxModal>
 
     <SectionMain>
