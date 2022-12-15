@@ -23,11 +23,9 @@ import FormFilePicker from "@/components/dashboard/FormFilePicker.vue";
 import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
 import NotificationToast from "@/components/dashboard/NotificationToast.vue";
 
-const emit = defineEmits(["update"]);
+const emit = defineEmits(["update","delete","insert","operationMessage"]);
 const axios = inject("axios");
 const isModelUpdateUser = ref(false);
-const toastMessage = ref("");
-const toastType = ref("");
 const productTypes = [
   {
     value: "hot dish",
@@ -109,17 +107,28 @@ const update = async (product) => {
 
     const res = await axios.put(`products/${product.id}`, product);
     console.log(res)
-    toastMessage.value = "Product updated successfully";
-    toastType.value = "success";
+    /*toastMessage.value = "Product updated successfully";
+    toastType.value = "success";*/
+    emit('update')
+    emit('operationMessage', "Product updated successfully", "success")
   } catch (error) {
     console.log(error)
-    toastMessage.value = error.response;
-    toastType.value = "danger";
+    /*toastMessage.value = error.response;
+    toastType.value = "danger";*/
+    emit('operationMessage', "Product was not updated", "danger")
   }
 };
 
-const destroy = () => {
-  alert("delete");
+const destroy = async (product) => {
+  try {
+    const res = await axios.delete(`products/${product.id}`);
+    console.log(res)
+    emit('operationMessage', "Product deleted successfully", "success")
+    emit('delete')
+  } catch (error) {
+    console.log(error)
+    emit('operationMessage', "Product was not deleted", "danger")
+  }
 };
 </script>
 
@@ -205,7 +214,7 @@ const destroy = () => {
               color="danger"
               :icon="mdiTrashCan"
               small
-              @click="destroy()"
+              @click="destroy(product)"
             />
       </BaseButtons>
     </BaseLevel>

@@ -57,6 +57,13 @@ const productTypes = [
   },
 ];
 
+const setToast = (message, type) => {
+  toastType.value = null
+  console.log(message)
+  toastType.value = type
+  toastMessage.value = message
+}
+
 const formErrors = ref({
   name: [],
   photo: [],
@@ -71,8 +78,6 @@ const productToCreate = ref({
   description: "",
   price: "",
 });
-
-
 
 const setPhoto = (file) => {
   productToCreate.value.photo = file;
@@ -105,6 +110,7 @@ const create = async () => {
     console.log(response);
     toastMessage.value = "Product created successfully";
     toastType.value = "success";
+    loadProducts()
   } catch (error) {
     console.log(error)
     toastMessage.value = error.response.data.message;
@@ -214,6 +220,10 @@ onMounted(() => {
             :avatar="item.photo_url"
             :price="item.price"
             :product="item"
+            @update="loadProducts()"
+            @delete="loadProducts()"
+            @insert="loadProducts()"
+            @operationMessage="setToast"
           />
         </div>
       </div>
