@@ -93,21 +93,19 @@ const edit = async (product) => {
 };
 
 const update = async (product) => {
-  alert("update")
   try {
-    /*if (product.photo) {
+    if (product.photo) {
       const formData = new FormData();
       formData.append("photo", product.photo);
 
-      await axios.post(`users/${product.id}/photo`, formData, {
+      await axios.post(`products/${product.id}/photo`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-    }*/
-
-    console.log("PRODUCT TO UPDATE: "+product)
-    console.log(product)
+    }
+    /*console.log("PRODUCT TO UPDATE: "+product)
+    console.log(product)*/
 
     const res = await axios.put(`products/${product.id}`, product);
     console.log(res)
@@ -179,8 +177,9 @@ const destroy = () => {
           v-model="productToUpdate.description"
         />
     </FormField>
-
-    
+    <FormField :errors="formErrors.photo" label="Photo" help="Max 500kb" name="photo">
+      <FormFilePicker label="Upload" @update:modelValue="setPhoto" />
+    </FormField>
       
   </CardBoxModal>
   <!-- #endregion -->
