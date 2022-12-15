@@ -1,23 +1,22 @@
-import { createRouter, createWebHistory } from "vue-router";
-import Dashboard from "@/views/dashboard/HomeView.vue";
-import Home from "@/views/front/main.vue";
-import { useUserStore } from "@/stores/user";
-import RouteRedirector from "@/components/RouteRedirector.vue";
+import { createRouter, createWebHistory } from 'vue-router'
+import Dashboard from '@/views/dashboard/HomeView.vue'
+import Home from '@/views/front/HomeView.vue'
+import { useUserStore } from '@/stores/user'
+import RouteRedirector from '@/components/RouteRedirector.vue'
 
 const routes = [
   {
-    path: "/redirect/:redirectTo",
-    name: "Redirect",
+    path: '/redirect/:redirectTo',
+    name: 'Redirect',
     component: RouteRedirector,
     props: (route) => ({ redirectTo: route.params.redirectTo }),
   },
   {
     meta: {
-
-      title: "Home",
+      title: 'Home',
     },
-    path: "/",
-    name: "home",
+    path: '/',
+    name: 'home',
     component: Home,
   },
   {
@@ -25,42 +24,42 @@ const routes = [
       title: 'Dashboard',
     },
 
-    path: "/dashboard",
-    name: "dashboard",
+    path: '/dashboard',
+    name: 'dashboard',
     component: Dashboard,
   },
   {
     meta: {
-      title: "All Orders",
+      title: 'All Orders',
     },
-    path: "/orders",
-    name: "orders",
-    component: () => import("@/views/dashboard/OrdersListView.vue"),
+    path: '/orders',
+    name: 'orders',
+    component: () => import('@/views/dashboard/OrdersListView.vue'),
   },
   {
     meta: {
-      title: "Order Details",
+      title: 'Order Details',
     },
-    path: "/orders/:id",
-    name: "order",
-    component: () => import("@/views/dashboard/OrderView.vue"),
+    path: '/orders/:id',
+    name: 'order',
+    component: () => import('@/views/dashboard/OrderView.vue'),
     props: (route) => ({ id: parseInt(route.params.id) }),
   },
   {
     meta: {
-      title: "Items To Prepare",
+      title: 'Items To Prepare',
     },
-    path: "/orderItems",
-    name: "itemsToPrepare",
-    component: () => import("@/views/dashboard/OrderItemsView.vue"),
+    path: '/orderItems',
+    name: 'itemsToPrepare',
+    component: () => import('@/views/dashboard/OrderItemsView.vue'),
   },
   {
     meta: {
-      title: "Profile",
+      title: 'Profile',
     },
-    path: "/profile",
-    name: "profile",
-    component: () => import("@/views/dashboard/ProfileView.vue"),
+    path: '/profile',
+    name: 'profile',
+    component: () => import('@/views/dashboard/ProfileView.vue'),
   },
 
   {
@@ -74,13 +73,13 @@ const routes = [
 
   {
     meta: {
-      title: "Register",
+      title: 'Register',
     },
-    path: "/register",
-    name: "register",
-    component: () => import("@/views/auth/RegisterView.vue"),
+    path: '/register',
+    name: 'register',
+    component: () => import('@/views/auth/RegisterView.vue'),
   },
-];
+]
 
 const router = createRouter({
   history: createWebHistory(),
@@ -90,45 +89,44 @@ const router = createRouter({
   },
 })
 
-
 /* Default title tag */
-const defaultDocumentTitle = "FasTuga";
+const defaultDocumentTitle = 'FasTuga'
 
-let handlingFirstRoute = true;
+let handlingFirstRoute = true
 
 router.beforeEach((to, from, next) => {
   if (handlingFirstRoute) {
-    handlingFirstRoute = false;
-    next({ name: "Redirect", params: { redirectTo: to.fullPath } });
-    return;
-  } else if (to.name == "Redirect") {
-    next();
-    return;
+    handlingFirstRoute = false
+    next({ name: 'Redirect', params: { redirectTo: to.fullPath } })
+    return
+  } else if (to.name == 'Redirect') {
+    next()
+    return
   }
   // Careful!!! Using Handling first route to solve this
   // https://pinia.vuejs.org/core-concepts/outside-component-usage.html#single-page-applications
-  const userStore = useUserStore();
+  const userStore = useUserStore()
 
   if (!userStore.canGoTo(to)) {
-    next({ name: "home" });
-    return;
+    next({ name: 'home' })
+    return
   }
 
-  if ((to.name == "login" || to.name == "register") && userStore.user) {
-    userStore.user.type == "EM" || userStore.user.type == "EC"
-      ? next({ name: "dashboard" })
-      : next({ name: "home" });
-    return;
+  if ((to.name == 'login' || to.name == 'register') && userStore.user) {
+    userStore.user.type == 'EM' || userStore.user.type == 'EC'
+      ? next({ name: 'dashboard' })
+      : next({ name: 'home' })
+    return
   }
 
-  next();
-});
+  next()
+})
 
 /* Set document title from route meta */
 router.afterEach((to) => {
   document.title = to.meta?.title
     ? `${to.meta.title} — ${defaultDocumentTitle}`
-    : defaultDocumentTitle;
-});
+    : defaultDocumentTitle
+})
 
-export default router;
+export default router

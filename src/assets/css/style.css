@@ -1009,7 +1009,7 @@ section {
 }
 
 #menu-flters li:hover,
-#menu-flters li.filter-active {
+#menu-flters li.active {
   color: #cda45e;
 }
 
@@ -1022,7 +1022,7 @@ section {
   margin: 20px 0 auto;
 }
 
-.menu-item span{
+.menu-item span {
   flex: 1 0 auto;
   align-content: flex-end;
   text-align: end;

@@ -1,9 +1,6 @@
 <script setup>
-import InfiniteScroll from 'vue-infinite-scroll';
-
-
 const props = defineProps({
-  photo_url: {
+  photoUrl: {
     type: String,
     required: true,
   },
@@ -19,9 +16,11 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  loading: false
-});
-
+  pType: {
+    type: String,
+    required: true,
+  },
+})
 </script>
 
 <style scoped>
@@ -30,21 +29,15 @@ const props = defineProps({
 </style>
 
 <template>
-  <div class="col-lg-6 menu-item filter-starters">
-    <img
-      :src="photo_url"
-      class="menu-img"
-      alt=""
-    />
+  <div class="col-lg-6 menu-item filter-starters" v-if="pType == 'dessert'">
+    <img :src="photoUrl" class="menu-img" alt="" />
     <div class="menu-content">
       <a href="#">{{ name }}</a>
       <span>{{ price }}€</span>
-      <input type="number" id="quantity" min="0" step="1" max="10"/>
+      <input type="number" id="quantity" value="0" min="0" step="1" max="10" />
     </div>
     <div class="menu-ingredients">
       {{ description }}
     </div>
   </div>
-  <!-- <div v-infinite-scroll="loadMore" :infinite-scroll-disabled="loading" infinite-scroll-distance="500"></div>
-  <p v-if="loading">Loading...</p> -->
 </template>
