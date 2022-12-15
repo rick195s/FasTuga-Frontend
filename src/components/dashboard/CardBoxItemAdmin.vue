@@ -102,19 +102,12 @@ const update = async (product) => {
         },
       });
     }
-    /*console.log("PRODUCT TO UPDATE: "+product)
-    console.log(product)*/
-
     const res = await axios.put(`products/${product.id}`, product);
     console.log(res)
-    /*toastMessage.value = "Product updated successfully";
-    toastType.value = "success";*/
     emit('update')
     emit('operationMessage', "Product updated successfully", "success")
   } catch (error) {
     console.log(error)
-    /*toastMessage.value = error.response;
-    toastType.value = "danger";*/
     emit('operationMessage', "Product was not updated", "danger")
   }
 };
