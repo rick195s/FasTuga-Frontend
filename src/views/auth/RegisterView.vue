@@ -200,10 +200,21 @@ const setWaiting = () => {
           />
         </FormField>
 
+        <div class="space-y-3">
+          <p>
+            Do you want to login?
+            <a
+              class="underline text-sky-400 cursor-pointer"
+              @click.prevent="router.push({ name: 'login' })"
+              >Click here</a
+            >
+          </p>
+        </div>
+
         <template #footer>
           <BaseButtons>
             <BaseButton type="submit" color="info" label="Register" />
-            <BaseButton to="/login" color="info" outline label="Login" />
+            <BaseButton to="/" color="info" outline label="Home" />
           </BaseButtons>
         </template>
       </CardBox>
