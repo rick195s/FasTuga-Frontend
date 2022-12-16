@@ -20,6 +20,7 @@ import FormField from "@/components/dashboard/FormField.vue";
 import FormControl from "@/components/dashboard/FormControl.vue";
 import FormFilePicker from "@/components/dashboard/FormFilePicker.vue";
 import NotificationToast from "@/components/dashboard/NotificationToast.vue";
+import BaseButton from "@/components/dashboard/BaseButton.vue";
 
 const axios = inject("axios");
 
@@ -274,12 +275,14 @@ onMounted(async () => {
         />
       </div>
 
-      <SectionTitleLineWithButton
-        :end-icon="mdiAccountPlusOutline"
-        :icon="mdiAccountMultiple"
-        title="Users"
-        @end-icon-click="isModelCreateUser = true"
-      />
+      <SectionTitleLineWithButton :icon="mdiAccountMultiple" title="Users">
+        <BaseButton
+          label="Create User"
+          :icon="mdiAccountPlusOutline"
+          color="whiteDark"
+          @click="isModelCreateUser = true"
+        />
+      </SectionTitleLineWithButton>
 
       <CardBox has-table>
         <TableUsers
