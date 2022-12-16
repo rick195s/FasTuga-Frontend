@@ -11,13 +11,12 @@ const props = defineProps({
 });
 </script>
 
+<style scoped>
+@import '@/../src/assets/css/style.css';
+</style>
+
 <template>
   <li :data-filter="'.' + isActive" :class="{ active: isActive }">
     {{ pType }}
   </li>
 </template>
-
-<style scoped>
-@import "@/../src/assets/css/style.css";
-@import "bootstrap/dist/css/bootstrap.min.css";
-</style>

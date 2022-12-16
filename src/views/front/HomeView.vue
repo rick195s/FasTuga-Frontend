@@ -8,10 +8,19 @@ import { ref, inject, onMounted } from "vue";
 
 const axios = inject("axios");
 const products = ref([]);
-const productsTypes = ref([]);
 const waiting = ref(false);
+
+//filtering products
+const productsTypes = ref(['all', 'hot dish', 'cold dish', 'drink', 'dessert']);
 const selectedType = ref("all");
 
+//Adding products to cart
+const productsSelected = ref([]);
+const addToCart = (product) => {
+  productsSelected.value.push(product);
+};
+
+//loading products
 const loadProducts = async (url) => {
   waiting.value = true;
   try {
@@ -26,28 +35,25 @@ const loadProducts = async (url) => {
   waiting.value = false;
 };
 
-const loadProductsTypes = async (url) => {
-  waiting.value = true;
-  try {
-    const response = await axios.get(url || "products/type");
-
-    productsTypes.value = response.data;
-  } catch (error) {
-    console.log(error);
-  }
-  waiting.value = false;
-};
-
 const changeType = (value) => {
   selectedType.value = value;
   loadProducts();
 };
 
 onMounted(() => {
-  loadProductsTypes();
   loadProducts();
 });
 </script>
+
+<style scoped>
+@import '@/../src/assets/css/style.css';
+</style>
+
+
+<style scoped>
+@import "@/../src/assets/css/style.css";
+@import "bootstrap/dist/css/bootstrap.min.css";
+</style>
 
 <template>
   <!-- ======= Top Bar ======= -->
@@ -131,25 +137,17 @@ onMounted(() => {
           </div>
           <div class="col-lg-6 text-right">
             <a href="#menu" class="btn-menu animated fadeInUp scrollto">
-              Next (5)
+              Next ({{productsSelected.length}})
             </a>
           </div>
           <div class="row" data-aos="fade-up" data-aos-delay="100">
             <div class="col-lg-12 d-flex justify-content-center">
               <ul id="menu-flters">
-                <li
-                  data-filter="*"
-                  :class="{ active: selectedType == 'all' }"
-                  @click="changeType('all')"
-                >
-                  All
-                </li>
                 <Filter
                   v-for="productType in productsTypes"
-                  :key="productType.id"
-                  :p-type="productType.type"
-                  :is-active="productType.type == selectedType"
-                  @click="changeType(productType.type)"
+                  :p-type="productType"
+                  :is-active="productType == selectedType"
+                  @click="changeType(productType)"
                 />
               </ul>
             </div>
@@ -175,8 +173,3 @@ onMounted(() => {
   </section>
   <!-- End Hero -->
 </template>
-
-<style scoped>
-@import "@/../src/assets/css/style.css";
-@import "bootstrap/dist/css/bootstrap.min.css";
-</style>

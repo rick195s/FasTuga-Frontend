@@ -23,6 +23,10 @@ const props = defineProps({
 });
 </script>
 
+<style scoped>
+@import "@/../src/assets/css/style.css";
+</style>
+
 <template>
   <div class="col-lg-6 menu-item filter-starters">
     <img :src="photoUrl" class="menu-img" alt="" />
