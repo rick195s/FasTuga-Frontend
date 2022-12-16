@@ -2,7 +2,9 @@ import { createApp } from "vue";
 import { createPinia } from "pinia";
 
 import App from "./App.vue";
+
 import router from "./router";
+
 import { useStyleStore } from "@/stores/dashboard/style.js";
 import { useUserStore } from "@/stores/user.js";
 import { darkModeKey, styleKey } from "@/config.js";
@@ -18,6 +20,7 @@ const wsConnection = "http://localhost:8080"; //process.env.VUE_APP_WS_CONNECTIO
 const pinia = createPinia();
 
 /* Create Vue app */
+
 const app = createApp(App).use(pinia).use(router);
 
 app.config.globalProperties.$serverUrl = apiDomain;
@@ -51,7 +54,13 @@ axiosModel.interceptors.response.use(
 
 app.provide("axios", axiosModel);
 
-app.provide("socket", io(wsConnection));
+app.provide(
+  "socket",
+  io(wsConnection, {
+    // note changed URL here
+    path: "/socket.io",
+  })
+);
 
 app.mount("#app");
 

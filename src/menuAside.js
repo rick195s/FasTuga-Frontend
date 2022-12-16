@@ -28,10 +28,10 @@ export default [
   },
   {
     label: "Profile",
+    to: "/profile",
     icon: mdiAccountCircle,
     name: "profile",
   },
-
   {
     label: "Dropdown",
     icon: mdiViewList,

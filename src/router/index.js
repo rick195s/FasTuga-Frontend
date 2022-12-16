@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Dashboard from "@/views/dashboard/HomeView.vue";
-import Home from "@/views/HomeView.vue";
+import Home from "@/views/front/HomeView.vue";
 import { useUserStore } from "@/stores/user";
 import RouteRedirector from "@/components/RouteRedirector.vue";
 
@@ -23,6 +23,7 @@ const routes = [
     meta: {
       title: "Dashboard",
     },
+
     path: "/dashboard",
     name: "dashboard",
     component: Dashboard,
@@ -77,6 +78,7 @@ const routes = [
     name: "login",
     component: () => import("@/views/auth/LoginView.vue"),
   },
+
   {
     meta: {
       title: "Register",
