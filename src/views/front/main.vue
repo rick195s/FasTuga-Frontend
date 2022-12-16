@@ -1,15 +1,9 @@
-<style scoped>
-@import '@/../src/assets/css/style.css';
-@import 'bootstrap/dist/css/bootstrap.min.css';
-</style>
-
 <script setup>
-  import BaseButton from "@/components/dashboard/BaseButton.vue";
-  import BaseButtons from "@/components/dashboard/BaseButtons.vue";
-  import Product from "@/components/front/Product.vue";
-  import Filter from "@/components/front/FilterProducts.vue";
-  import { ref, inject, onMounted } from "vue";
-
+import BaseButton from "@/components/dashboard/BaseButton.vue";
+import BaseButtons from "@/components/dashboard/BaseButtons.vue";
+import Product from "@/components/front/Product.vue";
+import Filter from "@/components/front/FilterProducts.vue";
+import { ref, inject, onMounted } from "vue";
 
 const axios = inject("axios");
 const products = ref([]);
@@ -21,7 +15,6 @@ const loadProducts = async (url) => {
     const response = await axios.get(url || "products");
 
     products.value = response.data;
-
   } catch (error) {
     console.log(error);
   }
@@ -32,7 +25,6 @@ onMounted(() => {
   loadProducts();
 });
 </script>
-
 
 <template>
   <!-- ======= Top Bar ======= -->
@@ -73,17 +65,11 @@ onMounted(() => {
 
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
-          <li class="book-a-table-btn d-none d-lg-flex">
-            Menu Choosing
-          </li>
+          <li class="book-a-table-btn d-none d-lg-flex">Menu Choosing</li>
           <li><fa icon="chevron-right" /></li>
-          <li class="d-none d-lg-flex">
-            Finishing Order
-          </li>
+          <li class="d-none d-lg-flex">Finishing Order</li>
           <li><fa icon="chevron-right" /></li>
-          <li class="d-none d-lg-flex">
-            Status
-          </li>
+          <li class="d-none d-lg-flex">Status</li>
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav>
@@ -143,12 +129,11 @@ onMounted(() => {
             <Product
               v-for="product in products.data"
               :key="product.id"
-              :photo_url="product.photo_url"
+              :photo-url="product.photo_url"
               :name="product.name"
               :price="product.price"
               :description="product.description"
             ></Product>
-
           </div>
         </div>
       </form>
@@ -156,3 +141,8 @@ onMounted(() => {
   </section>
   <!-- End Hero -->
 </template>
+
+<style scoped>
+@import "@/../src/assets/css/style.css";
+@import "bootstrap/dist/css/bootstrap.min.css";
+</style>
