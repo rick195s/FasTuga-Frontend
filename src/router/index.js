@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Dashboard from "@/views/dashboard/HomeView.vue";
-import Home from "@/views/front/main.vue";
+import Home from "@/views/front/HomeView.vue";
 import { useUserStore } from "@/stores/user";
 import RouteRedirector from "@/components/RouteRedirector.vue";
 
@@ -13,7 +13,6 @@ const routes = [
   },
   {
     meta: {
-
       title: "Home",
     },
     path: "/",
@@ -22,7 +21,7 @@ const routes = [
   },
   {
     meta: {
-      title: 'Dashboard',
+      title: "Dashboard",
     },
 
     path: "/dashboard",
@@ -65,11 +64,11 @@ const routes = [
 
   {
     meta: {
-      title: 'Login',
+      title: "Login",
     },
-    path: '/login',
-    name: 'login',
-    component: () => import('@/views/auth/LoginView.vue'),
+    path: "/login",
+    name: "login",
+    component: () => import("@/views/auth/LoginView.vue"),
   },
 
   {
@@ -86,10 +85,9 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    return savedPosition || { top: 0 }
+    return savedPosition || { top: 0 };
   },
-})
-
+});
 
 /* Default title tag */
 const defaultDocumentTitle = "FasTuga";

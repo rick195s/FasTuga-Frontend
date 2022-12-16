@@ -1,18 +1,23 @@
 <script setup>
 import BaseButton from "@/components/dashboard/BaseButton.vue";
 import BaseButtons from "@/components/dashboard/BaseButtons.vue";
+import { mdiChevronRight } from "@mdi/js";
 import Product from "@/components/front/Product.vue";
 import Filter from "@/components/front/FilterProducts.vue";
 import { ref, inject, onMounted } from "vue";
 
 const axios = inject("axios");
 const products = ref([]);
+const productsTypes = ref([]);
 const waiting = ref(false);
+const selectedType = ref("all");
 
 const loadProducts = async (url) => {
   waiting.value = true;
   try {
-    const response = await axios.get(url || "products");
+    const response = await axios.get(
+      url || "products?filter=" + selectedType.value
+    );
 
     products.value = response.data;
   } catch (error) {
@@ -21,7 +26,25 @@ const loadProducts = async (url) => {
   waiting.value = false;
 };
 
+const loadProductsTypes = async (url) => {
+  waiting.value = true;
+  try {
+    const response = await axios.get(url || "products/type");
+
+    productsTypes.value = response.data;
+  } catch (error) {
+    console.log(error);
+  }
+  waiting.value = false;
+};
+
+const changeType = (value) => {
+  selectedType.value = value;
+  loadProducts();
+};
+
 onMounted(() => {
+  loadProductsTypes();
   loadProducts();
 });
 </script>
@@ -66,9 +89,11 @@ onMounted(() => {
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
           <li class="book-a-table-btn d-none d-lg-flex">Menu Choosing</li>
-          <li><fa icon="chevron-right" /></li>
+          <li m-0><BaseButton :icon="mdiChevronRight" color="white" /></li>
           <li class="d-none d-lg-flex">Finishing Order</li>
-          <li><fa icon="chevron-right" /></li>
+          <li m-0>
+            <BaseButton :icon="mdiChevronRight" color="white" />
+          </li>
           <li class="d-none d-lg-flex">Status</li>
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
@@ -109,18 +134,26 @@ onMounted(() => {
               Next (5)
             </a>
           </div>
-          <Filter></Filter>
-          <!-- <div class="row" data-aos="fade-up" data-aos-delay="100">
+          <div class="row" data-aos="fade-up" data-aos-delay="100">
             <div class="col-lg-12 d-flex justify-content-center">
               <ul id="menu-flters">
-                <li data-filter="*" class="filter-active">All</li>
-                <li data-filter=".filter-starters">Starters</li>
-                <li data-filter=".filter-salads">Salads</li>
-                <li data-filter=".filter-specialty">Specialty</li>
+                <li
+                  data-filter="*"
+                  :class="{ active: selectedType == 'all' }"
+                  @click="changeType('all')"
+                >
+                  All
+                </li>
+                <Filter
+                  v-for="productType in productsTypes"
+                  :key="productType.id"
+                  :p-type="productType.type"
+                  :is-active="productType.type == selectedType"
+                  @click="changeType(productType.type)"
+                />
               </ul>
             </div>
-          </div> -->
-
+          </div>
           <div
             class="row menu-container"
             data-aos="fade-up"
@@ -133,7 +166,8 @@ onMounted(() => {
               :name="product.name"
               :price="product.price"
               :description="product.description"
-            ></Product>
+              :p-type="product.type"
+            />
           </div>
         </div>
       </form>
