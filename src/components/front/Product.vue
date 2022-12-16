@@ -36,3 +36,7 @@ const props = defineProps({
     </div>
   </div>
 </template>
+<style scoped>
+@import "/src/assets/css/style.css";
+@import "bootstrap/dist/css/bootstrap.min.css";
+</style>
