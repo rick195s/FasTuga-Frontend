@@ -84,10 +84,7 @@ const setError = () => {
       >
       </SectionTitleLineWithButton>
 
-      <UserCard
-        :points="customer ? userStore.user?.points : null"
-        class="mb-6"
-      />
+      <UserCard class="mb-6" />
 
       <CardBox is-form @submit.prevent="submitPass">
         <NotificationBarInCard
