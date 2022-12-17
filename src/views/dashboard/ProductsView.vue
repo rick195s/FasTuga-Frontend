@@ -2,16 +2,12 @@
 import { mdiChartTimelineVariant, mdiAlertRemoveOutline } from "@mdi/js";
 import { ref, inject, onMounted } from "vue";
 import {
-  mdiTrashCan,
-  mdiCancel,
-  mdiCircleEditOutline,
-  mdiAccount,
   mdiPencil,
   mdiPlus,
   mdiListBox,
-  mdiFileDocument,
   mdiImage,
-  mdiPiggyBank
+  mdiPiggyBank,
+  mdiFood,
 } from "@mdi/js";
 import SectionMain from "@/components/dashboard/SectionMain.vue";
 import LayoutAuthenticated from "@/layouts/dashboard/LayoutAuthenticated.vue";
@@ -103,6 +99,8 @@ const setError = (error) => {
   if (!error.response.data) {
     formHeaderContent.value = "Register failed";
   } else {
+    toastMessage.value = error.response.data.message;
+    toastType.value = "danger";
     formHeaderContent.value = error.response.data.message;
     populateErrors(error.response.data.errors);
   }
@@ -124,7 +122,7 @@ const cleanForm = () => {
     description: [],
     price: [],
   };
-  productToCreate.value.photo = file;
+  productToCreate.value.photo = null;
 };
 
 const cleanErrors = () => {
@@ -163,19 +161,13 @@ const create = async () => {
       toastType.value = "success";
       cleanForm();
     }else{
-      //setError(null);
       populateErrors(formErrors.value);
       toastMessage.value = "Required fields wasn't fielded";
       toastType.value = "danger";
-      /*let err = {respoonse:{data:{message :"Required fields wasn't fielded", formErrors}}}
-      console.log(err)
-      setError(err);*/
     }
     loadProducts()
   } catch (error) {
     setError(error);
-    toastMessage.value = error.response.data.message;
-    toastType.value = "danger";
   }
 }
 
@@ -202,7 +194,7 @@ onMounted(() => {
       <br>
       
       <FormField label="Name" :errors="formErrors.name" help="Please enter Name">
-        <FormControl v-model="productToCreate.name" :icon="mdiAccount" name="name" autocomplete="" placeholder="Name"
+        <FormControl v-model="productToCreate.name" :icon="mdiFood" name="name" autocomplete="" placeholder="Name"
           type="text"/>
       </FormField>
       <FormField label="Type" :errors="formErrors.type" help="Please enter Type">
@@ -218,7 +210,7 @@ onMounted(() => {
           autocomplete="description" placeholder="Description" type="textarea" />
       </FormField>
       <FormField :errors="formErrors.photo" label="Photo" help="Max 500kb" name="photo">
-        <FormFilePicker label="Upload" @update:modelValue="setPhoto" />
+        <FormFilePicker label="Upload" @update:modelValue="setPhoto" :icon="mdiImage" />
       </FormField>
       <template #footer>
         <BaseButtons>
@@ -236,7 +228,7 @@ onMounted(() => {
       </SectionTitleLineWithButton>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div v-for="item in products" :key="item.id" class="flex flex-col justify-between">
-          <CardBoxItemAdmin :name="item.name" :avatar="item.photo_url" :price="item.price" :product="item"
+          <CardBoxItemAdmin :name="item.name" :avatar="item.photo_url" :price="item.price" :product="item" 
             @update="loadProducts()" @delete="loadProducts()" @insert="loadProducts()" @operationMessage="setToast" />
         </div>
       </div>

@@ -9,7 +9,8 @@ import {
   mdiFileDocument,
   mdiImage,
   mdiPencil,
-  mdiPiggyBank
+  mdiPiggyBank,
+  mdiFood,
 } from "@mdi/js";
 import CardBox from "@/components/dashboard/CardBox.vue";
 import BaseLevel from "@/components/dashboard/BaseLevel.vue";
@@ -136,7 +137,7 @@ const destroy = async (product) => {
 
     <FormField label="Name">
         <FormControl 
-          :icon="mdiAccount"
+          :icon="mdiFood"
           name="name"
           autocomplete=""
           placeholder="Name"
