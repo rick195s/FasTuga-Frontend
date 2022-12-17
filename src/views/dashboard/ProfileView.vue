@@ -19,7 +19,7 @@ import LayoutAuthenticated from "@/layouts/dashboard/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/dashboard/SectionTitleLineWithButton.vue";
 import NotificationBarInCard from "@/components/dashboard/NotificationBarInCard.vue";
 
-const props = defineProps({
+defineProps({
   customer: Boolean,
 });
 
@@ -68,6 +68,9 @@ const cleanErrors = () => {
     default_payment_type: [],
     default_payment_reference: [],
   };
+
+  formHeaderTitle.value = "";
+  formHeaderContent.value = "";
 };
 
 const setPhoto = (file) => {
