@@ -20,21 +20,33 @@ import CardBoxItem from "@/components/dashboard/CardBoxItem.vue";
 import CardBoxItemAdmin from "@/components/dashboard/CardBoxItemAdmin.vue";
 import CardBoxClient from "@/components/dashboard/CardBoxClient.vue";
 import NotificationToast from "@/components/dashboard/NotificationToast.vue";
+import NotificationBarInCard from "@/components/dashboard/NotificationBarInCard.vue";
 import BaseButton from "@/components/dashboard/BaseButton.vue";
+import BaseButtons from "@/components/dashboard/BaseButtons.vue";
 import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
 import FormField from "@/components/dashboard/FormField.vue";
 import FormControl from "@/components/dashboard/FormControl.vue";
 import FormFilePicker from "@/components/dashboard/FormFilePicker.vue";
+import { useUserStore } from "@/stores/user";
 
+
+const store = useUserStore();
 const emit = defineEmits(["create"]);
 const axios = inject("axios");
 const socket = inject("socket");
 
 const toastType = ref("");
 const toastMessage = ref("");
+const waiting = ref(false);
+const allInputs = ref(true);
+
+const formStatusCurrent = ref("");
+const formHeaderTitle = ref("");
+const formHeaderContent = ref("");
 
 const isModelUpdateUser = ref(false);
 const productToUpdate = ref([null]);
+
 
 const products = ref([]);
 //['hot dish','cold dish','drink','dessert']
@@ -57,6 +69,26 @@ const productTypes = [
   },
 ];
 
+const formErrors = ref({
+  name: [],
+  type: [],
+  photo: [],
+  description: [],
+  price: [],
+});
+
+const productToCreate = ref({
+  name: [],
+  type: [],
+  photo: [],
+  description: [],
+  price: [],
+});
+
+const setPhoto = (file) => {
+  productToCreate.value.photo = file;
+};
+
 const setToast = (message, type) => {
   toastType.value = null
   console.log(message)
@@ -64,31 +96,44 @@ const setToast = (message, type) => {
   toastMessage.value = message
 }
 
-const formErrors = ref({
-  name: [],
-  photo: [],
-  old_password: [],
-  password: [],
-});
+const setError = (error) => {
+  //formHeaderTitle.value = "Error: ";
+  //waiting.value = false;
+  formStatusCurrent.value = "danger";
+  if (!error.response.data) {
+    formHeaderContent.value = "Register failed";
+  } else {
+    formHeaderContent.value = error.response.data.message;
+    populateErrors(error.response.data.errors);
+  }
+};
 
-const productToCreate = ref({
-  name: "",
-  type: "",
-  photo: null,
-  description: "",
-  price: "",
-});
+const populateErrors = (errors) => {
+  formErrors.value.name = errors.name;
+  formErrors.value.type = errors.email;
+  formErrors.value.photo = errors.photo;
+  formErrors.value.description = errors.description;
+  formErrors.value.price = errors.price;
+};
 
-const setPhoto = (file) => {
+const cleanForm = () => {
+  productToCreate.value = {
+    name: [],
+    type: [],
+    photo: [],
+    description: [],
+    price: [],
+  };
   productToCreate.value.photo = file;
 };
 
 const cleanErrors = () => {
   formErrors.value = {
     name: [],
+    type: [],
     photo: [],
-    old_password: [],
-    password: [],
+    description: [],
+    price: [],
   };
 };
 
@@ -97,22 +142,38 @@ const createNewProduct = () => {
 }
 
 const create = async () => {
+  cleanErrors();
   try {
+    allInputs.value = true;
     const formData = new FormData();
 
     for (var key in productToCreate.value) {
       if (productToCreate.value[key]) {
         formData.append(key, productToCreate.value[key]);
       }
+      if(productToCreate.value[key].length == 0){
+        formErrors.value[key] = ['required field']
+        allInputs.value = false;
+      }
     }
-
-    const response = await axios.post("/products", formData);
-    console.log(response);
-    toastMessage.value = "Product created successfully";
-    toastType.value = "success";
+    
+    if(allInputs.value){
+      const response = await axios.post("/products", formData);
+      toastMessage.value = "Product created successfully";
+      toastType.value = "success";
+      cleanForm();
+    }else{
+      //setError(null);
+      populateErrors(formErrors.value);
+      toastMessage.value = "Required fields wasn't fielded";
+      toastType.value = "danger";
+      /*let err = {respoonse:{data:{message :"Required fields wasn't fielded", formErrors}}}
+      console.log(err)
+      setError(err);*/
+    }
     loadProducts()
   } catch (error) {
-    console.log(error)
+    setError(error);
     toastMessage.value = error.response.data.message;
     toastType.value = "danger";
   }
@@ -137,94 +198,46 @@ onMounted(() => {
 <template>
   <LayoutAuthenticated>
     <!-- #region ------------------------------- INSERT PRODUCT --------------------------------->
-  <CardBoxModal 
-      v-model="isModelUpdateUser"
-      title="Create Product"
-      button="info"
-      has-cancel
-      @confirm="create">
-
-    <FormField label="Name">
-        <FormControl
-          v-model="productToCreate.name" 
-          :icon="mdiAccount"
-          name="name"
-          autocomplete=""
-          placeholder="Name"
-          type="text"
-        />
-    </FormField>
-    <FormField label="Type">
-        <FormControl
-          v-model="productToCreate.type"
-          :icon="mdiListBox"
-          name="type"
-          autocomplete="type"
-          placeholder="Type"
-          type="select"
-          :options="productTypes"
-        />
-    </FormField>
-    <FormField label="Price">
-        <FormControl
-          v-model="productToCreate.price"
-          :icon="mdiPiggyBank"
-          name="price"
-          autocomplete="price"
-          placeholder="price"
-          type="money"
-        />
-    </FormField>
-    <FormField label="Description">
-        <FormControl
-          v-model="productToCreate.description"
-          :icon="mdiPencil"
-          name="description"
-          autocomplete="description"
-          placeholder="Description"
-          type="textarea"
-        />
-    </FormField>
-    <FormField :errors="formErrors.photo" label="Photo" help="Max 500kb" name="photo">
-      <FormFilePicker label="Upload" @update:modelValue="setPhoto" />
-    </FormField>
-  </CardBoxModal>
-  <!-- #endregion -->
-    <NotificationToast
-      v-if="toastType"
-      :type="toastType"
-      :message="toastMessage"
-      @close="toastType = ''"
-    ></NotificationToast>
+    <CardBoxModal v-model="isModelUpdateUser" title="Create Product" button="info" has-cancel @confirm="create">
+      <br>
+      
+      <FormField label="Name" :errors="formErrors.name" help="Please enter Name">
+        <FormControl v-model="productToCreate.name" :icon="mdiAccount" name="name" autocomplete="" placeholder="Name"
+          type="text"/>
+      </FormField>
+      <FormField label="Type" :errors="formErrors.type" help="Please enter Type">
+        <FormControl v-model="productToCreate.type" :icon="mdiListBox" name="type" autocomplete="type"
+          placeholder="Type" type="select" :options="productTypes" />
+      </FormField>
+      <FormField label="Price" :errors="formErrors.price" help="Please enter Price">
+        <FormControl v-model="productToCreate.price" :icon="mdiPiggyBank" name="price" autocomplete="price"
+          placeholder="price" type="money" />
+      </FormField>
+      <FormField label="Description" :errors="formErrors.description" help="Please enter Description">
+        <FormControl v-model="productToCreate.description" :icon="mdiPencil" name="description"
+          autocomplete="description" placeholder="Description" type="textarea" />
+      </FormField>
+      <FormField :errors="formErrors.photo" label="Photo" help="Max 500kb" name="photo">
+        <FormFilePicker label="Upload" @update:modelValue="setPhoto" />
+      </FormField>
+      <template #footer>
+        <BaseButtons>
+          <BaseButton type="submit" color="info" label="Register" />
+          <BaseButton to="/dashboard" color="info" outline label="Back" />
+        </BaseButtons>
+      </template>
+    </CardBoxModal>
+    <!-- #endregion -->
+    <NotificationToast v-if="toastType" :type="toastType" :message="toastMessage" @close="toastType = ''">
+    </NotificationToast>
     <SectionMain>
-      <SectionTitleLineWithButton
-        :icon="mdiChartTimelineVariant"
-        :title="`Products`"
-        main
-      >
-        <BaseButton 
-          label="Create new Product"
-          :icon="mdiPlus"
-          color="whiteDark"
-          @click="createNewProduct"
-        />
+      <SectionTitleLineWithButton :icon="mdiChartTimelineVariant" :title="`Products`" main>
+        <BaseButton label="Create new Product" :icon="mdiPlus" color="whiteDark" @click="createNewProduct" />
       </SectionTitleLineWithButton>
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <div
-          v-for="item in products"
-          :key="item.id"
-          class="flex flex-col justify-between"
-        >
-          <CardBoxItemAdmin
-            :name="item.name"
-            :avatar="item.photo_url"
-            :price="item.price"
-            :product="item"
-            @update="loadProducts()"
-            @delete="loadProducts()"
-            @insert="loadProducts()"
-            @operationMessage="setToast"
-          />
+        <div v-for="item in products" :key="item.id" class="flex flex-col justify-between">
+          <CardBoxItemAdmin :name="item.name" :avatar="item.photo_url" :price="item.price" :product="item"
+            @update="loadProducts()" @delete="loadProducts()" @insert="loadProducts()" @operationMessage="setToast" />
         </div>
       </div>
     </SectionMain>
