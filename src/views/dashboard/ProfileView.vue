@@ -1,24 +1,27 @@
 <script setup>
-import { ref, inject } from "vue";
+import { ref, inject, onMounted } from "vue";
 import { useUserStore } from "@/stores/user";
 import {
   mdiAccount,
+  mdiCellphone,
   mdiMail,
-  mdiAsterisk,
-  mdiFormTextboxPassword,
+  mdiFormatListCheckbox,
+  mdiCreditCardOutline,
 } from "@mdi/js";
 import SectionMain from "@/components/dashboard/SectionMain.vue";
 import CardBox from "@/components/dashboard/CardBox.vue";
-import BaseDivider from "@/components/dashboard/BaseDivider.vue";
 import FormField from "@/components/dashboard/FormField.vue";
 import FormControl from "@/components/dashboard/FormControl.vue";
 import FormFilePicker from "@/components/dashboard/FormFilePicker.vue";
 import BaseButton from "@/components/dashboard/BaseButton.vue";
-import BaseButtons from "@/components/dashboard/BaseButtons.vue";
 import UserCard from "@/components/dashboard/UserCard.vue";
 import LayoutAuthenticated from "@/layouts/dashboard/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/dashboard/SectionTitleLineWithButton.vue";
 import NotificationBarInCard from "@/components/dashboard/NotificationBarInCard.vue";
+
+defineProps({
+  customer: Boolean,
+});
 
 const userStore = useUserStore();
 const axios = inject("axios");
@@ -31,38 +34,66 @@ const waiting = ref(false);
 const formErrors = ref({
   name: [],
   photo: [],
-  old_password: [],
-  password: [],
+  nif: [],
+  phone: [],
+  default_payment_type: [],
+  default_payment_reference: [],
 });
 
-const profileForm = ref({
-  name: userStore.user?.name ?? "Anonymous",
-});
+const paymentTypes = [
+  {
+    value: "PAYPAL",
+    label: "Paypal",
+  },
+  {
+    value: "VISA",
+    label: "Visa",
+  },
+  {
+    value: "MBWAY",
+    label: "Mbway",
+  },
+];
+
+const profileForm = ref({});
 
 const userPhoto = ref(null);
-
-const passwordForm = ref({
-  old_password: "",
-  password: "",
-  password_confirmation: "",
-});
 
 const cleanErrors = () => {
   formErrors.value = {
     name: [],
     photo: [],
-    old_password: [],
-    password: [],
+    nif: [],
+    phone: [],
+    default_payment_type: [],
+    default_payment_reference: [],
   };
+
+  formHeaderTitle.value = "";
+  formHeaderContent.value = "";
 };
 
 const setPhoto = (file) => {
   userPhoto.value = file;
 };
 
+const checkFieldsChanged = () => {
+  return (
+    JSON.stringify(profileForm.value) === JSON.stringify(userStore.user) &&
+    !userPhoto.value
+  );
+};
+
 const submitProfile = async () => {
   cleanErrors();
+  if (checkFieldsChanged()) {
+    formHeaderTitle.value = "No changes detected";
+    formStatusCurrent.value = "info";
+    return;
+  }
+
   setWaiting();
+
   try {
     if (userPhoto.value) {
       const formData = new FormData();
@@ -79,32 +110,20 @@ const submitProfile = async () => {
       );
 
       userStore.user.photo_url = response.data.data.photo_url;
+      profileForm.value.photo_url = response.data.data.photo_url;
     }
 
-    await axios.put(`users/${userStore.userId}`, profileForm.value);
+    await axios.put(
+      `users/${userStore.userId}`,
+      getDiff(userStore.user, profileForm.value)
+    );
+
     userStore.user = { ...userStore.user, ...profileForm.value };
     setSuccess();
   } catch (error) {
-    setError();
-
-    formErrors.value.name = error.response.data.errors?.name;
-    formErrors.value.photo = error.response.data.errors?.photo;
+    setError(error);
   }
 
-  waiting.value = false;
-};
-
-const submitPass = async () => {
-  cleanErrors();
-  setWaiting();
-  try {
-    await axios.put(`users/${userStore.userId}`, passwordForm.value);
-    setSuccess();
-  } catch (error) {
-    setError();
-    formErrors.value.password = error.response.data.errors?.password;
-    formErrors.value.old_password = error.response.data.errors?.old_password;
-  }
   waiting.value = false;
 };
 
@@ -121,11 +140,28 @@ const setSuccess = () => {
   formStatusCurrent.value = "success";
 };
 
-const setError = () => {
+const setError = (error) => {
+  formErrors.value = { ...error.response.data.errors };
+
   formHeaderTitle.value = "Error";
-  formHeaderContent.value = "";
+  formHeaderContent.value = error.response.data.message;
   formStatusCurrent.value = "danger";
 };
+
+const getDiff = (obj1, obj2) => {
+  const result = {};
+  Object.keys(obj1).forEach((key) => {
+    if (obj1[key] !== obj2[key]) {
+      result[key] = obj2[key];
+    }
+  });
+  return result;
+};
+
+onMounted(() => {
+  profileForm.value = { ...userStore.user };
+  profileForm.value.name = userStore.user?.name ?? "Anonymous";
+});
 </script>
 
 <template>
@@ -134,110 +170,106 @@ const setError = () => {
       <SectionTitleLineWithButton :icon="mdiAccount" title="Profile" main>
       </SectionTitleLineWithButton>
 
-      <UserCard class="mb-6" />
+      <UserCard
+        :points="customer ? userStore.user?.points : null"
+        :email="userStore.user?.email"
+        class="mb-6"
+      />
 
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <CardBox is-form @submit.prevent="submitProfile">
+      <CardBox is-form @submit.prevent="submitProfile">
+        <NotificationBarInCard
+          v-if="formStatusCurrent"
+          :color="formStatusCurrent"
+          :waiting="waiting"
+        >
+          <span
+            ><b class="capitalize">{{ formHeaderTitle }}</b>
+            {{ formHeaderContent }}
+          </span>
+        </NotificationBarInCard>
+        <div class="flex justify-between">
           <FormField :errors="formErrors.photo" label="Avatar" help="Max 500kb">
             <FormFilePicker label="Upload" @update:modelValue="setPhoto" />
           </FormField>
+          <BaseButton
+            color="info"
+            class="self-center h-fit"
+            type="submit"
+            label="Submit"
+          />
+        </div>
 
+        <FormField
+          label="Name"
+          help="Required. Your name"
+          :errors="formErrors.name"
+        >
+          <FormControl
+            v-model="profileForm.name"
+            :icon="mdiAccount"
+            name="username"
+            required
+            autocomplete="username"
+          />
+        </FormField>
+        <span v-if="customer">
           <FormField
-            label="Name"
-            help="Required. Your name"
-            :errors="formErrors.name"
+            label="NIF"
+            :errors="formErrors.nif"
+            help="Required. Your NIF"
           >
             <FormControl
-              v-model="profileForm.name"
-              :icon="mdiAccount"
-              name="username"
-              required
-              autocomplete="username"
-            />
-          </FormField>
-          <FormField label="E-mail" help="Required. Your e-mail">
-            <FormControl
-              v-model="userStore.user.email"
+              v-model="profileForm.nif"
               :icon="mdiMail"
-              type="email"
-              name="email"
+              type="text"
+              name="nif"
               required
-              autocomplete="email"
+              autocomplete="nif"
             />
           </FormField>
-
-          <template #footer>
-            <BaseButtons>
-              <BaseButton color="info" type="submit" label="Submit" />
-              <BaseButton color="info" label="Options" outline />
-            </BaseButtons>
-          </template>
-        </CardBox>
-
-        <CardBox is-form @submit.prevent="submitPass">
-          <NotificationBarInCard
-            v-if="formStatusCurrent"
-            :color="formStatusCurrent"
-            :waiting="waiting"
-          >
-            <span
-              ><b class="capitalize">{{ formHeaderTitle }}</b>
-            </span>
-          </NotificationBarInCard>
           <FormField
-            label="Current password"
-            help="Required. Your current password"
-            :errors="formErrors.old_password"
+            label="Phone"
+            :errors="formErrors.phone"
+            help="Required. Your Phone"
           >
             <FormControl
-              v-model="passwordForm.old_password"
-              :icon="mdiAsterisk"
-              name="password_current"
-              type="password"
+              v-model="profileForm.phone"
+              :icon="mdiCellphone"
+              type="text"
+              name="phone"
               required
-              autocomplete="current-password"
-            />
-          </FormField>
-
-          <BaseDivider />
-
-          <FormField
-            label="New password"
-            help="Required. New password"
-            :errors="formErrors.password"
-          >
-            <FormControl
-              v-model="passwordForm.password"
-              :icon="mdiFormTextboxPassword"
-              name="password"
-              type="password"
-              required
-              autocomplete="new-password"
+              autocomplete="phone"
             />
           </FormField>
 
           <FormField
-            label="Confirm password"
-            help="Required. New password one more time"
+            label="Payment Method"
+            :errors="formErrors.default_payment_type"
           >
             <FormControl
-              v-model="passwordForm.password_confirmation"
-              :icon="mdiFormTextboxPassword"
-              name="password_confirmation"
-              type="password"
-              required
-              autocomplete="new-password"
+              v-model="profileForm.default_payment_type"
+              :icon="mdiFormatListCheckbox"
+              name="default_payment_type"
+              autocomplete="type"
+              placeholder="Default Payment Type"
+              type="select"
+              :options="paymentTypes"
             />
           </FormField>
-
-          <template #footer>
-            <BaseButtons>
-              <BaseButton type="submit" color="info" label="Submit" />
-              <BaseButton color="info" label="Options" outline />
-            </BaseButtons>
-          </template>
-        </CardBox>
-      </div>
+          <FormField
+            label="Payment Reference"
+            :errors="formErrors.default_payment_reference"
+          >
+            <FormControl
+              v-model="profileForm.default_payment_reference"
+              :icon="mdiCreditCardOutline"
+              type="text"
+              name="default_payment_reference"
+              autocomplete="default_payment_reference"
+            />
+          </FormField>
+        </span>
+      </CardBox>
     </SectionMain>
   </LayoutAuthenticated>
 </template>

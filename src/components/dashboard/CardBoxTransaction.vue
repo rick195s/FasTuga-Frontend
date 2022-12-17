@@ -25,7 +25,8 @@ const props = defineProps({
   },
   name: {
     type: String,
-    required: true,
+    required: false,
+    default: "",
   },
   account: {
     type: String,
@@ -64,7 +65,7 @@ const statusColor = computed(() => {
       <BaseLevel type="justify-start">
         <IconRounded :icon="icon" :color="statusColor" class="md:mr-6" />
         <div class="text-center space-y-1 md:text-left md:mr-6">
-          <h4 class="text-xl">{{ amount }} €</h4>
+          <h4 class="text-xl">{{ amount }}</h4>
 
           <p class="text-gray-500 dark:text-slate-400">
             <b>{{ date }}</b> via {{ type }}

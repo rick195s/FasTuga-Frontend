@@ -4,7 +4,6 @@ import { useRouter } from "vue-router";
 import { mdiAccount, mdiAsterisk } from "@mdi/js";
 import SectionFullScreen from "@/components/dashboard/SectionFullScreen.vue";
 import CardBox from "@/components/dashboard/CardBox.vue";
-import FormCheckRadio from "@/components/dashboard/FormCheckRadio.vue";
 import FormField from "@/components/dashboard/FormField.vue";
 import FormControl from "@/components/dashboard/FormControl.vue";
 import BaseButton from "@/components/dashboard/BaseButton.vue";
@@ -24,8 +23,27 @@ const store = useUserStore();
 const form = reactive({
   email: "",
   password: "",
-  remember: true,
 });
+
+const resolveDirective = () => {
+  switch (store.user?.type) {
+    case "EM":
+      router.push({ name: "dashboard" });
+      break;
+
+    case "EC":
+      router.push({ name: "itemsToPrepare" });
+      break;
+
+    case "ED":
+      router.push({ name: "ordersToDeliver" });
+      break;
+
+    default:
+      router.push({ name: "home" });
+      break;
+  }
+};
 
 const submit = async () => {
   const credentials = {
@@ -34,19 +52,24 @@ const submit = async () => {
   };
 
   setWaiting();
-  const response = await store.login(credentials);
 
-  if (response.status === 200) {
-    router.push({ name: "dashboard" });
-  } else {
-    setError(response);
+  try {
+    const response = await store.login(credentials);
+
+    if (response.status !== 200) {
+      throw response;
+    }
+
+    resolveDirective();
+  } catch (error) {
+    setError(error);
   }
   waiting.value = false;
 };
 
 const setError = (error) => {
   formHeaderTitle.value = "Error: ";
-  if (!error.response.data) {
+  if (!error.response?.data) {
     formHeaderContent.value = "Login failed";
   } else {
     formHeaderContent.value = error.response.data.message;
@@ -83,6 +106,8 @@ const setWaiting = () => {
             name="login"
             placeholder="Email"
             autocomplete="email"
+            required
+            type="email"
           />
         </FormField>
 
@@ -94,20 +119,24 @@ const setWaiting = () => {
             name="password"
             placeholder="Password"
             autocomplete="current-password"
+            required
           />
         </FormField>
 
-        <FormCheckRadio
-          v-model="form.remember"
-          name="remember"
-          label="Remember"
-          :input-value="true"
-        />
-
+        <div class="space-y-3">
+          <p>
+            Do you want to register?
+            <a
+              class="underline text-sky-400 cursor-pointer"
+              @click.prevent="router.push({ name: 'register' })"
+              >Click here</a
+            >
+          </p>
+        </div>
         <template #footer>
           <BaseButtons>
             <BaseButton type="submit" color="info" label="Login" />
-            <BaseButton to="/dashboard" color="info" outline label="Back" />
+            <BaseButton to="/" color="info" outline label="Home" />
           </BaseButtons>
         </template>
       </CardBox>

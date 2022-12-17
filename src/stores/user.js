@@ -5,6 +5,18 @@ import avatarNoneUrl from "@/assets/avatar-none.png";
 export const useUserStore = defineStore("user", () => {
   const axios = inject("axios");
 
+  const permissions = {
+    dashboard: ["EM"],
+    orders: ["EM"],
+    itemsToPrepare: ["EC"],
+    ordersToDeliver: ["ED"],
+    order: ["EM"],
+    profile: ["EM", "EC", "ED"],
+    customerProfile: ["C"],
+    changePassword: ["EM", "EC", "ED", "C"],
+    products: ["EM"],
+  };
+
   const user = ref(null);
 
   const userPhotoUrl = computed(() => {
@@ -21,7 +33,12 @@ export const useUserStore = defineStore("user", () => {
   async function loadUser() {
     try {
       const response = await axios.get("/me");
-      user.value = response.data.data;
+      // verification because of when a driver makes 'me' request the "data" wrapper is not there
+      if (response.data.data) {
+        user.value = response.data.data;
+      } else {
+        user.value = response.data;
+      }
     } catch (error) {
       clearUser();
       throw error;
@@ -83,5 +100,26 @@ export const useUserStore = defineStore("user", () => {
     return false;
   }
 
-  return { user, userId, userPhotoUrl, login, logout, register, restoreToken };
+  function canGoTo(to) {
+    if (
+      permissions[to.name] &&
+      !permissions[to.name].includes(user.value?.type)
+    ) {
+      return false;
+    }
+
+    return true;
+  }
+
+  return {
+    user,
+    userId,
+    userPhotoUrl,
+    login,
+    logout,
+    register,
+    restoreToken,
+    canGoTo,
+    clearUser,
+  };
 });

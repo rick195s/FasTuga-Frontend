@@ -6,6 +6,9 @@ import { mdiMinus, mdiPlus } from "@mdi/js";
 import { getButtonColor } from "@/colors.js";
 import BaseIcon from "@/components/dashboard/BaseIcon.vue";
 import AsideMenuList from "@/components/dashboard/AsideMenuList.vue";
+import { useUserStore } from "@/stores/user";
+
+const userStore = useUserStore();
 
 const props = defineProps({
   item: {
@@ -46,11 +49,11 @@ const menuClick = (event) => {
 </script>
 
 <template>
-  <li>
+  <li v-if="userStore.canGoTo(item)">
     <component
-      :is="item.to ? RouterLink : 'a'"
+      :is="item.name ? RouterLink : 'a'"
       v-slot="vSlot"
-      :to="item.to ?? null"
+      :to="{ name: item.name ?? null }"
       :href="item.href ?? null"
       :target="item.target ?? null"
       class="flex cursor-pointer"

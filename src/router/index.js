@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Dashboard from "@/views/dashboard/HomeView.vue";
-import Home from "@/views/HomeView.vue";
+import Home from "@/views/front/HomeView.vue";
 import { useUserStore } from "@/stores/user";
 import RouteRedirector from "@/components/RouteRedirector.vue";
 
@@ -18,7 +18,6 @@ const routes = [
     path: "/",
     name: "home",
     component: Home,
-    
   },
   {
     meta: {
@@ -32,6 +31,7 @@ const routes = [
     meta: {
       title: "Dashboard",
     },
+
     path: "/dashboard",
     name: "dashboard",
     component: Dashboard,
@@ -57,9 +57,17 @@ const routes = [
     meta: {
       title: "Items To Prepare",
     },
-    path: "/orderItems",
+    path: "/orders/items/prepare",
     name: "itemsToPrepare",
     component: () => import("@/views/dashboard/OrderItemsView.vue"),
+  },
+  {
+    meta: {
+      title: "Items To Deliver",
+    },
+    path: "/orders/deliver",
+    name: "ordersToDeliver",
+    component: () => import("@/views/dashboard/DeliverOrdersView.vue"),
   },
   {
     meta: {
@@ -68,6 +76,24 @@ const routes = [
     path: "/profile",
     name: "profile",
     component: () => import("@/views/dashboard/ProfileView.vue"),
+  },
+  {
+    meta: {
+      title: "Customer Profile",
+    },
+    path: "/customer/profile",
+    name: "customerProfile",
+    component: () => import("@/views/dashboard/ProfileView.vue"),
+    props: () => ({ customer: true }),
+  },
+
+  {
+    meta: {
+      title: "Change Password",
+    },
+    path: "/change/password",
+    name: "changePassword",
+    component: () => import("@/views/dashboard/ChangePasswordView.vue"),
   },
 
   {
@@ -78,6 +104,7 @@ const routes = [
     name: "login",
     component: () => import("@/views/auth/LoginView.vue"),
   },
+
   {
     meta: {
       title: "Register",
@@ -114,43 +141,7 @@ router.beforeEach((to, from, next) => {
   // https://pinia.vuejs.org/core-concepts/outside-component-usage.html#single-page-applications
   const userStore = useUserStore();
 
-  if (to.name == "dashboard") {
-    if (userStore.user.type == "EC") {
-      next({ name: "itemsToPrepare" });
-      return;
-    }
-
-    if (userStore.user && userStore.user.type == "EM") {
-      next();
-      return;
-    }
-    next({ name: "home" });
-    return;
-  }
-
-  if (to.name == "orders") {
-    if (userStore.user && userStore.user.type == "EM") {
-      next();
-      return;
-    }
-    next({ name: "home" });
-    return;
-  }
-
-  if (to.name == "itemsToPrepare") {
-    if (userStore.user && userStore.user.type == "EC") {
-      next();
-      return;
-    }
-    next({ name: "home" });
-    return;
-  }
-
-  if (to.name == "order") {
-    if (userStore.user && userStore.user.type == "EM") {
-      next();
-      return;
-    }
+  if (!userStore.canGoTo(to)) {
     next({ name: "home" });
     return;
   }

@@ -34,18 +34,19 @@ const cancelOrder = async () => {
     const response = await axios.patch(`orders/${props.id}`, { status: "C" });
     order.value = response.data;
 
-    if (order.value.data.status == "Cancelled") {
-      toastType.value = "success";
-      toastMessage.value = "Order canceled successfully";
-
-      if (order.value.data.order_delivery) {
-        socket.emit("order-cancelled", order.value.data.order_delivery);
-      }
-      return;
+    if (order.value.data.status != "Cancelled") {
+      throw response;
     }
-  } catch {}
-  toastType.value = "danger";
-  toastMessage.value = "Error canceling order";
+
+    toastType.value = "success";
+    toastMessage.value = "Order canceled successfully";
+    if (order.value.data.id) {
+      socket.emit("order-cancelled", order.value.data.id);
+    }
+  } catch {
+    toastType.value = "danger";
+    toastMessage.value = "Error canceling order";
+  }
 };
 
 const loadOrder = async (url) => {
@@ -90,6 +91,7 @@ onMounted(() => {
         main
       >
         <BaseButton
+          v-if="order.data?.status != 'Cancelled'"
           label="Cancel Order"
           :icon="mdiAlertRemoveOutline"
           color="whiteDark"

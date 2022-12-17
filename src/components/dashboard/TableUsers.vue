@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, inject, defineExpose } from "vue";
+import { ref, watch, onMounted } from "vue";
 import {
   mdiTrashCan,
   mdiCancel,
@@ -14,11 +14,12 @@ import FormField from "@/components/dashboard/FormField.vue";
 import FormControl from "@/components/dashboard/FormControl.vue";
 import FormFilePicker from "@/components/dashboard/FormFilePicker.vue";
 import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
+import CardBoxComponentEmpty from "@/components/dashboard/CardBoxComponentEmpty.vue";
 
 const props = defineProps({
-  endpoint: {
-    type: String,
-    default: null,
+  users: {
+    type: Object,
+    default: () => {},
   },
   headers: {
     type: Array,
@@ -29,18 +30,16 @@ const props = defineProps({
     default: () => [],
   },
 });
+const emit = defineEmits(["toggle-blocked", "delete", "update", "load-users"]);
 
-const emit = defineEmits(["toggle-blocked", "delete", "update"]);
-
-const axios = inject("axios");
-
-const users = ref([]);
 const numPages = ref(0);
 const currentPageHuman = ref(0);
 const pagesList = ref([]);
 
 const isModalDeleteUser = ref(false);
 const userToDelete = ref(null);
+
+const tableUsersWaiting = ref(false);
 
 const isModelUpdateUser = ref(false);
 const userToUpdate = ref([null]);
@@ -49,18 +48,18 @@ userToUpdate.value = {
   type: "",
 };
 
-const loadUsers = async (url) => {
-  try {
-    const response = await axios.get(url || props.endpoint || "users");
-
-    users.value = response.data;
-
-    numPages.value = users.value.meta.last_page;
-    currentPageHuman.value = users.value.meta.current_page;
-    pagesList.value = users.value.meta.links;
-  } catch (error) {
-    console.log(error);
+watch(
+  () => props.users,
+  (users) => {
+    loadMeta(users.meta);
+    tableUsersWaiting.value = false;
   }
+);
+
+const loadMeta = (meta) => {
+  numPages.value = meta.last_page;
+  currentPageHuman.value = meta.current_page;
+  pagesList.value = meta.links;
 };
 
 const setFile = (file) => {
@@ -77,12 +76,13 @@ const showModelUpdateUser = (user) => {
   userToUpdate.value = { ...user };
 };
 
-defineExpose({
-  loadUsers,
-});
+const loadUsers = (url) => {
+  tableUsersWaiting.value = true;
+  emit("load-users", url);
+};
 
-onMounted(async () => {
-  loadUsers();
+onMounted(() => {
+  loadMeta(props.users.meta);
 });
 </script>
 
@@ -144,7 +144,7 @@ onMounted(async () => {
   </CardBoxModal>
   <!-- #endregion -->
 
-  <table>
+  <table v-if="!tableUsersWaiting">
     <thead>
       <tr>
         <th />
@@ -194,6 +194,8 @@ onMounted(async () => {
       </tr>
     </tbody>
   </table>
+  <CardBoxComponentEmpty v-else :waiting="tableUsersWaiting" />
+
   <div class="p-3 lg:px-6 border-t border-gray-100 dark:border-slate-800">
     <PaginationButtons
       :num-pages="numPages"
