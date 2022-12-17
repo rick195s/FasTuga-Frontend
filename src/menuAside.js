@@ -3,36 +3,51 @@ import {
   mdiMonitor,
   mdiViewList,
   mdiPackageVariantClosed,
-  mdiSilverware
+  mdiSilverware,
+  mdiFormTextboxPassword,
 } from "@mdi/js";
 
 export default [
   {
-    to: "/dashboard",
-    icon: mdiMonitor,
     label: "Dashboard",
+    icon: mdiMonitor,
+    name: "dashboard",
   },
   {
-    to: "/orders",
     label: "Orders",
     icon: mdiPackageVariantClosed,
+    name: "orders",
   },
   {
-    to: "/products",
     label: "Products",
     icon: mdiSilverware,
+    name: "products",
   },
   {
-    to: "/orderItems",
     label: "Items To Prepare",
     icon: mdiPackageVariantClosed,
+    name: "itemsToPrepare",
   },
   {
-    to: "/profile",
+    label: "Items To Deliver",
+    icon: mdiPackageVariantClosed,
+    name: "ordersToDeliver",
+  },
+  {
     label: "Profile",
     icon: mdiAccountCircle,
+    name: "profile",
   },
-
+  {
+    label: "Profile",
+    icon: mdiAccountCircle,
+    name: "customerProfile",
+  },
+  {
+    label: "Change Password",
+    icon: mdiFormTextboxPassword,
+    name: "changePassword",
+  },
   {
     label: "Dropdown",
     icon: mdiViewList,

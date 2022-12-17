@@ -48,7 +48,9 @@ const componentClass = computed(() => {
 });
 
 const itemLabel = computed(() =>
-  props.item.isCurrentUser ? useUserStore().user?.name ?? 'Anonymous' : props.item.label
+  props.item.isCurrentUser
+    ? useUserStore().user?.name ?? "Anonymous"
+    : props.item.label
 );
 
 const isDropdownActive = ref(false);
