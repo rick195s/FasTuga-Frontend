@@ -7,7 +7,7 @@ import router from "./router";
 
 import { useStyleStore } from "@/stores/dashboard/style.js";
 import { useUserStore } from "@/stores/user.js";
-import { darkModeKey, styleKey } from "@/config.js";
+import { styleKey } from "@/config.js";
 import axios from "axios";
 import { io } from "socket.io-client";
 
