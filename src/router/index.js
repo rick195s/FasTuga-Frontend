@@ -69,6 +69,24 @@ const routes = [
     name: "profile",
     component: () => import("@/views/dashboard/ProfileView.vue"),
   },
+  {
+    meta: {
+      title: "Customer Profile",
+    },
+    path: "/customer/profile",
+    name: "customerProfile",
+    component: () => import("@/views/dashboard/ProfileView.vue"),
+    props: () => ({ customer: true }),
+  },
+
+  {
+    meta: {
+      title: "Change Password",
+    },
+    path: "/change/password",
+    name: "changePassword",
+    component: () => import("@/views/dashboard/ChangePasswordView.vue"),
+  },
 
   {
     meta: {

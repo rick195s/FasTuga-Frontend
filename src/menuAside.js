@@ -3,6 +3,7 @@ import {
   mdiMonitor,
   mdiViewList,
   mdiPackageVariantClosed,
+  mdiFormTextboxPassword,
 } from "@mdi/js";
 
 export default [
@@ -28,9 +29,18 @@ export default [
   },
   {
     label: "Profile",
-    to: "/profile",
     icon: mdiAccountCircle,
     name: "profile",
+  },
+  {
+    label: "Profile",
+    icon: mdiAccountCircle,
+    name: "customerProfile",
+  },
+  {
+    label: "Change Password",
+    icon: mdiFormTextboxPassword,
+    name: "changePassword",
   },
   {
     label: "Dropdown",

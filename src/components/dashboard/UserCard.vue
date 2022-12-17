@@ -1,11 +1,23 @@
 <script setup>
 import { computed, ref, onMounted } from "vue";
 import { useUserStore } from "@/stores/user";
-import { mdiCheckDecagram } from "@mdi/js";
 import BaseLevel from "@/components/dashboard/BaseLevel.vue";
 import UserAvatarCurrentUser from "@/components/dashboard/UserAvatarCurrentUser.vue";
 import CardBox from "@/components/dashboard/CardBox.vue";
 import PillTag from "@/components/dashboard/PillTag.vue";
+
+const props = defineProps({
+  points: {
+    type: Number,
+    required: false,
+    default: 0,
+  },
+  email: {
+    type: String,
+    required: false,
+    default: "",
+  },
+});
 
 const userStore = useUserStore();
 
@@ -39,14 +51,15 @@ onMounted(() => {
       <UserAvatarCurrentUser class="w-48" />
       <div class="space-y-3 text-center md:text-left lg:mx-12">
         <h1 class="text-2xl">
-          Howdy, <b>{{ userName }}</b
+          Welcome, <b>{{ userName }}</b
           >!
         </h1>
 
         <p>{{ userType }}</p>
+        <p>{{ email }}</p>
 
-        <div class="flex justify-center md:block">
-          <PillTag label="Verified" color="info" :icon="mdiCheckDecagram" />
+        <div v-if="props.points" class="flex justify-center md:block">
+          <PillTag :label="`Points: ${props.points}`" color="info" />
         </div>
       </div>
     </BaseLevel>

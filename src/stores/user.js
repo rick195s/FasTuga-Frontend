@@ -12,6 +12,8 @@ export const useUserStore = defineStore("user", () => {
     ordersToDeliver: ["ED"],
     order: ["EM"],
     profile: ["EM", "EC", "ED"],
+    customerProfile: ["C"],
+    changePassword: ["EM", "EC", "ED", "C"],
   };
 
   const user = ref(null);
