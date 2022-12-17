@@ -1,54 +1,21 @@
 <script setup>
 import BaseButton from "@/components/dashboard/BaseButton.vue";
 import BaseButtons from "@/components/dashboard/BaseButtons.vue";
+import MenuChoosing from "@/components/front/MenuChoosing.vue";
+import Checkout from "@/components/front/Checkout.vue";
 import { mdiChevronRight } from "@mdi/js";
-import Product from "@/components/front/Product.vue";
-import Filter from "@/components/front/FilterProducts.vue";
-import { ref, inject, onMounted } from "vue";
+import { ref } from "vue";
 
-const axios = inject("axios");
-const products = ref([]);
-const waiting = ref(false);
+const menuChoosing = ref(true);
+const checkout = ref(false);
+const status = ref(false);
 
-//filtering products
-const productsTypes = ref(['all', 'hot dish', 'cold dish', 'drink', 'dessert']);
-const selectedType = ref("all");
-
-//Adding products to cart
-const productsSelected = ref([]);
-const addToCart = (product) => {
-  productsSelected.value.push(product);
+const changeState = () => {
+  menuChoosing.value = false;
+  checkout.value = false;
+  status.value = false;
 };
-
-//loading products
-const loadProducts = async (url) => {
-  waiting.value = true;
-  try {
-    const response = await axios.get(
-      url || "products?filter=" + selectedType.value
-    );
-
-    products.value = response.data;
-  } catch (error) {
-    console.log(error);
-  }
-  waiting.value = false;
-};
-
-const changeType = (value) => {
-  selectedType.value = value;
-  loadProducts();
-};
-
-onMounted(() => {
-  loadProducts();
-});
 </script>
-
-<style scoped>
-@import '@/../src/assets/css/style.css';
-</style>
-
 
 <style scoped>
 @import "@/../src/assets/css/style.css";
@@ -94,13 +61,13 @@ onMounted(() => {
 
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
-          <li class="book-a-table-btn d-none d-lg-flex">Menu Choosing</li>
+          <li :class="{activeState : menuChoosing , 'd-none d-lg-flex' : true}" @click="changeState(); menuChoosing=true">Menu Choosing</li>
           <li m-0><BaseButton :icon="mdiChevronRight" color="white" /></li>
-          <li class="d-none d-lg-flex">Finishing Order</li>
+          <li :class="{activeState : checkout , 'd-none d-lg-flex': true}" @click="changeState(); checkout=true">Checkout</li>
           <li m-0>
             <BaseButton :icon="mdiChevronRight" color="white" />
           </li>
-          <li class="d-none d-lg-flex">Status</li>
+          <li :class="{activeState : status , 'd-none d-lg-flex': true}" @click="changeState(); status=true">Status</li>
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav>
@@ -122,54 +89,9 @@ onMounted(() => {
     >
       <source src="src/assets/img/promoVideo.mp4" type="video/mp4" />
     </video>
-    <div
-      class="container position-relative text-center text-lg-start"
-      data-aos="zoom-in"
-      data-aos-delay="100"
-    >
-      <form action="/action_page.php">
-        <div class="row bgOrder">
-          <div class="col-lg-6">
-            <div class="section-title">
-              <h2>Menu</h2>
-              <p>Check Our Tasty Menu</p>
-            </div>
-          </div>
-          <div class="col-lg-6 text-right">
-            <a href="#menu" class="btn-menu animated fadeInUp scrollto">
-              Next ({{productsSelected.length}})
-            </a>
-          </div>
-          <div class="row" data-aos="fade-up" data-aos-delay="100">
-            <div class="col-lg-12 d-flex justify-content-center">
-              <ul id="menu-flters">
-                <Filter
-                  v-for="productType in productsTypes"
-                  :p-type="productType"
-                  :is-active="productType == selectedType"
-                  @click="changeType(productType)"
-                />
-              </ul>
-            </div>
-          </div>
-          <div
-            class="row menu-container"
-            data-aos="fade-up"
-            data-aos-delay="200"
-          >
-            <Product
-              v-for="product in products.data"
-              :key="product.id"
-              :photo-url="product.photo_url"
-              :name="product.name"
-              :price="product.price"
-              :description="product.description"
-              :p-type="product.type"
-            />
-          </div>
-        </div>
-      </form>
-    </div>
+    <MenuChoosing v-if="menuChoosing" @to-checkout="changeState(); checkout=true"/>
+    <Checkout v-if="checkout" @to-menu-choosing="changeState(); menuChoosing=true" />
+    />
   </section>
   <!-- End Hero -->
 </template>
