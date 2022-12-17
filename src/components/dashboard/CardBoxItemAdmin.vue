@@ -108,8 +108,8 @@ const update = async (product) => {
     emit('update')
     emit('operationMessage', "Product updated successfully", "success")
   } catch (error) {
-    console.log(error)
-    emit('operationMessage', "Product was not updated", "danger")
+    //console.log(error)
+    emit('operationMessage', error.response.data.message, "danger")
   }
 };
 
