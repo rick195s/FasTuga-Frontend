@@ -57,7 +57,6 @@ const deliverOrder = async () => {
       status: "D",
     });
 
-    console.log(orderSelected.value.id);
     socket.emit("order-delivered", orderSelected.value.id);
 
     orderSelected.value = response.data;
@@ -72,6 +71,9 @@ const deliverOrder = async () => {
 
 onMounted(() => {
   socket.emit("register", "deliverers");
+  socket.on("order-ready", () => {
+    loadOrders();
+  });
   loadOrders();
 });
 </script>
