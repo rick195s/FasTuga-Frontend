@@ -4,6 +4,7 @@ import {
   mdiViewList,
   mdiPackageVariantClosed,
   mdiFormTextboxPassword,
+  mdiClipboardTextClockOutline,
 } from "@mdi/js";
 
 export default [
@@ -41,6 +42,11 @@ export default [
     label: "Change Password",
     icon: mdiFormTextboxPassword,
     name: "changePassword",
+  },
+  {
+    label: "History",
+    icon: mdiClipboardTextClockOutline,
+    name: "history",
   },
   {
     label: "Dropdown",
