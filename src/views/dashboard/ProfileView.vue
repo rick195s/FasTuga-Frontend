@@ -18,6 +18,7 @@ import UserCard from "@/components/dashboard/UserCard.vue";
 import LayoutAuthenticated from "@/layouts/dashboard/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/dashboard/SectionTitleLineWithButton.vue";
 import NotificationBarInCard from "@/components/dashboard/NotificationBarInCard.vue";
+import utils from "@/utils.js";
 
 defineProps({
   customer: Boolean,
@@ -115,7 +116,7 @@ const submitProfile = async () => {
 
     await axios.put(
       `users/${userStore.userId}`,
-      getDiff(userStore.user, profileForm.value)
+      utils.getDiff(userStore.user, profileForm.value)
     );
 
     userStore.user = { ...userStore.user, ...profileForm.value };
@@ -146,16 +147,6 @@ const setError = (error) => {
   formHeaderTitle.value = "Error";
   formHeaderContent.value = error.response.data.message;
   formStatusCurrent.value = "danger";
-};
-
-const getDiff = (obj1, obj2) => {
-  const result = {};
-  Object.keys(obj1).forEach((key) => {
-    if (obj1[key] !== obj2[key]) {
-      result[key] = obj2[key];
-    }
-  });
-  return result;
 };
 
 onMounted(() => {

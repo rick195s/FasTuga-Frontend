@@ -18,13 +18,17 @@ const orders = ref([]);
 const numPages = ref(0);
 const currentPageHuman = ref(0);
 const pagesList = ref([]);
+const currentURL = ref("");
 
 const waiting = ref(false);
 
 const loadOrders = async (url) => {
   waiting.value = true;
+  if (url) {
+    currentURL.value = url;
+  }
   try {
-    const response = await axios.get(url || "orders");
+    const response = await axios.get(currentURL.value || "orders");
 
     orders.value = response.data;
 
