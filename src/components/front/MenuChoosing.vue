@@ -22,7 +22,7 @@ const loadProducts = async (url) => {
   waiting.value = true;
   try {
     const response = await axios.get(
-      url || "products?filter=" + selectedType.value
+      url || "products"
     );
 
     products.value = response.data;
@@ -38,7 +38,6 @@ onMounted(() => {
 
 const changeType = (value) => {
   selectedType.value = value;
-  loadProducts();
 };
 
 const emit = defineEmits(["to-checkout"]);
@@ -96,7 +95,7 @@ const toCheckout = (event) => {
               :name="product.name"
               :price="product.price"
               :description="product.description"
-              :p-type="product.type"
+              :p-type="product.type!=selectedType && selectedType!='all'"
             />
           </div>
         </div>
