@@ -1,5 +1,5 @@
 <script setup>
-import { mdiChartTimelineVariant } from "@mdi/js";
+import { mdiChartTimelineVariant, mdiRefresh } from "@mdi/js";
 import { useRouter } from "vue-router";
 import { ref, inject, onMounted } from "vue";
 import SectionMain from "@/components/dashboard/SectionMain.vue";
@@ -11,19 +11,24 @@ import WaitingSpinner from "@/components/dashboard/WaitingSpinner.vue";
 
 const axios = inject("axios");
 const router = useRouter();
+const socket = inject("socket");
 
 const orders = ref([]);
 
 const numPages = ref(0);
 const currentPageHuman = ref(0);
 const pagesList = ref([]);
+const currentURL = ref("");
 
 const waiting = ref(false);
 
 const loadOrders = async (url) => {
   waiting.value = true;
+  if (url) {
+    currentURL.value = url;
+  }
   try {
-    const response = await axios.get(url || "orders");
+    const response = await axios.get(currentURL.value || "orders");
 
     orders.value = response.data;
 
@@ -42,6 +47,23 @@ const goToOrder = (order) => {
 
 onMounted(() => {
   loadOrders();
+
+  socket.emit("register", "managers");
+  socket.on("order-ready", (order_id) => {
+    orders.value.data.forEach((item, index, object) => {
+      if (item.id == order_id) {
+        object[index].status = "Ready";
+      }
+    });
+  });
+
+  socket.on("order-delivered", (order_id) => {
+    orders.value.data.forEach((item, index, object) => {
+      if (item.id == order_id) {
+        object[index].status = "Delivered";
+      }
+    });
+  });
 });
 </script>
 
@@ -52,6 +74,8 @@ onMounted(() => {
         :icon="mdiChartTimelineVariant"
         title="Orders"
         main
+        :end-icon="mdiRefresh"
+        @end-icon-click="loadOrders"
       >
       </SectionTitleLineWithButton>
 

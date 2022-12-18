@@ -15,6 +15,7 @@ import FormControl from "@/components/dashboard/FormControl.vue";
 import FormFilePicker from "@/components/dashboard/FormFilePicker.vue";
 import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
 import CardBoxComponentEmpty from "@/components/dashboard/CardBoxComponentEmpty.vue";
+import utils from "@/utils.js";
 
 const props = defineProps({
   users: {
@@ -43,10 +44,8 @@ const tableUsersWaiting = ref(false);
 
 const isModelUpdateUser = ref(false);
 const userToUpdate = ref([null]);
-userToUpdate.value = {
-  name: "",
-  type: "",
-};
+const userSelected = ref(null);
+const photo = ref(null);
 
 watch(
   () => props.users,
@@ -63,7 +62,7 @@ const loadMeta = (meta) => {
 };
 
 const setFile = (file) => {
-  userToUpdate.value.photo = file;
+  photo.value = file;
 };
 
 const showModelDeleteUser = (user) => {
@@ -73,7 +72,17 @@ const showModelDeleteUser = (user) => {
 
 const showModelUpdateUser = (user) => {
   isModelUpdateUser.value = true;
+  userSelected.value = user;
   userToUpdate.value = { ...user };
+};
+
+const update = () => {
+  const diff = utils.getDiff(userSelected.value, userToUpdate.value);
+
+  diff.id = userSelected.value.id;
+  diff.photo = photo.value;
+
+  emit("update", diff);
 };
 
 const loadUsers = (url) => {
@@ -93,7 +102,7 @@ onMounted(() => {
     title="Update User"
     button="info"
     has-cancel
-    @confirm="emit('update', userToUpdate)"
+    @confirm="update"
   >
     <FormField
       v-for="userField in userUpdateFields"

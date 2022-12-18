@@ -78,6 +78,7 @@ const isModelCreateUser = ref(false);
 const toastType = ref("");
 const toastMessage = ref("");
 const users = ref([]);
+const currentURL = ref("");
 
 const userToCreate = ref({
   name: "",
@@ -99,8 +100,11 @@ const toggleBlocked = async (user) => {
 };
 
 const loadUsers = async (url) => {
+  if (url) {
+    currentURL.value = url;
+  }
   try {
-    const response = await axios.get(url || "users");
+    const response = await axios.get(currentURL.value || "users");
     users.value = response.data;
   } catch (error) {
     console.log(error);
@@ -153,6 +157,7 @@ const updateUser = async (user) => {
           "Content-Type": "multipart/form-data",
         },
       });
+      delete user.photo;
     }
 
     await axios.put(`users/${user.id}`, user);
