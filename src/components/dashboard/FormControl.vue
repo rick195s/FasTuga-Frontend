@@ -116,6 +116,7 @@ onMounted(() => {
         :value="option.value"
       >
         {{ option.label ?? option }}
+        
       </option>
     </select>
     <textarea

@@ -21,6 +21,14 @@ const routes = [
   },
   {
     meta: {
+      title: "Products",
+    },
+    path: "/products",
+    name: "products",
+    component: () => import("@/views/dashboard/ProductsView.vue"),
+  },
+  {
+    meta: {
       title: "Dashboard",
     },
 

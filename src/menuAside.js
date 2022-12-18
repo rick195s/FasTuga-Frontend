@@ -3,6 +3,7 @@ import {
   mdiMonitor,
   mdiViewList,
   mdiPackageVariantClosed,
+  mdiSilverware,
   mdiFormTextboxPassword,
 } from "@mdi/js";
 
@@ -16,6 +17,11 @@ export default [
     label: "Orders",
     icon: mdiPackageVariantClosed,
     name: "orders",
+  },
+  {
+    label: "Products",
+    icon: mdiSilverware,
+    name: "products",
   },
   {
     label: "Items To Prepare",
