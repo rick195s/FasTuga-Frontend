@@ -13,6 +13,7 @@ import NotificationToast from "@/components/dashboard/NotificationToast.vue";
 import CardBoxComponentEmpty from "@/components/dashboard/CardBoxComponentEmpty.vue";
 
 const axios = inject("axios");
+const socket = inject("socket");
 
 const orders = ref([]);
 const isModalOrder = ref(false);
@@ -56,6 +57,9 @@ const deliverOrder = async () => {
       status: "D",
     });
 
+    console.log(orderSelected.value.id);
+    socket.emit("order-delivered", orderSelected.value.id);
+
     orderSelected.value = response.data;
     toastType.value = "success";
     toastMessage.value = "Success changing order status";
@@ -67,6 +71,7 @@ const deliverOrder = async () => {
 };
 
 onMounted(() => {
+  socket.emit("register", "deliverers");
   loadOrders();
 });
 </script>
