@@ -840,6 +840,14 @@ section {
 /*--------------------------------------------------------------
 # About
 --------------------------------------------------------------*/
+
+.ticket{
+  border:1px solid #cda45e; 
+  border-radius:25px; 
+  padding:15px; 
+  margin:0px;
+}
+
 .about {
   background: url('../img/about-bg.jpg') center center;
   background-size: cover;

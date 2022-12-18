@@ -23,7 +23,7 @@ const props = defineProps({
 
 <template>
   <div class="col-lg-6 menu-item filter-starters">
-    <div class="menu-content" style="border:1px solid #cda45e; border-radius:25px;">
+    <div class="menu-content ticket">
       <BaseIcon  :path="mdiTicket" h="155px"/>
       <span>{{ticketNumber}}</span>
       <a href="#">{{ status }}</a>
