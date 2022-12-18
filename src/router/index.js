@@ -18,6 +18,13 @@ const routes = [
     path: "/",
     name: "home",
     component: Home,
+  },{
+    meta: {
+      title: "Board",
+    },
+    path: "/board",
+    name: "board",
+    component: () => import("@/views/front/PublicBoard.vue"),
   },
   {
     meta: {

@@ -1,51 +1,32 @@
 <script setup>
 import BaseButton from "@/components/dashboard/BaseButton.vue";
 import { mdiChevronRight } from "@mdi/js";
-import Product from "@/components/front/Product.vue";
-import Filter from "@/components/front/FilterProducts.vue";
+import Ticket from "@/components/front/Ticket.vue";
 import { ref, inject, onMounted } from "vue";
 import NavbarComponent from "../../components/front/NavbarComponent.vue";
 
 const axios = inject("axios");
-const products = ref([]);
-const productsTypes = ref([]);
+const tickets = ref([]);
 const waiting = ref(false);
 const selectedType = ref("all");
 
-const loadProducts = async (url) => {
+const loadTickets = async (url) => {
   waiting.value = true;
   try {
     const response = await axios.get(
-      url || "products?filter=" + selectedType.value
+      url || "orders"
     );
 
-    products.value = response.data;
+    tickets.value = response.data;
   } catch (error) {
     console.log(error);
   }
   waiting.value = false;
 };
 
-const loadProductsTypes = async (url) => {
-  waiting.value = true;
-  try {
-    const response = await axios.get(url || "products/type");
-
-    productsTypes.value = response.data;
-  } catch (error) {
-    console.log(error);
-  }
-  waiting.value = false;
-};
-
-const changeType = (value) => {
-  selectedType.value = value;
-  loadProducts();
-};
 
 onMounted(() => {
-  loadProductsTypes();
-  loadProducts();
+  loadTickets();
 });
 </script>
 
@@ -64,13 +45,7 @@ onMounted(() => {
 
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
-          <li class="book-a-table-btn d-none d-lg-flex">Menu Choosing</li>
-          <li m-0><BaseButton :icon="mdiChevronRight" color="white" /></li>
-          <li class="d-none d-lg-flex">Finishing Order</li>
-          <li m-0>
-            <BaseButton :icon="mdiChevronRight" color="white" />
-          </li>
-          <li class="d-none d-lg-flex">Status</li>
+          <li class="book-a-table-btn d-none d-lg-flex">Public Board</li>
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav>
@@ -101,8 +76,8 @@ onMounted(() => {
         <div class="row bgOrder">
           <div class="col-lg-6">
             <div class="section-title">
-              <h2>Menu</h2>
-              <p>Check Our Tasty Menu</p>
+              <h2>Public Board</h2>
+              <p>Track your dish</p>
             </div>
           </div>
           <div class="col-lg-6 text-right">
@@ -110,40 +85,17 @@ onMounted(() => {
               Next (5)
             </a>
           </div>
-          <div class="row" data-aos="fade-up" data-aos-delay="100">
-            <div class="col-lg-12 d-flex justify-content-center">
-              <ul id="menu-flters">
-                <li
-                  data-filter="*"
-                  :class="{ active: selectedType == 'all' }"
-                  @click="changeType('all')"
-                >
-                  All
-                </li>
-                <Filter
-                  v-for="productType in productsTypes"
-                  :key="productType.id"
-                  :p-type="productType.type"
-                  :is-active="productType.type == selectedType"
-                  @click="changeType(productType.type)"
-                />
-              </ul>
-            </div>
-          </div>
           <div
             class="row menu-container"
             data-aos="fade-up"
             data-aos-delay="200"
           >
-            <Product
-              v-for="product in products.data"
-              :key="product.id"
-              :photo-url="product.photo_url"
-              :name="product.name"
-              :price="product.price"
-              :description="product.description"
-              :p-type="product.type"
-            />
+            <Ticket
+              v-for=" t in tickets.data"
+              :ticketNumber="t.ticket_number"
+              :status="t.status"
+              :date="t.date"
+              />
           </div>
         </div>
       </form>
