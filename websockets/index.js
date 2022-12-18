@@ -8,12 +8,13 @@ const io = require("socket.io")(httpServer, {
 httpServer.listen(8080, () => {
   console.log("listening on *:8080");
 });
+
 io.on("connection", (socket) => {
   console.log(`client ${socket.id} has connected`);
+
+  // register as driver, chef, delivery, etc
   socket.on("register", (msgData) => {
-    if (msgData === "driver") {
-      socket.join("drivers");
-    }
+    socket.join(msgData);
   });
 
   socket.on("order-cancelled", (order) => {
