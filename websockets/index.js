@@ -25,6 +25,7 @@ io.on("connection", (socket) => {
 
   socket.on("order-ready", (order_id) => {
     socket.to("drivers").emit("order-ready", order_id);
+    socket.to("managers").emit("order-ready", order_id);
     console.log(`order ${order_id} ready`);
   });
 });
