@@ -17,9 +17,10 @@ io.on("connection", (socket) => {
     socket.join(msgData);
   });
 
-  socket.on("order-cancelled", (order) => {
-    socket.to("drivers").emit("order-cancelled", order);
-    console.log(`order ${order} cancelled`);
+  socket.on("order-cancelled", (order_id) => {
+    socket.to("drivers").emit("order-cancelled", order_id);
+    socket.to("chefs").emit("order-cancelled", order_id);
+    console.log(`order ${order_id} cancelled`);
   });
 
   socket.on("order-ready", (order_id) => {
