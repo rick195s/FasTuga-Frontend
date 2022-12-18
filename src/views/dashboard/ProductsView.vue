@@ -312,7 +312,7 @@ onMounted(() => {
             @update="loadProducts()"
             @delete="loadProducts()"
             @insert="loadProducts()"
-            @operationMessage="setToast"
+            @operation-message="setToast"
           />
         </div>
       </div>
