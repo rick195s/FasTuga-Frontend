@@ -89,6 +89,15 @@ const checkStatusChanged = (newStatus) => {
 
 onMounted(() => {
   loadItems();
+
+  socket.emit("register", "chefs");
+  socket.on("order-cancelled", (order_id) => {
+    orderItems.value.data.forEach((item, index, object) => {
+      if (item.order_id == order_id) {
+        object.splice(index, 1);
+      }
+    });
+  });
 });
 </script>
 

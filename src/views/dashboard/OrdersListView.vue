@@ -11,6 +11,7 @@ import WaitingSpinner from "@/components/dashboard/WaitingSpinner.vue";
 
 const axios = inject("axios");
 const router = useRouter();
+const socket = inject("socket");
 
 const orders = ref([]);
 
@@ -42,6 +43,23 @@ const goToOrder = (order) => {
 
 onMounted(() => {
   loadOrders();
+
+  socket.emit("register", "managers");
+  socket.on("order-ready", (order_id) => {
+    orders.value.data.forEach((item, index, object) => {
+      if (item.id == order_id) {
+        object[index].status = "Ready";
+      }
+    });
+  });
+
+  socket.on("order-delivered", (order_id) => {
+    orders.value.data.forEach((item, index, object) => {
+      if (item.id == order_id) {
+        object[index].status = "Delivered";
+      }
+    });
+  });
 });
 </script>
 
