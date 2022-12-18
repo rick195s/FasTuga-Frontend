@@ -1,5 +1,5 @@
 <script setup>
-import { mdiChartTimelineVariant } from "@mdi/js";
+import { mdiChartTimelineVariant, mdiRefresh } from "@mdi/js";
 import { useRouter } from "vue-router";
 import { ref, inject, onMounted } from "vue";
 import SectionMain from "@/components/dashboard/SectionMain.vue";
@@ -70,6 +70,8 @@ onMounted(() => {
         :icon="mdiChartTimelineVariant"
         title="Orders"
         main
+        :end-icon="mdiRefresh"
+        @end-icon-click="loadOrders"
       >
       </SectionTitleLineWithButton>
 
