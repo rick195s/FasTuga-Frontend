@@ -55,7 +55,6 @@ const submit = async () => {
 
   try {
     const response = await store.login(credentials);
-    console.log(response)
 
     if (response.status !== 200) {
       throw response;
