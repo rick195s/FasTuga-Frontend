@@ -107,8 +107,8 @@ onMounted(() => {
             </div>
           </div>
           <div class="col-lg-6 text-right">
-            <BaseButton  v-if="page != 1" class="btn-menu animated fadeInUp scrollto" label="Previous (5)" @click="goesToPage('prev')"/>
-            <BaseButton  v-if="tickets[0] != null" class="btn-menu animated fadeInUp scrollto" label="Next (5)" @click="goesToPage('next')"/>
+            <BaseButton  v-if="page != 1" class="btn-menu animated fadeInUp scrollto" label="Previous (10)" @click="goesToPage('prev')"/>
+            <BaseButton  v-if="tickets[9] != null" class="btn-menu animated fadeInUp scrollto" label="Next (10)" @click="goesToPage('next')"/>
           </div>
           <div
             class="row menu-container"
