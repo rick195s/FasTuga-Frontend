@@ -19,19 +19,13 @@ const changeState = () => {
 const productsListCheckout = ref([]);
 
 const productsToCheckout = (productsList) => {
-  productsListCheckout.value=productsList;
+  productsListCheckout.value = productsList;
 };
 
 const alerta = () => {
   alert(productsListCheckout.value);
 };
-
 </script>
-
-<style scoped>
-@import "@/../src/assets/css/style.css";
-@import "bootstrap/dist/css/bootstrap.min.css";
-</style>
 
 <template>
   <!-- ======= Top Bar ======= -->
@@ -72,13 +66,37 @@ const alerta = () => {
 
       <nav id="navbar" class="navbar order-last order-lg-0">
         <ul>
-          <li :class="{activeState : menuChoosing , 'd-none d-lg-flex' : true}" @click="changeState(); menuChoosing=true">Menu Choosing</li>
+          <li
+            :class="{ activeState: menuChoosing, 'd-none d-lg-flex': true }"
+            @click="
+              changeState();
+              menuChoosing = true;
+            "
+          >
+            Menu Choosing
+          </li>
           <li m-0><BaseButton :icon="mdiChevronRight" color="white" /></li>
-          <li :class="{activeState : checkout , 'd-none d-lg-flex': true}" @click="changeState(); checkout=true">Checkout</li>
+          <li
+            :class="{ activeState: checkout, 'd-none d-lg-flex': true }"
+            @click="
+              changeState();
+              checkout = true;
+            "
+          >
+            Checkout
+          </li>
           <li m-0>
             <BaseButton :icon="mdiChevronRight" color="white" />
           </li>
-          <li :class="{activeState : status , 'd-none d-lg-flex': true}" @click="changeState(); status=true">Status</li>
+          <li
+            :class="{ activeState: status, 'd-none d-lg-flex': true }"
+            @click="
+              changeState();
+              status = true;
+            "
+          >
+            Status
+          </li>
         </ul>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav>
@@ -100,17 +118,28 @@ const alerta = () => {
     >
       <source src="src/assets/img/promoVideo.mp4" type="video/mp4" />
     </video>
-    <MenuChoosing 
-      v-if="menuChoosing" 
-      @to-checkout="changeState(); checkout=true"
+    <MenuChoosing
+      v-if="menuChoosing"
+      @to-checkout="
+        changeState();
+        checkout = true;
+      "
       @add-products-to-checkout="productsToCheckout"
-      />
-    <Checkout 
-      v-if="checkout" 
-      @to-menu-choosing="changeState(); menuChoosing=true" 
+    />
+    <Checkout
+      v-if="checkout"
       :products-list="productsListCheckout"
+      @to-menu-choosing="
+        changeState();
+        menuChoosing = true;
+      "
     />
     />
   </section>
   <!-- End Hero -->
 </template>
+
+<style scoped>
+@import "@/../src/assets/css/style.css";
+@import "bootstrap/dist/css/bootstrap.min.css";
+</style>
