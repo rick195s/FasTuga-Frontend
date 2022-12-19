@@ -4,6 +4,7 @@ import { ref, inject, onMounted } from "vue";
 import LayoutFrontGuest from "@/layouts/LayoutFrontGuest.vue";
 
 const axios = inject("axios");
+const socket = inject("socket");
 const tickets = ref([]);
 
 const loadTickets = async (url) => {
@@ -16,6 +17,12 @@ const loadTickets = async (url) => {
 };
 
 onMounted(() => {
+  socket.on("order-ready", (order_id) => {
+    const ticket = tickets.value.find((t) => t.id == order_id);
+    if (ticket) {
+      ticket.status = "Ready";
+    }
+  });
   loadTickets();
 });
 </script>
