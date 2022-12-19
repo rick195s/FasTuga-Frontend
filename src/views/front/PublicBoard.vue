@@ -7,22 +7,48 @@ import NavbarComponent from "../../components/front/NavbarComponent.vue";
 
 const axios = inject("axios");
 const tickets = ref([]);
+const page = ref(0);
 const waiting = ref(false);
 const selectedType = ref("all");
 
 const loadTickets = async (url) => {
+  page.value = page.value+1
   waiting.value = true;
   try {
     const response = await axios.get(
       url || "tickets"
     );
 
-    tickets.value = response.data;
+    tickets.value = response.data.data;
   } catch (error) {
     console.log(error);
   }
   waiting.value = false;
 };
+
+const pages = async () => {
+  waiting.value = true;
+  try {
+    const response = await axios.get(
+      "tickets?page="+page.value
+    );
+
+    tickets.value = response.data.data;
+  } catch (error) {
+    console.log(error);
+  }
+  waiting.value = false;
+};
+
+const goesToPage = (signal) => {
+  if(signal == "next"){
+    page.value = page.value+1
+    pages()
+    return
+  }
+  page.value = page.value-1
+  pages()
+}
 
 
 onMounted(() => {
@@ -81,9 +107,8 @@ onMounted(() => {
             </div>
           </div>
           <div class="col-lg-6 text-right">
-            <a href="#menu" class="btn-menu animated fadeInUp scrollto">
-              Next (5)
-            </a>
+            <BaseButton  v-if="page != 1" class="btn-menu animated fadeInUp scrollto" label="Previous (5)" @click="goesToPage('prev')"/>
+            <BaseButton  v-if="tickets[0] != null" class="btn-menu animated fadeInUp scrollto" label="Next (5)" @click="goesToPage('next')"/>
           </div>
           <div
             class="row menu-container"
@@ -91,7 +116,7 @@ onMounted(() => {
             data-aos-delay="200"
           >
             <Ticket
-              v-for=" t in tickets.data"
+              v-for=" t in tickets"
               :ticketNumber="t.ticket_number"
               :status="t.status"
               :date="t.date"
