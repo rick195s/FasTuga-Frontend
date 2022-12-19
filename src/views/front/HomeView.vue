@@ -1,10 +1,11 @@
 <script setup>
 import BaseButton from "@/components/dashboard/BaseButton.vue";
-import BaseButtons from "@/components/dashboard/BaseButtons.vue";
 import MenuChoosing from "@/components/front/MenuChoosing.vue";
 import Checkout from "@/components/front/Checkout.vue";
 import { mdiChevronRight } from "@mdi/js";
-import { ref } from "vue";
+import { ref, inject, onMounted } from "vue";
+import LayoutFrontGuest from "@/layouts/LayoutFrontGuest.vue";
+
 
 const menuChoosing = ref(true);
 const checkout = ref(false);
@@ -28,33 +29,7 @@ const alerta = () => {
 </script>
 
 <template>
-  <!-- ======= Top Bar ======= -->
-  <div id="topbar" class="d-flex align-items-center fixed-top">
-    <div
-      class="container d-flex justify-content-center justify-content-md-between"
-    >
-      <div class="contact-info d-flex align-items-center">
-        <i class="bi bi-phone d-flex align-items-center">
-          <span>+351 912 345 678</span>
-        </i>
-        <i class="bi bi-clock d-flex align-items-center ms-4">
-          <span>Mon-Sat: 11:00h - 23:00h</span>
-        </i>
-      </div>
-
-      <div class="languages d-none d-md-flex align-items-center">
-        <ul>
-          <BaseButtons>
-            <BaseButton to="/login" outline label="Login" />
-            <BaseButton to="/register" outline label="Register" />
-          </BaseButtons>
-          <!-- <li><a to="/login">Login</a></li>
-          <li><a href="">Register</a></li> -->
-        </ul>
-      </div>
-    </div>
-  </div>
-
+  <LayoutFrontGuest>
   <!-- ======= Header ======= -->
   <header id="header" class="fixed-top d-flex align-items-cente">
     <div
@@ -137,6 +112,7 @@ const alerta = () => {
     />
   </section>
   <!-- End Hero -->
+</LayoutFrontGuest>
 </template>
 
 <style scoped>

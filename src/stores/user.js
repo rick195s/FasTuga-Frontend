@@ -9,8 +9,13 @@ export const useUserStore = defineStore("user", () => {
     dashboard: ["EM"],
     orders: ["EM"],
     itemsToPrepare: ["EC"],
-    order: ["EM"],
-    profile: ["EM", "EC"],
+    ordersToDeliver: ["ED"],
+    order: ["EM", "C"],
+    profile: ["EM", "EC", "ED"],
+    customerProfile: ["C"],
+    history: ["C"],
+    changePassword: ["EM", "EC", "ED", "C"],
+    products: ["EM"],
   };
 
   const user = ref(null);
@@ -29,7 +34,12 @@ export const useUserStore = defineStore("user", () => {
   async function loadUser() {
     try {
       const response = await axios.get("/me");
-      user.value = response.data.data;
+      // verification because of when a driver makes 'me' request the "data" wrapper is not there
+      if (response.data.data) {
+        user.value = response.data.data;
+      } else {
+        user.value = response.data;
+      }
     } catch (error) {
       clearUser();
       throw error;
@@ -111,5 +121,6 @@ export const useUserStore = defineStore("user", () => {
     register,
     restoreToken,
     canGoTo,
+    clearUser,
   };
 });

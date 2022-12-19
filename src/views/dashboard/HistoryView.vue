@@ -1,7 +1,8 @@
 <script setup>
-import { mdiChartTimelineVariant, mdiRefresh } from "@mdi/js";
+import { mdiChartTimelineVariant } from "@mdi/js";
 import { useRouter } from "vue-router";
 import { ref, inject, onMounted } from "vue";
+import { useUserStore } from "@/stores/user";
 import SectionMain from "@/components/dashboard/SectionMain.vue";
 import LayoutAuthenticated from "@/layouts/dashboard/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/dashboard/SectionTitleLineWithButton.vue";
@@ -11,25 +12,23 @@ import WaitingSpinner from "@/components/dashboard/WaitingSpinner.vue";
 
 const axios = inject("axios");
 const router = useRouter();
-const socket = inject("socket");
 
 const orders = ref([]);
+const userStore = useUserStore();
 
 const numPages = ref(0);
 const currentPageHuman = ref(0);
 const pagesList = ref([]);
-const currentURL = ref("");
 
 const waiting = ref(false);
 
 const loadOrders = async (url) => {
   waiting.value = true;
-  if (url) {
-    currentURL.value = url;
-  }
   try {
-    const response = await axios.get(currentURL.value || "orders");
-
+    const response = await axios.get(
+      url || "customer/" + userStore.user.customer_id + "/orders"
+    );
+    console.log(userStore.user.customer_id);
     orders.value = response.data;
 
     numPages.value = orders.value.meta.last_page;
@@ -47,23 +46,6 @@ const goToOrder = (order) => {
 
 onMounted(() => {
   loadOrders();
-
-  socket.emit("register", "managers");
-  socket.on("order-ready", (order_id) => {
-    orders.value.data.forEach((item, index, object) => {
-      if (item.id == order_id) {
-        object[index].status = "Ready";
-      }
-    });
-  });
-
-  socket.on("order-delivered", (order_id) => {
-    orders.value.data.forEach((item, index, object) => {
-      if (item.id == order_id) {
-        object[index].status = "Delivered";
-      }
-    });
-  });
 });
 </script>
 
@@ -72,10 +54,8 @@ onMounted(() => {
     <SectionMain>
       <SectionTitleLineWithButton
         :icon="mdiChartTimelineVariant"
-        title="Orders"
+        title="History"
         main
-        :end-icon="mdiRefresh"
-        @end-icon-click="loadOrders"
       >
       </SectionTitleLineWithButton>
 
@@ -85,7 +65,7 @@ onMounted(() => {
         v-for="order in orders.data"
         v-else
         :key="order.id"
-        :amount="`#${order.ticket_number} - ${order.total_price} €`"
+        :amount="`#${order.ticket_number} - ${order.total_price}`"
         :date="order.created_at"
         :type="order.payment_type"
         :status="order.status"

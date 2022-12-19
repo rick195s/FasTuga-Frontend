@@ -18,6 +18,21 @@ const routes = [
     path: "/",
     name: "home",
     component: Home,
+  },{
+    meta: {
+      title: "Board",
+    },
+    path: "/board",
+    name: "board",
+    component: () => import("@/views/front/PublicBoard.vue"),
+  },
+  {
+    meta: {
+      title: "Products",
+    },
+    path: "/products",
+    name: "products",
+    component: () => import("@/views/dashboard/ProductsView.vue"),
   },
   {
     meta: {
@@ -49,9 +64,26 @@ const routes = [
     meta: {
       title: "Items To Prepare",
     },
-    path: "/orderItems",
+    path: "/orders/items/prepare",
     name: "itemsToPrepare",
     component: () => import("@/views/dashboard/OrderItemsView.vue"),
+  },
+  {
+    meta: {
+      title: "Items To Deliver",
+    },
+    path: "/orders/deliver",
+    name: "ordersToDeliver",
+    component: () => import("@/views/dashboard/DeliverOrdersView.vue"),
+  },
+  {
+    meta: {
+      title: "History",
+    },
+    path: "/customer/history",
+    name: "history",
+    component: () => import("@/views/dashboard/HistoryView.vue"),
+
   },
   {
     meta: {
@@ -60,6 +92,24 @@ const routes = [
     path: "/profile",
     name: "profile",
     component: () => import("@/views/dashboard/ProfileView.vue"),
+  },
+  {
+    meta: {
+      title: "Customer Profile",
+    },
+    path: "/customer/profile",
+    name: "customerProfile",
+    component: () => import("@/views/dashboard/ProfileView.vue"),
+    props: () => ({ customer: true }),
+  },
+
+  {
+    meta: {
+      title: "Change Password",
+    },
+    path: "/change/password",
+    name: "changePassword",
+    component: () => import("@/views/dashboard/ChangePasswordView.vue"),
   },
 
   {

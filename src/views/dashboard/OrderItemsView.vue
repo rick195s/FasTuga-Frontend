@@ -1,16 +1,16 @@
 <script setup>
-import { mdiChartTimelineVariant } from "@mdi/js";
+import { mdiChartTimelineVariant, mdiRefresh } from "@mdi/js";
 import { ref, inject, onMounted } from "vue";
 import SectionMain from "@/components/dashboard/SectionMain.vue";
 import LayoutAuthenticated from "@/layouts/dashboard/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/dashboard/SectionTitleLineWithButton.vue";
 import PaginationButtons from "@/components/dashboard/PaginationButtons.vue";
-import WaitingSpinner from "@/components/dashboard/WaitingSpinner.vue";
 import CardBoxItem from "@/components/dashboard/CardBoxItem.vue";
 import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
 import BaseButton from "@/components/dashboard/BaseButton.vue";
 import BaseButtons from "@/components/dashboard/BaseButtons.vue";
 import NotificationToast from "@/components/dashboard/NotificationToast.vue";
+import CardBoxComponentEmpty from "@/components/dashboard/CardBoxComponentEmpty.vue";
 
 const axios = inject("axios");
 const socket = inject("socket");
@@ -32,7 +32,7 @@ const waiting = ref(false);
 const loadItems = async (url) => {
   waiting.value = true;
   try {
-    const response = await axios.get(url || "orderItems");
+    const response = await axios.get(url || "orders/items");
 
     orderItems.value = response.data;
 
@@ -54,7 +54,7 @@ const changeItemStatus = async (newStatus) => {
   isModelItem.value = false;
   try {
     const response = await axios.put(
-      `orderItems/${orderItemSelected.value.id}`,
+      `orders/items/${orderItemSelected.value.id}`,
       {
         status: newStatus,
       }
@@ -89,6 +89,15 @@ const checkStatusChanged = (newStatus) => {
 
 onMounted(() => {
   loadItems();
+
+  socket.emit("register", "chefs");
+  socket.on("order-cancelled", (order_id) => {
+    orderItems.value.data.forEach((item, index, object) => {
+      if (item.order_id == order_id) {
+        object.splice(index, 1);
+      }
+    });
+  });
 });
 </script>
 
@@ -128,31 +137,32 @@ onMounted(() => {
     <SectionMain>
       <SectionTitleLineWithButton
         :icon="mdiChartTimelineVariant"
+        :end-icon="mdiRefresh"
         title="Items To Prepare"
         main
+        @end-icon-click="loadItems"
       >
       </SectionTitleLineWithButton>
 
-      <WaitingSpinner v-if="waiting" />
-
-      <CardBoxItem
-        v-for="item in orderItems.data"
-        v-else
-        :key="item.id"
-        :name="`Order #${item.order_ticket_number} - ${item.product.name} `"
-        :avatar="item.product.photo_url"
-        :price="`Notes: ${item.notes ?? ''}`"
-        :status="item.status"
-        @click="showItemModal(item)"
-      />
-
-      <PaginationButtons
-        v-if="!waiting"
-        :num-pages="numPages"
-        :current-page-human="currentPageHuman"
-        :pages-list="pagesList"
-        @change-page="loadItems"
-      />
+      <span v-if="!waiting && orderItems.data?.length > 0">
+        <CardBoxItem
+          v-for="item in orderItems.data"
+          :key="item.id"
+          :name="`Order #${item.order_ticket_number} - ${item.product.name} `"
+          :avatar="item.product.photo_url"
+          :price="`Notes: ${item.notes ?? ''}`"
+          :status="item.status"
+          @click="showItemModal(item)"
+        />
+        <PaginationButtons
+          v-if="!waiting"
+          :num-pages="numPages"
+          :current-page-human="currentPageHuman"
+          :pages-list="pagesList"
+          @change-page="loadItems"
+        />
+      </span>
+      <CardBoxComponentEmpty v-else :waiting="waiting" />
     </SectionMain>
   </LayoutAuthenticated>
 </template>

@@ -6,7 +6,8 @@ import App from "./App.vue";
 import router from "./router";
 
 import { useStyleStore } from "@/stores/dashboard/style.js";
-import { darkModeKey, styleKey } from "@/config.js";
+import { useUserStore } from "@/stores/user.js";
+import { styleKey } from "@/config.js";
 import axios from "axios";
 import { io } from "socket.io-client";
 
@@ -34,6 +35,23 @@ const axiosModel = axios.create({
   },
 });
 
+axiosModel.interceptors.response.use(
+  function (response) {
+    return response;
+  },
+  function (error) {
+    if (
+      error.response.status === 403 &&
+      error.response?.data?.message.includes("is blocked")
+    ) {
+      useUserStore(pinia).clearUser();
+      router.push("/login");
+    }
+    // Do something with request error
+    return Promise.reject(error);
+  }
+);
+
 app.provide("axios", axiosModel);
 
 app.provide(
@@ -52,10 +70,4 @@ const styleStore = useStyleStore(pinia);
 styleStore.setStyle(localStorage[styleKey] ?? "basic");
 
 /* Dark mode */
-if (
-  (!localStorage[darkModeKey] &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches) ||
-  localStorage[darkModeKey] === "1"
-) {
-  styleStore.setDarkMode(true);
-}
+styleStore.setDarkMode(true);

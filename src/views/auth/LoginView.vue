@@ -25,6 +25,26 @@ const form = reactive({
   password: "",
 });
 
+const resolveDirective = () => {
+  switch (store.user?.type) {
+    case "EM":
+      router.push({ name: "dashboard" });
+      break;
+
+    case "EC":
+      router.push({ name: "itemsToPrepare" });
+      break;
+
+    case "ED":
+      router.push({ name: "ordersToDeliver" });
+      break;
+
+    default:
+      router.push({ name: "home" });
+      break;
+  }
+};
+
 const submit = async () => {
   const credentials = {
     email: form.email,
@@ -40,7 +60,7 @@ const submit = async () => {
       throw response;
     }
 
-    router.push({ name: "dashboard" });
+    resolveDirective();
   } catch (error) {
     setError(error);
   }
@@ -103,10 +123,20 @@ const setWaiting = () => {
           />
         </FormField>
 
+        <div class="space-y-3">
+          <p>
+            Do you want to register?
+            <a
+              class="underline text-sky-400 cursor-pointer"
+              @click.prevent="router.push({ name: 'register' })"
+              >Click here</a
+            >
+          </p>
+        </div>
         <template #footer>
           <BaseButtons>
             <BaseButton type="submit" color="info" label="Login" />
-            <BaseButton to="/register" color="info" outline label="Register" />
+            <BaseButton to="/" color="info" outline label="Home" />
           </BaseButtons>
         </template>
       </CardBox>

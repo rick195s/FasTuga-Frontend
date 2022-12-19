@@ -1,7 +1,6 @@
 <script setup>
 import {
   mdiAccountMultiple,
-  mdiCartOutline,
   mdiChartTimelineVariant,
   mdiAccountPlusOutline,
   mdiFormTextboxPassword,
@@ -10,7 +9,8 @@ import {
 } from "@mdi/js";
 import { ref, inject, onMounted } from "vue";
 import SectionMain from "@/components/dashboard/SectionMain.vue";
-import CardBoxWidget from "@/components/dashboard/CardBoxWidget.vue";
+
+import MainStatistics from "@/components/dashboard/MainStatistics.vue";
 import CardBox from "@/components/dashboard/CardBox.vue";
 import TableUsers from "@/components/dashboard/TableUsers.vue";
 import LayoutAuthenticated from "@/layouts/dashboard/LayoutAuthenticated.vue";
@@ -20,6 +20,7 @@ import FormField from "@/components/dashboard/FormField.vue";
 import FormControl from "@/components/dashboard/FormControl.vue";
 import FormFilePicker from "@/components/dashboard/FormFilePicker.vue";
 import NotificationToast from "@/components/dashboard/NotificationToast.vue";
+import BaseButton from "@/components/dashboard/BaseButton.vue";
 
 const axios = inject("axios");
 
@@ -77,6 +78,7 @@ const isModelCreateUser = ref(false);
 const toastType = ref("");
 const toastMessage = ref("");
 const users = ref([]);
+const currentURL = ref("");
 
 const userToCreate = ref({
   name: "",
@@ -98,8 +100,11 @@ const toggleBlocked = async (user) => {
 };
 
 const loadUsers = async (url) => {
+  if (url) {
+    currentURL.value = url;
+  }
   try {
-    const response = await axios.get(url || "users");
+    const response = await axios.get(currentURL.value || "users");
     users.value = response.data;
   } catch (error) {
     console.log(error);
@@ -152,6 +157,7 @@ const updateUser = async (user) => {
           "Content-Type": "multipart/form-data",
         },
       });
+      delete user.photo;
     }
 
     await axios.put(`users/${user.id}`, user);
@@ -245,41 +251,15 @@ onMounted(async () => {
       >
       </SectionTitleLineWithButton>
 
-      <div class="grid grid-cols-1 gap-6 lg:grid-cols-3 mb-6">
-        <CardBoxWidget
-          trend="12%"
-          trend-type="up"
-          color="text-emerald-500"
-          :icon="mdiAccountMultiple"
-          :number="512"
-          label="Clients"
+      <MainStatistics />
+      <SectionTitleLineWithButton :icon="mdiAccountMultiple" title="Users">
+        <BaseButton
+          label="Create User"
+          :icon="mdiAccountPlusOutline"
+          color="whiteDark"
+          @click="isModelCreateUser = true"
         />
-        <CardBoxWidget
-          trend="12%"
-          trend-type="down"
-          color="text-blue-500"
-          :icon="mdiCartOutline"
-          :number="7770"
-          prefix="$"
-          label="Sales"
-        />
-        <CardBoxWidget
-          trend="Overflow"
-          trend-type="alert"
-          color="text-red-500"
-          :icon="mdiChartTimelineVariant"
-          :number="256"
-          suffix="%"
-          label="Performance"
-        />
-      </div>
-
-      <SectionTitleLineWithButton
-        :end-icon="mdiAccountPlusOutline"
-        :icon="mdiAccountMultiple"
-        title="Users"
-        @end-icon-click="isModelCreateUser = true"
-      />
+      </SectionTitleLineWithButton>
 
       <CardBox has-table>
         <TableUsers

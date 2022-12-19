@@ -12,6 +12,10 @@ defineProps({
     type: Number,
     default: 0,
   },
+  string: {
+    type: String,
+    default: null,
+  },
   icon: {
     type: String,
     default: null,
@@ -61,7 +65,13 @@ defineProps({
           {{ label }}
         </h3>
         <h1 class="text-3xl leading-tight font-semibold">
-          <NumberDynamic :value="number" :prefix="prefix" :suffix="suffix" />
+          <NumberDynamic
+            v-if="number"
+            :value="number"
+            :prefix="prefix"
+            :suffix="suffix"
+          />
+          <p v-if="string">{{ prefix }} {{ string }} {{ suffix }}</p>
         </h1>
       </div>
       <BaseIcon
