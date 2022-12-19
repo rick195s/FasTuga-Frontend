@@ -71,6 +71,15 @@ const routes = [
   },
   {
     meta: {
+      title: "History",
+    },
+    path: "/customer/history",
+    name: "history",
+    component: () => import("@/views/dashboard/HistoryView.vue"),
+
+  },
+  {
+    meta: {
       title: "Profile",
     },
     path: "/profile",

@@ -13,6 +13,7 @@ export const useUserStore = defineStore("user", () => {
     order: ["EM"],
     profile: ["EM", "EC", "ED"],
     customerProfile: ["C"],
+    history: ["C"],
     changePassword: ["EM", "EC", "ED", "C"],
     products: ["EM"],
   };
