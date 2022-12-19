@@ -14,7 +14,7 @@ const loadTickets = async (url) => {
   waiting.value = true;
   try {
     const response = await axios.get(
-      url || "orders"
+      url || "tickets"
     );
 
     tickets.value = response.data;
