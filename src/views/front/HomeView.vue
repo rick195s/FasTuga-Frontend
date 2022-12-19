@@ -43,20 +43,12 @@ const alerta = () => {
         <ul>
           <li
             :class="{ activeState: menuChoosing, 'd-none d-lg-flex': true }"
-            @click="
-              changeState();
-              menuChoosing = true;
-            "
           >
             Menu Choosing
           </li>
           <li m-0><BaseButton :icon="mdiChevronRight" color="white" /></li>
           <li
             :class="{ activeState: checkout, 'd-none d-lg-flex': true }"
-            @click="
-              changeState();
-              checkout = true;
-            "
           >
             Checkout
           </li>
@@ -65,10 +57,6 @@ const alerta = () => {
           </li>
           <li
             :class="{ activeState: status, 'd-none d-lg-flex': true }"
-            @click="
-              changeState();
-              status = true;
-            "
           >
             Status
           </li>
@@ -95,6 +83,7 @@ const alerta = () => {
     </video>
     <MenuChoosing
       v-if="menuChoosing"
+      :products-list="productsListCheckout"
       @to-checkout="
         changeState();
         checkout = true;
@@ -108,6 +97,7 @@ const alerta = () => {
         changeState();
         menuChoosing = true;
       "
+      @add-products-to-menu-choosing="productsToCheckout"
     />
     />
   </section>

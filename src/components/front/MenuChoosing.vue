@@ -3,6 +3,13 @@ import ProductComponent from "@/components/front/ProductComponent.vue";
 import Filter from "@/components/front/FilterProducts.vue";
 import { ref, inject, onMounted } from "vue";
 
+const props = defineProps({
+  productsList: {
+    type: Array,
+    required: true,
+  },
+});
+
 const axios = inject("axios");
 const products = ref([]);
 const waiting = ref(false);
@@ -12,8 +19,7 @@ const productsTypes = ref(["all", "hot dish", "cold dish", "drink", "dessert"]);
 const selectedType = ref("all");
 
 //Adding products to cart
-//const productSelected = ref({});
-const listOfProductsSelected = ref([]);
+const listOfProductsSelected = ref(props.productsList);
 const totalQuantity = ref(0);
 
 const productQuantityChanged = (product, quantity) => {
@@ -38,10 +44,6 @@ const productQuantityChanged = (product, quantity) => {
   );
 };
 
-const totalQuantityChanged = () => {
-  alert(listOfProductsSelected.value.product_id);
-};
-
 //loading products
 const loadProducts = async (url) => {
   waiting.value = true;
@@ -49,6 +51,7 @@ const loadProducts = async (url) => {
     const response = await axios.get(url || "products");
 
     products.value = response.data;
+
   } catch (error) {
     console.log(error);
   }
@@ -66,6 +69,7 @@ const changeType = (value) => {
 const emit = defineEmits(["to-checkout", "add-products-to-checkout"]);
 
 const toCheckout = (event) => {
+  
   emit("to-checkout", event);
   emit("add-products-to-checkout", listOfProductsSelected.value);
 };
@@ -87,8 +91,11 @@ const toCheckout = (event) => {
           </div>
         </div>
         <div class="col-lg-6 text-right">
-          <a href="#" class="btn-menu" @click="toCheckout()">
+          <a v-if="totalQuantity != 0" href="#" class="btn-menu" @click="toCheckout()">
             Next ({{ totalQuantity }})
+          </a>
+          <a v-else href="#" class="btn-menu" @click="toCheckout()">
+            Choose something from the menu
           </a>
         </div>
         <div class="row" data-aos="fade-up" data-aos-delay="100">
@@ -114,6 +121,7 @@ const toCheckout = (event) => {
             :price="product.price"
             :description="product.description"
             :product-type="product.type!=selectedType && selectedType!='all'"
+            :previous-products="productsList"
             @product-quantity-changed="
               (quantity) => productQuantityChanged(product, quantity)
             "

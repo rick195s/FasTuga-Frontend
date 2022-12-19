@@ -1,6 +1,6 @@
 <script setup>
-import { watch, ref } from "vue";
-defineProps({
+import { watch, ref, onMounted } from "vue";
+const props = defineProps({
   productId: {
     type: Number,
     required: true,
@@ -25,14 +25,33 @@ defineProps({
     type: Boolean,
     required: true,
   },
+  previousProducts: {
+    type: Array,
+    required: false,
+  },
 });
 
 const emit = defineEmits(["product-quantity-changed"]);
 
 const productQuantity = ref(0);
 
+const insertPreviousProducts = () => {
+  if (props.previousProducts) {
+    const previousProduct = props.previousProducts.find(
+      (p) => p.product_id === props.productId
+    );
+    if (previousProduct) {
+      productQuantity.value = previousProduct.quantity;
+    }
+  }
+};
+
 watch(productQuantity, (newValue) => {
   emit("product-quantity-changed", newValue);
+});
+
+onMounted(() => {
+  insertPreviousProducts();
 });
 </script>
 

@@ -13,10 +13,11 @@ const props = defineProps({
 const checkedMethod = ref("visa");
 const totalToPay = ref(0);
 
-const emit = defineEmits(["to-menu-choosing"]);
+const emit = defineEmits(["to-menu-choosing", "add-products-to-menu-choosing"]);
 
 const toMenuChoosing = (event) => {
   emit("to-menu-choosing", event);
+  emit("add-products-to-menu-choosing", props.productsList);
 };
 
 const sum = () => {
