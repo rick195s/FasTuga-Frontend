@@ -12,9 +12,15 @@ const productsTypes = ref(['all', 'hot dish', 'cold dish', 'drink', 'dessert']);
 const selectedType = ref("all");
 
 //Adding products to cart
-const productsSelected = ref([]);
-const addToCart = (product) => {
-  productsSelected.value.push(product);
+//const productSelected = ref({});
+const listOfProductsSelected = ref([]);
+
+const addToCheckout = (product) => {
+  listOfProductsSelected.value.push(product);
+};
+
+const removeFromCheckout = (product) => {
+  listOfProductsSelected.value.splice(listOfProductsSelected.value.indexOf(product), 1);
 };
 
 //loading products
@@ -40,10 +46,14 @@ const changeType = (value) => {
   selectedType.value = value;
 };
 
-const emit = defineEmits(["to-checkout"]);
+const emit = defineEmits(["to-checkout", "add-products-to-checkout"]);
 
 const toCheckout = (event) => {
   emit("to-checkout", event);
+};
+
+const addProductsToCheckout = () => {
+    emit("add-products-to-checkout", listOfProductsSelected.value);
 };
 </script>
 
@@ -62,13 +72,13 @@ const toCheckout = (event) => {
         <div class="row bgOrder">
           <div class="col-lg-6">
             <div class="section-title">
-              <h2>Menu</h2>
+              <h2 @click="alerta">Menu</h2>
               <p>Check Our Tasty Menu</p>
             </div>
           </div>
           <div class="col-lg-6 text-right">
-            <a href="#" @click="toCheckout" class="btn-menu">
-              Next ({{productsSelected.length}})
+            <a href="#" @click="toCheckout(); addProductsToCheckout();" class="btn-menu">
+              Next ({{listOfProductsSelected.length}})
             </a>
           </div>
           <div class="row" data-aos="fade-up" data-aos-delay="100">
@@ -91,11 +101,14 @@ const toCheckout = (event) => {
             <Product
               v-for="product in products.data"
               :key="product.id"
+              :product-id="product.id"
               :photo-url="product.photo_url"
               :name="product.name"
               :price="product.price"
               :description="product.description"
               :p-type="product.type!=selectedType && selectedType!='all'"
+              @add-product="addToCheckout"
+              @remove-product="removeFromCheckout"
             />
           </div>
         </div>

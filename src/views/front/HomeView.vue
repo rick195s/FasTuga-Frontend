@@ -15,6 +15,17 @@ const changeState = () => {
   checkout.value = false;
   status.value = false;
 };
+
+const productsListCheckout = ref([]);
+
+const productsToCheckout = (productsList) => {
+  productsListCheckout.value=productsList;
+};
+
+const alerta = () => {
+  alert(productsListCheckout.value);
+};
+
 </script>
 
 <style scoped>
@@ -55,7 +66,7 @@ const changeState = () => {
     <div
       class="container-fluid container-xl d-flex align-items-center justify-content-lg-between"
     >
-      <h1 class="logo me-auto me-lg-0"><a href="index.html">FASTUGA</a></h1>
+      <h1 class="logo me-auto me-lg-0"><a href="#">FASTUGA</a></h1>
       <!-- Uncomment below if you prefer to use an image logo -->
       <!-- <a href="index.html" class="logo me-auto me-lg-0"><img src="assets/img/logo.png" alt="" class="img-fluid"></a>-->
 
@@ -89,8 +100,16 @@ const changeState = () => {
     >
       <source src="src/assets/img/promoVideo.mp4" type="video/mp4" />
     </video>
-    <MenuChoosing v-if="menuChoosing" @to-checkout="changeState(); checkout=true"/>
-    <Checkout v-if="checkout" @to-menu-choosing="changeState(); menuChoosing=true" />
+    <MenuChoosing 
+      v-if="menuChoosing" 
+      @to-checkout="changeState(); checkout=true"
+      @add-products-to-checkout="productsToCheckout"
+      />
+    <Checkout 
+      v-if="checkout" 
+      @to-menu-choosing="changeState(); menuChoosing=true" 
+      :products-list="productsListCheckout"
+    />
     />
   </section>
   <!-- End Hero -->

@@ -1,6 +1,6 @@
 <script setup>
 const props = defineProps({
-  photoUrl: {
+  photo: {
     type: String,
     required: true,
   },
@@ -12,6 +12,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  quantity: {
+    type: Number,
+    required: true,
+  },
 });
 </script>
 
@@ -21,10 +25,10 @@ const props = defineProps({
 
 <template>
     <div class="col-lg-12 menu-item-checkout">
-    <img :src="photoUrl" class="menu-img" alt="" />
+    <img :src="photo" class="menu-img" alt="" />
     <div class="menu-content">
       <a href="#">{{ name }}</a>
-      <span>{{ price }}€ <span class="quantity">x1</span></span>
+      <span>{{ price }}€ <!-- <span class="quantity">x1</span> --></span>
     </div>
     <div class="menu-content">
       <input type="text" class="product-notes" placeholder="Any note? Tell us here...">
