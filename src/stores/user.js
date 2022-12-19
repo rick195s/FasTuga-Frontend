@@ -10,7 +10,7 @@ export const useUserStore = defineStore("user", () => {
     orders: ["EM"],
     itemsToPrepare: ["EC"],
     ordersToDeliver: ["ED"],
-    order: ["EM"],
+    order: ["EM", "C"],
     profile: ["EM", "EC", "ED"],
     customerProfile: ["C"],
     history: ["C"],

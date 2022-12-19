@@ -25,8 +25,10 @@ const waiting = ref(false);
 const loadOrders = async (url) => {
   waiting.value = true;
   try {
-    const response = await axios.get(url || "customer/" + userStore.user.customer_id + "/orders");
-    console.log(userStore.user.customer_id)
+    const response = await axios.get(
+      url || "customer/" + userStore.user.customer_id + "/orders"
+    );
+    console.log(userStore.user.customer_id);
     orders.value = response.data;
 
     numPages.value = orders.value.meta.last_page;
