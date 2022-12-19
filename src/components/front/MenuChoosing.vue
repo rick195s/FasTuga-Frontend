@@ -14,6 +14,7 @@ const selectedType = ref("all");
 //Adding products to cart
 //const productSelected = ref({});
 const listOfProductsSelected = ref([]);
+const totalQuantity = ref(0);
 
 const productQuantityChanged = (product, quantity) => {
   const index = listOfProductsSelected.value.findIndex(
@@ -31,6 +32,14 @@ const productQuantityChanged = (product, quantity) => {
   } else {
     listOfProductsSelected.value.splice(index, 1);
   }
+  totalQuantity.value = listOfProductsSelected.value.reduce(
+    (acc, curr) => acc + curr.quantity,
+    0
+  );
+};
+
+const totalQuantityChanged = () => {
+  alert(listOfProductsSelected.value.product_id);
 };
 
 //loading products
@@ -60,6 +69,7 @@ const toCheckout = (event) => {
   emit("to-checkout", event);
   emit("add-products-to-checkout", listOfProductsSelected.value);
 };
+
 </script>
 
 <template>
@@ -78,7 +88,7 @@ const toCheckout = (event) => {
         </div>
         <div class="col-lg-6 text-right">
           <a href="#" class="btn-menu" @click="toCheckout()">
-            Next ({{ listOfProductsSelected.length }})
+            Next ({{ totalQuantity }})
           </a>
         </div>
         <div class="row" data-aos="fade-up" data-aos-delay="100">
@@ -103,6 +113,7 @@ const toCheckout = (event) => {
             :name="product.name"
             :price="product.price"
             :description="product.description"
+            :product-type="product.type!=selectedType && selectedType!='all'"
             @product-quantity-changed="
               (quantity) => productQuantityChanged(product, quantity)
             "

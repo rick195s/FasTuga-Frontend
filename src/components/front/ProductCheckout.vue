@@ -25,7 +25,7 @@ defineProps({
     <div class="menu-content">
       <a href="#">{{ name }}</a>
       <span
-        >{{ price }}€ <span class="quantity">{{ quantity }}</span></span
+        >{{ price }}€ <span class="quantity">{{ quantity }}x</span></span
       >
     </div>
     <div class="menu-content">

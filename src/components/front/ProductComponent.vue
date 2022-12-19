@@ -21,6 +21,10 @@ defineProps({
     type: String,
     required: true,
   },
+  productType: {
+    type: Boolean,
+    required: true,
+  },
 });
 
 const emit = defineEmits(["product-quantity-changed"]);
@@ -33,7 +37,7 @@ watch(productQuantity, (newValue) => {
 </script>
 
 <template>
-  <div class="col-lg-6 menu-item all">
+  <div :class="{'col-lg-6 menu-item all' : true, 'filter-remove' : productType}">
     <img :src="photoUrl" class="menu-img" alt="" />
     <div class="menu-content">
       <a href="#">{{ name }}</a>
