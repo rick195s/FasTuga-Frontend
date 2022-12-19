@@ -1,6 +1,6 @@
 <script setup>
 import { watch, ref } from "vue";
-const props = defineProps({
+defineProps({
   productId: {
     type: Number,
     required: true,
@@ -28,7 +28,7 @@ const emit = defineEmits(["product-quantity-changed"]);
 const productQuantity = ref(0);
 
 watch(productQuantity, (newValue) => {
-  emit("product-quantity-changed", props.productId, newValue);
+  emit("product-quantity-changed", newValue);
 });
 </script>
 

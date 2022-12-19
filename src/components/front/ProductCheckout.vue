@@ -1,5 +1,5 @@
 <script setup>
-const props = defineProps({
+defineProps({
   photo: {
     type: String,
     required: true,
@@ -19,19 +19,25 @@ const props = defineProps({
 });
 </script>
 
-<style scoped>
-@import "@/../src/assets/css/style.css";
-</style>
-
 <template>
-    <div class="col-lg-12 menu-item-checkout">
+  <div class="col-lg-12 menu-item-checkout">
     <img :src="photo" class="menu-img" alt="" />
     <div class="menu-content">
       <a href="#">{{ name }}</a>
-      <span>{{ price }}€ <!-- <span class="quantity">x1</span> --></span>
+      <span
+        >{{ price }}€ <span class="quantity">{{ quantity }}</span></span
+      >
     </div>
     <div class="menu-content">
-      <input type="text" class="product-notes" placeholder="Any note? Tell us here...">
+      <input
+        type="text"
+        class="product-notes"
+        placeholder="Any note? Tell us here..."
+      />
     </div>
-</div>
+  </div>
 </template>
+
+<style scoped>
+@import "@/../src/assets/css/style.css";
+</style>

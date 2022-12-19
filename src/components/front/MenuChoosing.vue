@@ -15,16 +15,17 @@ const selectedType = ref("all");
 //const productSelected = ref({});
 const listOfProductsSelected = ref([]);
 
-const productQuantityChanged = (productId, quantity) => {
+const productQuantityChanged = (product, quantity) => {
   const index = listOfProductsSelected.value.findIndex(
-    (p) => p.product_id === productId
+    (p) => p.product_id === product.id
   );
 
   if (quantity > 0) {
     index == -1
       ? listOfProductsSelected.value.push({
           quantity: quantity,
-          product_id: productId,
+          product_id: product.id,
+          ...product,
         })
       : (listOfProductsSelected.value[index].quantity = quantity);
   } else {
@@ -102,7 +103,9 @@ const toCheckout = (event) => {
             :name="product.name"
             :price="product.price"
             :description="product.description"
-            @product-quantity-changed="productQuantityChanged"
+            @product-quantity-changed="
+              (quantity) => productQuantityChanged(product, quantity)
+            "
           />
         </div>
       </div>
