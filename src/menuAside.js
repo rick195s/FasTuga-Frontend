@@ -54,16 +54,4 @@ export default [
     icon: mdiClipboardTextClockOutline,
     name: "history",
   },
-  {
-    label: "Dropdown",
-    icon: mdiViewList,
-    menu: [
-      {
-        label: "Item One",
-      },
-      {
-        label: "Item Two",
-      },
-    ],
-  },
 ];
