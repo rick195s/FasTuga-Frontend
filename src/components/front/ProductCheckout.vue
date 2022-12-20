@@ -27,7 +27,6 @@ const emit = defineEmits(["product-note"]);
 watch(note, (newValue) => {
   emit("product-note", newValue);
 });
-
 </script>
 
 <template>

@@ -83,13 +83,12 @@ const finalList = ref([]);
 const finalListCheckout = () => {
   paymentReference.value = paymentMethod.value.paymentData;
 
-  items.value.map((item) => {
-    delete item.name;
-    delete item.price;
-    delete item.description;
-    delete item.photo_url;
-    delete item.type;
-    delete item.id;
+  const finalItems = items.value.map((item) => {
+    return {
+      product_id: item.product_id,
+      quantity: item.quantity,
+      note: item.note,
+    };
   });
 
   finalList.value.push(
@@ -99,20 +98,19 @@ const finalListCheckout = () => {
       points_used_to_pay: pointsSelected.value * 2,
     },
     {
-      items: items.value,
+      items: finalItems,
     }
   );
 };
 
 const submit = async () => {
+  finalListCheckout();
   try {
     const response = await axios.post("orders", finalList.value);
-    if (response.status !== 201) {
-      alert(response);
-      throw response;
-    }
+    console.log(response);
     //router.push({ name: "home" });
   } catch (error) {
+    console.log(error);
     //setError(error);
   }
 };
@@ -126,7 +124,7 @@ onMounted(() => {
 
 <template>
   <div class="container position-relative text-center text-lg-start">
-    <form>
+    <form @submit="submit">
       <div class="row bgOrder">
         <div class="col-lg-12">
           <div class="section-title">
@@ -198,27 +196,27 @@ onMounted(() => {
                 @product-note="(note) => productNoteChanged(product, note)"
               />
               <hr />
-              <div v-if="userStore.user" class="col-lg-6 checkout-points">
-                <span>Use Points (10 points = 5€):</span>
-              </div>
-              <div
-                v-if="userStore.user"
-                class="col-lg-6 checkout-points text-right"
-              >
-                <select v-model="pointsSelected" class="form-select">
-                  <option
-                    v-for="option in optionsPoints"
-                    :key="option"
-                    :value="option.value"
+              <div v-if="userStore.user?.type == 'C'" style="display: flex">
+                <div class="col-lg-6 checkout-points">
+                  <span>Use Points (10 points = 5€):</span>
+                </div>
+                <div class="col-lg-6 checkout-points text-right">
+                  <select v-model="pointsSelected" class="form-select">
+                    <option
+                      v-for="option in optionsPoints"
+                      :key="option"
+                      :value="option.value"
+                    >
+                      {{ option.text }}
+                    </option>
+                  </select>
+                  <span class="checkout-points-quantity">
+                    (out of {{ userStore.user.points }})</span
                   >
-                    {{ option.text }}
-                  </option>
-                </select>
-                <span class="checkout-points-quantity">
-                  (out of {{ userStore.user.points }})</span
-                >
+                </div>
+
+                <hr class="mt-0" />
               </div>
-              <hr v-if="userStore.user" class="mt-0" />
               <div class="col-lg-6 checkout-total"><span>Total</span></div>
               <div class="col-lg-6 checkout-total text-right">
                 <span v-if="pointsSelected != 0">
@@ -233,13 +231,7 @@ onMounted(() => {
         <div class="row">
           <div class="col-lg-12">
             <a href="#" class="btn-menu" @click="toMenuChoosing"> Previous </a>
-            <button
-              class="btn-menu float-right"
-              @click="
-                finalListCheckout();
-                submit();
-              "
-            >
+            <button class="btn-menu float-right" type="submit">
               Buy & Finish
             </button>
           </div>

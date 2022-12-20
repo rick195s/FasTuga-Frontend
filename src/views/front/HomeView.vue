@@ -62,16 +62,6 @@ const productsToCheckout = (productsList) => {
 
     <!-- ======= Hero Section ======= -->
     <section id="hero" class="d-flex align-items-center">
-      <video
-        id="bgVideo"
-        preload="true"
-        autoplay
-        loop
-        muted
-        poster="src/assets/img/promoVideo.mp4"
-      >
-        <source src="src/assets/img/promoVideo.mp4" type="video/mp4" />
-      </video>
       <MenuChoosing
         v-if="menuChoosing"
         :products-list="productsListCheckout"
