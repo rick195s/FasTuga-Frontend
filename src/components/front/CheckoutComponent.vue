@@ -1,8 +1,10 @@
 <script setup>
 import ProductCheckout from "@/components/front/ProductCheckout.vue";
 import PaymentMethod from "@/components/front/PaymentMethodForm.vue";
-import { ref, watch, onMounted } from "vue";
+import { ref, watch, onMounted, inject } from "vue";
 import { useUserStore } from "@/stores/user";
+
+const axios = inject("axios");
 
 const props = defineProps({
   productsList: {
@@ -37,14 +39,17 @@ const sum = () => {
 const addToOptionsPoints = () => {
   if (!userStore.user) return;
 
-    for (let i = 0; i <= userStore.user.points; i += 10) {
-      if(i/2 < PriceProducts.value){
-        optionsPoints.value.push({ text: i, value: i / 2 });
-      }else{
-        optionsPoints.value.push({ text: i, value: (PriceProducts.value).toFixed(2) });
-        break;
-      }
+  for (let i = 0; i <= userStore.user.points; i += 10) {
+    if (i / 2 < PriceProducts.value) {
+      optionsPoints.value.push({ text: i, value: i / 2 });
+    } else {
+      optionsPoints.value.push({
+        text: i,
+        value: PriceProducts.value.toFixed(2),
+      });
+      break;
     }
+  }
 };
 
 watch(pointsSelected, (newValue) => {
@@ -53,27 +58,24 @@ watch(pointsSelected, (newValue) => {
 });
 
 const getTotalPrice = () => {
-  if(!userStore.user){
-    totalPrice.value=PriceProducts.value.toFixed(2);
-    return
+  if (!userStore.user) {
+    totalPrice.value = PriceProducts.value.toFixed(2);
+    return;
   }
-  if(PriceProducts.value<pointsSelected.value)
-  totalPrice.value=0;
-  else 
-  totalPrice.value=(PriceProducts.value-pointsSelected.value).toFixed(2)
+  if (PriceProducts.value < pointsSelected.value) totalPrice.value = 0;
+  else
+    totalPrice.value = (PriceProducts.value - pointsSelected.value).toFixed(2);
 };
 
 const productNoteChanged = (product, note) => {
-  const index = items.value.findIndex(
-    (p) => p.product_id === product.id
-  );
-    index == -1
-      ? items.value.push({
-          note: note,
-          product_id: product.id,
-          ...product,
-        })
-      : (items.value[index].note = note);
+  const index = items.value.findIndex((p) => p.product_id === product.id);
+  index == -1
+    ? items.value.push({
+        note: note,
+        product_id: product.id,
+        ...product,
+      })
+    : (items.value[index].note = note);
 };
 
 const finalList = ref([]);
@@ -90,19 +92,21 @@ const finalListCheckout = () => {
     delete item.id;
   });
 
-  finalList.value.push({
-    payment_type: checkedMethod.value,
-    payment_reference: paymentReference.value,
-    points_used_to_pay: pointsSelected.value*2,
-  },{
-    items: items.value
-  }
+  finalList.value.push(
+    {
+      payment_type: checkedMethod.value,
+      payment_reference: paymentReference.value,
+      points_used_to_pay: pointsSelected.value * 2,
+    },
+    {
+      items: items.value,
+    }
   );
-}
+};
 
 const submit = async () => {
   try {
-    const response = await store.makeOrder(finalList.value);
+    const response = await axios.post("orders", finalList.value);
     if (response.status !== 201) {
       alert(response);
       throw response;
@@ -177,10 +181,7 @@ onMounted(() => {
                       class="payment-img"
                     />
                   </div>
-                  <PaymentMethod 
-                    :method="checkedMethod"
-                    ref="paymentMethod"
-                  />
+                  <PaymentMethod ref="paymentMethod" :method="checkedMethod" />
                 </div>
               </div>
             </div>
@@ -194,27 +195,35 @@ onMounted(() => {
                 :name="product.name"
                 :price="product.price"
                 :quantity="product.quantity"
-                @product-note="
-              (note) => productNoteChanged(product, note)
-            "
+                @product-note="(note) => productNoteChanged(product, note)"
               />
               <hr />
               <div v-if="userStore.user" class="col-lg-6 checkout-points">
                 <span>Use Points (10 points = 5€):</span>
               </div>
-              <div v-if="userStore.user" class="col-lg-6 checkout-points text-right">
-                <select class="form-select" v-model="pointsSelected">
-                  <option v-for="option in optionsPoints" :value="option.value">
+              <div
+                v-if="userStore.user"
+                class="col-lg-6 checkout-points text-right"
+              >
+                <select v-model="pointsSelected" class="form-select">
+                  <option
+                    v-for="option in optionsPoints"
+                    :key="option"
+                    :value="option.value"
+                  >
                     {{ option.text }}
                   </option>
                 </select>
-                <span class="checkout-points-quantity"> (out of {{ userStore.user.points }})</span>
+                <span class="checkout-points-quantity">
+                  (out of {{ userStore.user.points }})</span
+                >
               </div>
               <hr v-if="userStore.user" class="mt-0" />
               <div class="col-lg-6 checkout-total"><span>Total</span></div>
               <div class="col-lg-6 checkout-total text-right">
-                <span v-if="pointsSelected!=0">
-                  {{ PriceProducts.toFixed(2) }}€ - {{ pointsSelected }}€ (points) = {{ totalPrice }}€
+                <span v-if="pointsSelected != 0">
+                  {{ PriceProducts.toFixed(2) }}€ - {{ pointsSelected }}€
+                  (points) = {{ totalPrice }}€
                 </span>
                 <span v-else>{{ totalPrice }}€</span>
               </div>
@@ -224,7 +233,15 @@ onMounted(() => {
         <div class="row">
           <div class="col-lg-12">
             <a href="#" class="btn-menu" @click="toMenuChoosing"> Previous </a>
-            <button @click="finalListCheckout(); submit();" class="btn-menu float-right"> Buy & Finish </button>
+            <button
+              class="btn-menu float-right"
+              @click="
+                finalListCheckout();
+                submit();
+              "
+            >
+              Buy & Finish
+            </button>
           </div>
         </div>
       </div>

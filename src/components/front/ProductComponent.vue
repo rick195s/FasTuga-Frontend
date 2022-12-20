@@ -21,13 +21,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
-  productType: {
-    type: Boolean,
-    required: true,
-  },
-  previousProducts: {
-    type: Array,
+  previousQuantity: {
+    type: Number,
     required: false,
+    default: null,
   },
 });
 
@@ -35,29 +32,17 @@ const emit = defineEmits(["product-quantity-changed"]);
 
 const productQuantity = ref(0);
 
-
-const insertPreviousProducts = () => {
-  if (props.previousProducts) {
-    const previousProduct = props.previousProducts.find(
-      (p) => p.product_id === props.productId
-    );
-    if (previousProduct) {
-      productQuantity.value = previousProduct.quantity;
-    }
-  }
-};
-
 watch(productQuantity, (newValue) => {
   emit("product-quantity-changed", newValue);
 });
 
 onMounted(() => {
-  insertPreviousProducts();
+  productQuantity.value = props.previousQuantity ?? 0;
 });
 </script>
 
 <template>
-  <div :class="{'col-lg-6 menu-item all' : true, 'filter-remove' : productType}">
+  <div :class="{ 'col-lg-6 menu-item all': true }">
     <img :src="photoUrl" class="menu-img" alt="" />
     <div class="menu-content">
       <a href="#">{{ name }}</a>

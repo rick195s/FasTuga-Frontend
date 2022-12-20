@@ -1,7 +1,7 @@
 <script setup>
 import ProductComponent from "@/components/front/ProductComponent.vue";
 import Filter from "@/components/front/FilterProducts.vue";
-import { ref, inject, onMounted, computed } from "vue";
+import { ref, inject, onMounted } from "vue";
 
 const props = defineProps({
   productsList: {
@@ -44,6 +44,17 @@ const productQuantityChanged = (product, quantity) => {
   );
 };
 
+// used when a user goes to checkout page and then gets back to menu choosing
+const restoreOldQuantities = () => {
+  products.value.data.forEach((product) => {
+    props.productsList.forEach((element) => {
+      if (product.id == element.product_id) {
+        product.quantity = element.quantity;
+      }
+    });
+  });
+};
+
 //loading products
 const loadProducts = async (url) => {
   waiting.value = true;
@@ -53,6 +64,7 @@ const loadProducts = async (url) => {
     );
 
     products.value = response.data;
+    restoreOldQuantities();
   } catch (error) {
     console.log(error);
   }
@@ -98,7 +110,12 @@ const toCheckout = (event) => {
           </div>
         </div>
         <div class="col-lg-6 text-right">
-          <a v-if="totalQuantity != 0" href="#" class="btn-menu" @click="toCheckout()">
+          <a
+            v-if="totalQuantity != 0"
+            href="#"
+            class="btn-menu"
+            @click="toCheckout()"
+          >
             Next ({{ totalQuantity }})
           </a>
           <a v-else href="#" class="btn-menu">
@@ -127,8 +144,7 @@ const toCheckout = (event) => {
             :name="product.name"
             :price="product.price"
             :description="product.description"
-            :product-type="product.type!=selectedType && selectedType!='all'"
-            :previous-products="productsList"
+            :previous-quantity="product.quantity"
             @product-quantity-changed="
               (quantity) => productQuantityChanged(product, quantity)
             "

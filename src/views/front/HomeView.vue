@@ -1,9 +1,9 @@
 <script setup>
 import BaseButton from "@/components/dashboard/BaseButton.vue";
 import MenuChoosing from "@/components/front/MenuChoosing.vue";
-import Checkout from "@/components/front/Checkout.vue";
+import CheckoutComponent from "@/components/front/CheckoutComponent.vue";
 import { mdiChevronRight } from "@mdi/js";
-import { ref, inject, onMounted } from "vue";
+import { ref } from "vue";
 import LayoutFrontGuest from "@/layouts/LayoutFrontGuest.vue";
 
 const menuChoosing = ref(true);
@@ -20,10 +20,6 @@ const productsListCheckout = ref([]);
 
 const productsToCheckout = (productsList) => {
   productsListCheckout.value = productsList;
-};
-
-const alerta = () => {
-  alert(productsListCheckout.value);
 };
 </script>
 
@@ -85,7 +81,7 @@ const alerta = () => {
         "
         @add-products-to-checkout="productsToCheckout"
       />
-      <Checkout
+      <CheckoutComponent
         v-if="checkout"
         :products-list="productsListCheckout"
         @to-menu-choosing="
