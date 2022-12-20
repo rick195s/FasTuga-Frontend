@@ -112,6 +112,15 @@ export const useUserStore = defineStore("user", () => {
     return true;
   }
 
+  async function makeOrder(listOProducts) {
+    try {
+      const response = await axios.post("orders", listOProducts);
+      return response;
+    } catch (error) {
+      return error;
+    }
+  }
+
   return {
     user,
     userId,
@@ -122,5 +131,6 @@ export const useUserStore = defineStore("user", () => {
     restoreToken,
     canGoTo,
     clearUser,
+    makeOrder,
   };
 });

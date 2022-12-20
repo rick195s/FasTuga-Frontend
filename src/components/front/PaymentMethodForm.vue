@@ -1,10 +1,22 @@
 <script setup>
+import { ref } from "vue";
+
 const props = defineProps({
   method: {
     type: String,
     required: true,
   },
 });
+
+
+const paymentData = ref();
+
+defineExpose({
+  paymentData,
+});
+
+
+
 </script>
 
 <style scoped>
@@ -15,14 +27,14 @@ const props = defineProps({
 <template>
   <div class="form-group" v-if="method == 'visa'">
     <label for="exampleInputEmail1">Visa Card ID</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="XXXX XXXX XXXX XXXX">
+    <input v-model="paymentData" type="text" class="form-control" placeholder="XXXX XXXX XXXX XXXX">
   </div>
   <div class="form-group" v-if="method == 'paypal'">
     <label for="exampleInputEmail1">Paypal email</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="ex: youremail@mail.pt">
+    <input v-model="paymentData" type="email" class="form-control" placeholder="ex: youremail@mail.pt">
   </div>
   <div class="form-group" v-if="method == 'mbway'">
     <label for="exampleInputEmail1">Your Mbway Phone Nr</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="ex: 912345678">
+    <input v-model="paymentData" type="tel" class="form-control" placeholder="ex: 912345678">
   </div>
 </template>

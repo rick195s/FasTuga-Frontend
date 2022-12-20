@@ -35,6 +35,7 @@ const emit = defineEmits(["product-quantity-changed"]);
 
 const productQuantity = ref(0);
 
+
 const insertPreviousProducts = () => {
   if (props.previousProducts) {
     const previousProduct = props.previousProducts.find(

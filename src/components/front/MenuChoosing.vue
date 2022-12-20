@@ -1,7 +1,7 @@
 <script setup>
 import ProductComponent from "@/components/front/ProductComponent.vue";
 import Filter from "@/components/front/FilterProducts.vue";
-import { ref, inject, onMounted } from "vue";
+import { ref, inject, onMounted, computed } from "vue";
 
 const props = defineProps({
   productsList: {
@@ -20,6 +20,7 @@ const selectedType = ref("all");
 
 //Adding products to cart
 const listOfProductsSelected = ref(props.productsList);
+const proudctsListCheckout = props.productsList;
 const totalQuantity = ref(0);
 
 const productQuantityChanged = (product, quantity) => {
@@ -58,6 +59,13 @@ const loadProducts = async (url) => {
   waiting.value = false;
 };
 
+const clearLists = () => {
+  listOfProductsSelected.value = [];
+  proudctsListCheckout.value = [];
+  totalQuantity.value = 0;
+};
+
+
 onMounted(() => {
   loadProducts();
 });
@@ -91,10 +99,13 @@ const toCheckout = (event) => {
           </div>
         </div>
         <div class="col-lg-6 text-right">
+          <a v-if="totalQuantity != 0" href="#" class="btn-menu mr-10" @click="clearLists();">
+            Clear
+          </a>
           <a v-if="totalQuantity != 0" href="#" class="btn-menu" @click="toCheckout()">
             Next ({{ totalQuantity }})
           </a>
-          <a v-else href="#" class="btn-menu" @click="toCheckout()">
+          <a v-else href="#" class="btn-menu">
             Choose something from the menu
           </a>
         </div>
@@ -121,7 +132,7 @@ const toCheckout = (event) => {
             :price="product.price"
             :description="product.description"
             :product-type="product.type!=selectedType && selectedType!='all'"
-            :previous-products="productsList"
+            :previous-products="proudctsListCheckout"
             @product-quantity-changed="
               (quantity) => productQuantityChanged(product, quantity)
             "

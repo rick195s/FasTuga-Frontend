@@ -1,4 +1,6 @@
 <script setup>
+import { ref, watch } from "vue";
+
 defineProps({
   photo: {
     type: String,
@@ -17,6 +19,15 @@ defineProps({
     required: true,
   },
 });
+
+const note = ref(null);
+
+const emit = defineEmits(["product-note"]);
+
+watch(note, (newValue) => {
+  emit("product-note", newValue);
+});
+
 </script>
 
 <template>
@@ -30,6 +41,7 @@ defineProps({
     </div>
     <div class="menu-content">
       <input
+        v-model="note"
         type="text"
         class="product-notes"
         placeholder="Any note? Tell us here..."
