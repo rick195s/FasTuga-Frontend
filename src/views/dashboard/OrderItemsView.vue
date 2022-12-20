@@ -148,7 +148,7 @@ onMounted(() => {
         <CardBoxItem
           v-for="item in orderItems.data"
           :key="item.id"
-          :name="`Order #${item.order_ticket_number} - ${item.product.name} `"
+          :name="`(${item.product.name}) Order #${item.local_number}`"
           :avatar="item.product.photo_url"
           :price="`Notes: ${item.notes ?? ''}`"
           :status="item.status"

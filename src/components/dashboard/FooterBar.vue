@@ -9,9 +9,7 @@ const year = new Date().getFullYear();
   <footer class="py-2 px-6" :class="containerMaxW">
     <BaseLevel>
       <div class="text-center md:text-left">
-        <b
-          >&copy;{{ year }},
-        </b>
+        <b>&copy;{{ year }}, </b>
         <slot />
       </div>
     </BaseLevel>
