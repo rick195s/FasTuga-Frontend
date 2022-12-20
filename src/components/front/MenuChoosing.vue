@@ -15,8 +15,8 @@ const products = ref([]);
 const waiting = ref(false);
 
 //filtering products
-const productsTypes = ref(["all", "hot dish", "cold dish", "drink", "dessert"]);
-const selectedType = ref("all");
+const productsTypes = ref(["hot dish", "cold dish", "drink", "dessert"]);
+const selectedType = ref("hot dish");
 
 //Adding products to cart
 const listOfProductsSelected = ref(props.productsList);
@@ -48,10 +48,11 @@ const productQuantityChanged = (product, quantity) => {
 const loadProducts = async (url) => {
   waiting.value = true;
   try {
-    const response = await axios.get(url || "products");
+    const response = await axios.get(
+      url || "products?type=" + selectedType.value
+    );
 
     products.value = response.data;
-
   } catch (error) {
     console.log(error);
   }
@@ -64,16 +65,15 @@ onMounted(() => {
 
 const changeType = (value) => {
   selectedType.value = value;
+  loadProducts();
 };
 
 const emit = defineEmits(["to-checkout", "add-products-to-checkout"]);
 
 const toCheckout = (event) => {
-  
   emit("to-checkout", event);
   emit("add-products-to-checkout", listOfProductsSelected.value);
 };
-
 </script>
 
 <template>
@@ -91,7 +91,12 @@ const toCheckout = (event) => {
           </div>
         </div>
         <div class="col-lg-6 text-right">
-          <a v-if="totalQuantity != 0" href="#" class="btn-menu" @click="toCheckout()">
+          <a
+            v-if="totalQuantity != 0"
+            href="#"
+            class="btn-menu"
+            @click="toCheckout()"
+          >
             Next ({{ totalQuantity }})
           </a>
           <a v-else href="#" class="btn-menu" @click="toCheckout()">
@@ -120,7 +125,6 @@ const toCheckout = (event) => {
             :name="product.name"
             :price="product.price"
             :description="product.description"
-            :product-type="product.type!=selectedType && selectedType!='all'"
             :previous-products="productsList"
             @product-quantity-changed="
               (quantity) => productQuantityChanged(product, quantity)
