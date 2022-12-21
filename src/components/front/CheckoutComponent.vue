@@ -3,8 +3,11 @@ import ProductCheckout from "@/components/front/ProductCheckout.vue";
 import PaymentMethod from "@/components/front/PaymentMethodForm.vue";
 import { ref, watch, onMounted, inject } from "vue";
 import { useUserStore } from "@/stores/user";
+import { useRouter } from "vue-router";
 
 const axios = inject("axios");
+
+const router = useRouter();
 
 const props = defineProps({
   productsList: {
@@ -93,7 +96,8 @@ const getFinalListCheckout = () => {
 const submit = async () => {
   cleanErrors();
   try {
-    await axios.post("orders", getFinalListCheckout());
+    const response = await axios.post("orders", getFinalListCheckout());
+    router.push({ name: "order", params: { id: response.data.data.id } });
   } catch (error) {
     setErrors(error);
   }
