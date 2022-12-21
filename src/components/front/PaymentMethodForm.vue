@@ -1,5 +1,6 @@
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import { useUserStore } from "@/stores/user";
 
 defineProps({
   errors: {
@@ -8,12 +9,20 @@ defineProps({
   },
 });
 
+const userStore = useUserStore();
 const paymentData = ref();
 const selectedMethod = ref("visa");
 
 defineExpose({
   paymentData,
   selectedMethod,
+});
+
+onMounted(() => {
+  if (userStore.user && userStore.user?.default_payment_type) {
+    selectedMethod.value = userStore.user.default_payment_type;
+    paymentData.value = userStore.user.default_payment_reference;
+  }
 });
 </script>
 
@@ -29,7 +38,7 @@ defineExpose({
               v-model="selectedMethod"
               class="form-check-input"
               type="radio"
-              value="visa"
+              value="VISA"
               checked
             />
             <img src="src/assets/img/visa.png" alt="visa" class="payment-img" />
@@ -39,7 +48,7 @@ defineExpose({
               v-model="selectedMethod"
               class="form-check-input"
               type="radio"
-              value="paypal"
+              value="PAYPAL"
             />
             <img
               src="src/assets/img/paypal.png"
@@ -52,7 +61,7 @@ defineExpose({
               v-model="selectedMethod"
               class="form-check-input"
               type="radio"
-              value="mbway"
+              value="MBWAY"
             />
             <img
               src="src/assets/img/mbway.png"
@@ -60,7 +69,7 @@ defineExpose({
               class="payment-img"
             />
           </div>
-          <div v-if="selectedMethod == 'visa'" class="form-group">
+          <div v-if="selectedMethod == 'VISA'" class="form-group">
             <label for="exampleInputEmail1">Visa Card ID</label>
             <input
               v-model="paymentData"
@@ -73,7 +82,8 @@ defineExpose({
               pattern="^[1-9][0-9]{15}"
             />
           </div>
-          <div v-if="selectedMethod == 'paypal'" class="form-group">
+
+          <div v-if="selectedMethod == 'PAYPAL'" class="form-group">
             <label for="exampleInputEmail1">Paypal email</label>
             <input
               v-model="paymentData"
@@ -83,7 +93,7 @@ defineExpose({
               required
             />
           </div>
-          <div v-if="selectedMethod == 'mbway'" class="form-group">
+          <div v-if="selectedMethod == 'MBWAY'" class="form-group">
             <label for="exampleInputEmail1">Your Mbway Phone Nr</label>
             <input
               v-model="paymentData"
