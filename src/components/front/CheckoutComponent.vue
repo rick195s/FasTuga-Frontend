@@ -22,6 +22,7 @@ const optionsPoints = ref([]);
 const items = ref(props.productsList);
 const paymentReference = ref(null);
 const paymentMethod = ref(null);
+const paymentErrors = ref([]);
 
 const emit = defineEmits(["to-menu-choosing", "add-products-to-menu-choosing"]);
 
@@ -78,9 +79,7 @@ const productNoteChanged = (product, note) => {
     : (items.value[index].note = note);
 };
 
-const finalList = ref([]);
-
-const finalListCheckout = () => {
+const getFinalListCheckout = () => {
   paymentReference.value = paymentMethod.value.paymentData;
 
   const finalItems = items.value.map((item) => {
@@ -91,28 +90,35 @@ const finalListCheckout = () => {
     };
   });
 
-  finalList.value.push(
-    {
-      payment_type: checkedMethod.value,
-      payment_reference: paymentReference.value,
-      points_used_to_pay: pointsSelected.value * 2,
-    },
-    {
-      items: finalItems,
-    }
-  );
+  return {
+    payment_type: checkedMethod.value,
+    payment_reference: paymentReference.value,
+    points_used_to_pay: pointsSelected.value,
+    items: finalItems,
+  };
 };
 
 const submit = async () => {
-  finalListCheckout();
+  cleanErrors();
   try {
-    const response = await axios.post("orders", finalList.value);
-    console.log(response);
-    //router.push({ name: "home" });
+    await axios.post("orders", getFinalListCheckout());
   } catch (error) {
-    console.log(error);
-    //setError(error);
+    setErrors(error);
   }
+};
+
+const cleanErrors = () => {
+  paymentErrors.value = [];
+};
+
+const setErrors = (error) => {
+  error.response.data.errors?.payment_reference?.forEach((element) => {
+    paymentErrors.value.push(element);
+  });
+
+  error.response.data.errors?.payment_type?.forEach((element) => {
+    paymentErrors.value.push(element);
+  });
 };
 
 onMounted(() => {
@@ -124,7 +130,7 @@ onMounted(() => {
 
 <template>
   <div class="container position-relative text-center text-lg-start">
-    <form @submit="submit">
+    <form @submit.prevent="submit">
       <div class="row bgOrder">
         <div class="col-lg-12">
           <div class="section-title">
@@ -162,7 +168,7 @@ onMounted(() => {
                     />
                     <img
                       src="src/assets/img/paypal.png"
-                      alt="visa"
+                      alt="paypal"
                       class="payment-img"
                     />
                   </div>
@@ -175,11 +181,15 @@ onMounted(() => {
                     />
                     <img
                       src="src/assets/img/mbway.png"
-                      alt="visa"
+                      alt="mbway"
                       class="payment-img"
                     />
                   </div>
-                  <PaymentMethod ref="paymentMethod" :method="checkedMethod" />
+                  <PaymentMethod
+                    ref="paymentMethod"
+                    :errors="paymentErrors"
+                    :method="checkedMethod"
+                  />
                 </div>
               </div>
             </div>

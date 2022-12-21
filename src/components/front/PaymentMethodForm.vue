@@ -6,6 +6,10 @@ defineProps({
     type: String,
     required: true,
   },
+  errors: {
+    type: Array,
+    required: true,
+  },
 });
 
 const paymentData = ref();
@@ -45,6 +49,11 @@ defineExpose({
       placeholder="ex: 912345678"
       required
     />
+  </div>
+  <div v-if="errors" role="alert" class="text-rose-500">
+    <p v-for="error in errors" :key="error">
+      {{ error }}
+    </p>
   </div>
 </template>
 
