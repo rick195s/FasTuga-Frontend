@@ -11,7 +11,7 @@ defineProps({
 
 const userStore = useUserStore();
 const paymentData = ref();
-const selectedMethod = ref("visa");
+const selectedMethod = ref("VISA");
 
 defineExpose({
   paymentData,

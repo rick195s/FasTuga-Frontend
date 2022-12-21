@@ -5,6 +5,7 @@ import { ref, watch, onMounted, inject } from "vue";
 import { useUserStore } from "@/stores/user";
 import { useRouter } from "vue-router";
 
+const socket = inject("socket");
 const axios = inject("axios");
 
 const router = useRouter();
@@ -97,7 +98,13 @@ const submit = async () => {
   cleanErrors();
   try {
     const response = await axios.post("orders", getFinalListCheckout());
-    router.push({ name: "order", params: { id: response.data.data.id } });
+    socket.emit("new-order", response.data.data);
+
+    if (userStore.user?.type == "C") {
+      router.push({ name: "order", params: { id: response.data.data.id } });
+    } else {
+      router.push({ name: "board" });
+    }
   } catch (error) {
     setErrors(error);
   }
