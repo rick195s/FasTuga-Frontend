@@ -66,8 +66,11 @@ defineExpose({
               v-model="paymentData"
               type="text"
               class="form-control"
-              placeholder="XXXX XXXX XXXX XXXX"
+              placeholder="XXXXXXXXXXXXXXXX (16 numbers)"
               required
+              minlength="16"
+              maxlength="16"
+              pattern="^[1-9][0-9]{15}"
             />
           </div>
           <div v-if="selectedMethod == 'paypal'" class="form-group">
@@ -88,6 +91,9 @@ defineExpose({
               class="form-control"
               placeholder="ex: 912345678"
               required
+              minlength="9"
+              maxlength="9"
+              pattern="^[1-9][0-9]{8}"
             />
           </div>
           <div v-if="errors" role="alert" class="text-rose-500">

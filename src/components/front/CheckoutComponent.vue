@@ -69,13 +69,7 @@ const getTotalPrice = () => {
 
 const productNoteChanged = (product, note) => {
   const index = items.value.findIndex((p) => p.product_id === product.id);
-  index == -1
-    ? items.value.push({
-        note: note,
-        product_id: product.id,
-        ...product,
-      })
-    : (items.value[index].note = note);
+  items.value[index].notes = note;
 };
 
 const getFinalListCheckout = () => {
@@ -83,7 +77,7 @@ const getFinalListCheckout = () => {
     return {
       product_id: item.product_id,
       quantity: item.quantity,
-      note: item.note,
+      notes: item.notes,
     };
   });
 
@@ -136,11 +130,7 @@ onMounted(() => {
           </div>
         </div>
         <div class="row menu-container">
-          <PaymentMethod
-            ref="paymentMethod"
-            :errors="paymentErrors"
-            :method="checkedMethod"
-          />
+          <PaymentMethod ref="paymentMethod" :errors="paymentErrors" />
           <div class="col-lg-6">
             <div class="row checkout-items">
               <ProductCheckout
