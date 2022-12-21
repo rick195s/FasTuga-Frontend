@@ -118,6 +118,7 @@ export const useUserStore = defineStore("user", () => {
     userPhotoUrl,
     login,
     logout,
+    loadUser,
     register,
     restoreToken,
     canGoTo,

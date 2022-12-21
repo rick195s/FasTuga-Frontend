@@ -30,6 +30,7 @@ const loadOrders = async (url) => {
   try {
     const response = await axios.get(currentURL.value || "orders");
 
+    console.log(response.data);
     orders.value = response.data;
 
     numPages.value = orders.value.meta.last_page;
@@ -90,7 +91,6 @@ onMounted(() => {
         :type="order.payment_type"
         :status="order.status"
         :name="order.customer_name ?? 'Anonymous'"
-        :account="order.payment_reference"
         @click="goToOrder(order)"
       />
 
