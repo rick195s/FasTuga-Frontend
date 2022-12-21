@@ -15,6 +15,11 @@ export default [
     name: "dashboard",
   },
   {
+    label: "Make Order",
+    icon: mdiClipboardTextClockOutline,
+    name: "home",
+  },
+  {
     label: "Orders",
     icon: mdiPackageVariantClosed,
     name: "orders",
