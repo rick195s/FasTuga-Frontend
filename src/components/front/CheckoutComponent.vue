@@ -14,13 +14,12 @@ const props = defineProps({
 });
 
 const userStore = useUserStore();
-const checkedMethod = ref("visa");
 const PriceProducts = ref(0);
 const pointsSelected = ref(0);
 const totalPrice = ref(0);
 const optionsPoints = ref([]);
 const items = ref(props.productsList);
-const paymentReference = ref(null);
+
 const paymentMethod = ref(null);
 const paymentErrors = ref([]);
 
@@ -80,8 +79,6 @@ const productNoteChanged = (product, note) => {
 };
 
 const getFinalListCheckout = () => {
-  paymentReference.value = paymentMethod.value.paymentData;
-
   const finalItems = items.value.map((item) => {
     return {
       product_id: item.product_id,
@@ -91,8 +88,8 @@ const getFinalListCheckout = () => {
   });
 
   return {
-    payment_type: checkedMethod.value,
-    payment_reference: paymentReference.value,
+    payment_type: paymentMethod.value.selectedMethod,
+    payment_reference: paymentMethod.value.paymentData,
     points_used_to_pay: pointsSelected.value,
     items: finalItems,
   };
@@ -139,61 +136,11 @@ onMounted(() => {
           </div>
         </div>
         <div class="row menu-container">
-          <div class="col-lg-6">
-            <div class="row bgOrder">
-              <div class="col-lg-12">
-                <div class="section-payment">
-                  <h2>Payment</h2>
-                  <p>Choose your Payment method</p>
-                  <div class="form-check">
-                    <input
-                      v-model="checkedMethod"
-                      class="form-check-input"
-                      type="radio"
-                      value="visa"
-                      checked
-                    />
-                    <img
-                      src="src/assets/img/visa.png"
-                      alt="visa"
-                      class="payment-img"
-                    />
-                  </div>
-                  <div class="form-check">
-                    <input
-                      v-model="checkedMethod"
-                      class="form-check-input"
-                      type="radio"
-                      value="paypal"
-                    />
-                    <img
-                      src="src/assets/img/paypal.png"
-                      alt="paypal"
-                      class="payment-img"
-                    />
-                  </div>
-                  <div class="form-check">
-                    <input
-                      v-model="checkedMethod"
-                      class="form-check-input"
-                      type="radio"
-                      value="mbway"
-                    />
-                    <img
-                      src="src/assets/img/mbway.png"
-                      alt="mbway"
-                      class="payment-img"
-                    />
-                  </div>
-                  <PaymentMethod
-                    ref="paymentMethod"
-                    :errors="paymentErrors"
-                    :method="checkedMethod"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          <PaymentMethod
+            ref="paymentMethod"
+            :errors="paymentErrors"
+            :method="checkedMethod"
+          />
           <div class="col-lg-6">
             <div class="row checkout-items">
               <ProductCheckout
