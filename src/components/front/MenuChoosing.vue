@@ -2,6 +2,7 @@
 import ProductComponent from "@/components/front/ProductComponent.vue";
 import Filter from "@/components/front/FilterProducts.vue";
 import { ref, inject, onMounted } from "vue";
+import PaginationButtons from "../dashboard/PaginationButtons.vue";
 
 const props = defineProps({
   productsList: {
@@ -13,6 +14,10 @@ const props = defineProps({
 const axios = inject("axios");
 const products = ref([]);
 const waiting = ref(false);
+
+const numPages = ref(0);
+const currentPageHuman = ref(0);
+const pagesList = ref([]);
 
 //filtering products
 const productsTypes = ref(["hot dish", "cold dish", "drink", "dessert"]);
@@ -65,10 +70,17 @@ const loadProducts = async (url) => {
 
     products.value = response.data;
     restoreOldQuantities();
+    loadMeta(response.data.meta);
   } catch (error) {
     console.log(error);
   }
   waiting.value = false;
+};
+
+const loadMeta = (meta) => {
+  numPages.value = meta.last_page;
+  currentPageHuman.value = meta.current_page;
+  pagesList.value = meta.links;
 };
 
 /*const clearLists = () => {
@@ -150,8 +162,17 @@ const toCheckout = (event) => {
             "
           />
         </div>
+        <br><br><br>
+        <PaginationButtons
+          :num-pages="numPages"
+          :current-page-human="currentPageHuman"
+          :pages-list="pagesList"
+          @change-page="loadProducts"
+        />
       </div>
     </form>
+   
+
   </div>
 </template>
 
