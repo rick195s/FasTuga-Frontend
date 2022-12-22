@@ -20,6 +20,8 @@ io.on("connection", (socket) => {
   socket.on("order-cancelled", (order_id) => {
     socket.to("drivers").emit("order-cancelled", order_id);
     socket.to("chefs").emit("order-cancelled", order_id);
+    socket.to("board").emit("order-cancelled", order_id);
+
     console.log(`order ${order_id} cancelled`);
   });
 
@@ -30,6 +32,8 @@ io.on("connection", (socket) => {
 
   socket.on("order-delivered", (order_id) => {
     socket.to("managers").emit("order-delivered", order_id);
+    socket.to("board").emit("order-delivered", order_id);
+
     console.log(`order ${order_id} delivered`);
   });
 

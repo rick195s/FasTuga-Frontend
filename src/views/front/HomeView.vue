@@ -85,7 +85,6 @@ const productsToCheckout = (productsList) => {
     <!-- End Hero -->
   </LayoutFrontGuest>
 </template>
-
 <style scoped>
 @import "@/../src/assets/css/style.css";
 @import "bootstrap/dist/css/bootstrap.min.css";
