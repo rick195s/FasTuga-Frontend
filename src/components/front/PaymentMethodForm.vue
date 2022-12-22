@@ -41,7 +41,11 @@ onMounted(() => {
               value="VISA"
               checked
             />
-            <img src="src/assets/img/visa.png" alt="visa" class="payment-img" />
+            <img
+              src="/src/assets/img/visa.png"
+              alt="visa"
+              class="payment-img"
+            />
           </div>
           <div class="form-check">
             <input
@@ -51,7 +55,7 @@ onMounted(() => {
               value="PAYPAL"
             />
             <img
-              src="src/assets/img/paypal.png"
+              src="/src/assets/img/paypal.png"
               alt="paypal"
               class="payment-img"
             />
@@ -64,7 +68,7 @@ onMounted(() => {
               value="MBWAY"
             />
             <img
-              src="src/assets/img/mbway.png"
+              src="/src/assets/img/mbway.png"
               alt="mbway"
               class="payment-img"
             />

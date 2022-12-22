@@ -11,9 +11,9 @@ import NavbarComponent from "@/components/front/NavbarComponent.vue";
     autoplay
     loop
     muted
-    poster="src/assets/img/promoVideo.mp4"
+    poster="/src/assets/img/promoVideo.mp4"
   >
-    <source src="src/assets/img/promoVideo.mp4" type="video/mp4" />
+    <source src="/src/assets/img/promoVideo.mp4" type="video/mp4" />
   </video>
   <slot />
   <!-- End Hero -->

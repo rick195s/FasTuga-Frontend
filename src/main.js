@@ -13,8 +13,8 @@ import { io } from "socket.io-client";
 
 import "./css/dashboard/main.css";
 
-const apiDomain = "http://localhost"; //process.env.VUE_APP_API_DOMAIN;
-const wsConnection = "http://localhost:8080"; //process.env.VUE_APP_WS_CONNECTION;
+const apiDomain = import.meta.env.VITE_API_DOMAIN;
+const wsConnection = import.meta.env.VITE_WS_CONNECTION;
 
 /* Init Pinia */
 const pinia = createPinia();
