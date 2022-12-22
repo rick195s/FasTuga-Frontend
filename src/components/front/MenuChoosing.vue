@@ -63,12 +63,14 @@ const restoreOldQuantities = () => {
 //loading products
 const loadProducts = async (url) => {
   waiting.value = true;
+
   try {
     const response = await axios.get(
       url || "products?type=" + selectedType.value
     );
 
     products.value = response.data;
+    console.log(response.data);
     restoreOldQuantities();
     loadMeta(response.data.meta);
   } catch (error) {
@@ -162,7 +164,7 @@ const toCheckout = (event) => {
             "
           />
         </div>
-        <br><br><br>
+        <br /><br /><br />
         <PaginationButtons
           :num-pages="numPages"
           :current-page-human="currentPageHuman"
@@ -171,8 +173,6 @@ const toCheckout = (event) => {
         />
       </div>
     </form>
-   
-
   </div>
 </template>
 

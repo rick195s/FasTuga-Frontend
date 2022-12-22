@@ -14,7 +14,7 @@ const logout = () => {
     <div
       class="container d-flex justify-content-center justify-content-md-between"
     >
-      <div class="contact-info d-flex align-items-center">
+      <div class="contact-info d-none d-md-flex align-items-center">
         <i class="bi bi-phone d-flex align-items-center">
           <span>+351 912 345 678</span>
         </i>
@@ -23,7 +23,7 @@ const logout = () => {
         </i>
       </div>
 
-      <div class="languages d-none d-md-flex align-items-center">
+      <div class="languages d-flex align-items-center">
         <ul>
           <BaseButtons>
             <BaseButton to="/board" outline label="Public Board" />
