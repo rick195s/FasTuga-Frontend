@@ -149,7 +149,8 @@ const setError = (error) => {
   formStatusCurrent.value = "danger";
 };
 
-onMounted(() => {
+onMounted(async () => {
+  await userStore.loadUser();
   profileForm.value = { ...userStore.user };
   profileForm.value.name = userStore.user?.name ?? "Anonymous";
 });

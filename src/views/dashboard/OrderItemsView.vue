@@ -98,6 +98,9 @@ onMounted(() => {
       }
     });
   });
+  socket.on("new-order", () => {
+    loadItems();
+  });
 });
 </script>
 

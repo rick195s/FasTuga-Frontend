@@ -25,15 +25,24 @@ const logout = () => {
 
       <div class="languages d-none d-md-flex align-items-center">
         <ul>
-          <BaseButtons v-if="!userStore.user">
+          <BaseButtons>
             <BaseButton to="/board" outline label="Public Board" />
-            <BaseButton to="/login" outline label="Login" />
-            <BaseButton to="/register" outline label="Register" />
-          </BaseButtons>
-          <BaseButtons v-else>
-            <BaseButton to="/board" outline label="Public Board" />
-            <BaseButton to="/customer/profile" outline label="Profile" />
-            <BaseButton outline label="Logout" @click="logout" />
+            <BaseButton to="/" outline label="Make order" />
+
+            <span v-if="!userStore.user">
+              <BaseButton to="/login" outline label="Login" />
+              <BaseButton to="/register" outline label="Register" />
+            </span>
+            <span v-else>
+              <BaseButton
+                v-if="userStore.user.type == 'C'"
+                to="/customer/profile"
+                outline
+                label="Profile"
+              />
+              <BaseButton v-else to="/profile" outline label="Profile" />
+              <BaseButton outline label="Logout" @click="logout" />
+            </span>
           </BaseButtons>
         </ul>
       </div>

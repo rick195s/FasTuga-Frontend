@@ -22,4 +22,8 @@ import NavbarComponent from "@/components/front/NavbarComponent.vue";
 <style scoped>
 @import "@/../src/assets/css/style.css";
 @import "bootstrap/dist/css/bootstrap.min.css";
+
+* {
+  background-color: black;
+}
 </style>

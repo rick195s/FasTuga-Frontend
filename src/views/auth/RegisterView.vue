@@ -79,17 +79,14 @@ const populateErrors = (errors) => {
   formErrors.value.password = errors.password;
 
   formErrors.value.phone_nif = [];
-  if (errors.phone) {
-    errors.phone.forEach((element) => {
-      formErrors.value.phone_nif.push(element);
-    });
-  }
 
-  if (errors.nif) {
-    errors.nif.forEach((element) => {
-      formErrors.value.phone_nif.push(element);
-    });
-  }
+  errors.phone?.forEach((element) => {
+    formErrors.value.phone_nif.push(element);
+  });
+
+  errors.nif?.forEach((element) => {
+    formErrors.value.phone_nif.push(element);
+  });
 };
 
 const setWaiting = () => {

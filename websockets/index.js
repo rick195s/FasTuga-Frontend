@@ -20,6 +20,8 @@ io.on("connection", (socket) => {
   socket.on("order-cancelled", (order_id) => {
     socket.to("drivers").emit("order-cancelled", order_id);
     socket.to("chefs").emit("order-cancelled", order_id);
+    socket.to("board").emit("order-cancelled", order_id);
+
     console.log(`order ${order_id} cancelled`);
   });
 
@@ -30,6 +32,19 @@ io.on("connection", (socket) => {
 
   socket.on("order-delivered", (order_id) => {
     socket.to("managers").emit("order-delivered", order_id);
+    socket.to("board").emit("order-delivered", order_id);
+
     console.log(`order ${order_id} delivered`);
+  });
+
+  socket.on("new-order", (order) => {
+    order.order_items?.forEach((item) => {
+      if (item.product.type == "hot dish") {
+        socket.to("chefs").emit("new-order");
+      }
+    });
+
+    socket.to("board").emit("new-order");
+    console.log(`new order`);
   });
 });

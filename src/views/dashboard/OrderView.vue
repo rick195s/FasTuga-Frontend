@@ -1,6 +1,7 @@
 <script setup>
 import { mdiChartTimelineVariant, mdiAlertRemoveOutline } from "@mdi/js";
 import { ref, inject, onMounted } from "vue";
+import { useUserStore } from "@/stores/user";
 import SectionMain from "@/components/dashboard/SectionMain.vue";
 import LayoutAuthenticated from "@/layouts/dashboard/LayoutAuthenticated.vue";
 import SectionTitleLineWithButton from "@/components/dashboard/SectionTitleLineWithButton.vue";
@@ -12,6 +13,8 @@ import CardBoxModal from "@/components/dashboard/CardBoxModal.vue";
 
 const axios = inject("axios");
 const socket = inject("socket");
+
+const userStore = useUserStore();
 
 const props = defineProps({
   id: {
@@ -91,7 +94,9 @@ onMounted(() => {
         main
       >
         <BaseButton
-          v-if="order.data?.status != 'Cancelled'"
+          v-if="
+            order.data?.status != 'Cancelled' && userStore.user.type == 'EM'
+          "
           label="Cancel Order"
           :icon="mdiAlertRemoveOutline"
           color="whiteDark"

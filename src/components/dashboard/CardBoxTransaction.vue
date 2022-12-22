@@ -28,10 +28,6 @@ const props = defineProps({
     required: false,
     default: "",
   },
-  account: {
-    type: String,
-    required: true,
-  },
 });
 
 const icon = computed(() => {

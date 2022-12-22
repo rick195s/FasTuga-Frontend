@@ -18,7 +18,8 @@ const routes = [
     path: "/",
     name: "home",
     component: Home,
-  },{
+  },
+  {
     meta: {
       title: "Board",
     },
@@ -83,7 +84,6 @@ const routes = [
     path: "/customer/history",
     name: "history",
     component: () => import("@/views/dashboard/HistoryView.vue"),
-
   },
   {
     meta: {

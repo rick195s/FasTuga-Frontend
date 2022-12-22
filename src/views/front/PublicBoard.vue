@@ -17,6 +17,18 @@ const loadTickets = async (url) => {
 };
 
 onMounted(() => {
+  socket.emit("register", "board");
+
+  socket.on("new-order", () => {
+    loadTickets();
+  });
+  socket.on("order-cancelled", () => {
+    loadTickets();
+  });
+  socket.on("order-delivered", () => {
+    loadTickets();
+  });
+
   socket.on("order-ready", (order_id) => {
     const ticket = tickets.value.find((t) => t.id == order_id);
     if (ticket) {
